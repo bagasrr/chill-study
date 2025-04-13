@@ -1,11 +1,5 @@
 // components/PricingCard.tsx
-import React from "react";
-
-type PricingCardProps = {
-  title: string;
-  price: string;
-  description: string;
-};
+import { PricingCardProps } from "@/lib/type";
 
 export const PricingCard: React.FC<PricingCardProps> = ({ title, price, description }) => {
   return (

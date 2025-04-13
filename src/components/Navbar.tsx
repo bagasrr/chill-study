@@ -15,7 +15,7 @@ const Navbar = () => {
   const menuItems = [
     { label: "Learning", href: "/learning" },
     { label: "Langganan", href: "/subcription" },
-    { label: "Company", href: "/company" },
+    { label: "Company", href: "/about" },
   ];
 
   return (
