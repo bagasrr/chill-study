@@ -83,9 +83,9 @@ const AboutPage = () => {
         <Typography variant="h5" fontWeight="medium" gutterBottom>
           Keanggotaan Pimpinan
         </Typography>
-        <Box className="grid sm:grid-cols-2 gap-6 mt-4">
+        <Box className="flex flex-wrap gap-6 mt-4">
           {(loading ? Array(4).fill({}) : leaders).map((leader, index) => (
-            <LeadershipCard key={index} name={leader.name} role={leader.role} responsibility={leader.responsibility} image={leader.image} loading={loading} />
+            <LeadershipCard key={index} name={leader.name} role={leader.role} responsibility={leader.responsibility} image={leader.image} />
           ))}
         </Box>
       </Box>

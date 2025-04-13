@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${poppins.variable}  ${roboto.variable}  ${patrickHand.variable} ${notoSans.variable} antialiased text-black`}>
+      <body className={`${poppins.variable}  ${roboto.variable}  ${patrickHand.variable} ${notoSans.variable} antialiased text-black dark:text-white`}>
         <Providers>
           <main>{children}</main>
         </Providers>

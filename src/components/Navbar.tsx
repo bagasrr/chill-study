@@ -2,26 +2,30 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import AuthNavbar from "./AuthNavbar";
 import { Divider, Stack, Typography } from "@mui/material";
+import { useSession } from "next-auth/react";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname(); // <-- Ambil path aktif
+  const { data: session, status } = useSession();
 
   const toggleMenu = () => setIsOpen(!isOpen);
   const closeMenu = () => setIsOpen(false);
 
   const menuItems = [
+    { label: "Home", href: "/" },
     { label: "Learning", href: "/learning" },
-    { label: "Langganan", href: "/subcription" },
     { label: "Company", href: "/about" },
   ];
 
   return (
     <>
       {/* NAVBAR DESKTOP */}
-      <nav className="bg-background text-textPrimary fixed top-0 left-0 w-full z-50 shadow-lg  p-3">
+      <nav className="bg-background text-textPrimary fixed top-0 left-0 w-full z-50 shadow-lg p-3">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
             <div className="text-xl font-bold">
@@ -43,11 +47,19 @@ const Navbar = () => {
             {/* Menu (Large Screens) */}
             <div className="hidden lg:flex items-center space-x-6">
               <Stack direction="row" spacing={2} alignItems="center" divider={<Divider orientation="vertical" flexItem />}>
-                {menuItems.map((item, index) => (
-                  <Link key={index} href={item.href} className="hover:text-primary transition font-medium">
-                    {item.label}
+                {menuItems.map((item, index) => {
+                  const isActive = pathname === item.href;
+                  return (
+                    <Link key={index} href={item.href} className={`transition  font-medium px-2 py-1 rounded-md  ${isActive ? " text-primary  ease-out duration-300" : "hover:text-linkHover"}`}>
+                      {item.label}
+                    </Link>
+                  );
+                })}
+                {session && (
+                  <Link href="/dashboard" className="transition font-medium px-2 py-1 rounded-md hover:text-linkHover">
+                    Dashboard
                   </Link>
-                ))}
+                )}
                 <AuthNavbar />
               </Stack>
             </div>
@@ -61,13 +73,16 @@ const Navbar = () => {
           <button onClick={closeMenu} className="self-end text-primary text-2xl hover:text-linkHover transition">
             ✕
           </button>
-          {menuItems.map((item, index) => (
-            <Link key={index} href={item.href} onClick={closeMenu} className="hover:text-primary transition text-lg">
-              {item.label}
-            </Link>
-          ))}
+          {menuItems.map((item, index) => {
+            const isActive = pathname === item.href;
+            return (
+              <Link key={index} href={item.href} onClick={closeMenu} className={`text-lg transition rounded-md px-2 py-1 ${isActive ? "bg-primary text-white" : "hover:text-primary"}`}>
+                {item.label}
+              </Link>
+            );
+          })}
 
-          <div className="pt-4 border-t border-textSecondary ">
+          <div className="pt-4 border-t border-textSecondary">
             <AuthNavbar />
           </div>
         </div>
