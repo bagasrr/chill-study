@@ -17,7 +17,7 @@ export default function LoginPage() {
   }, [status, router]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center dark:bg-gray-950 bg-white">
+    <div className="min-h-screen flex items-center justify-center dark:bg-slate-800 bg-white">
       <LoginForm />
     </div>
   );

@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
-import Navbar from "@/components/Navbar";
-import { notoSans, patrickHand, poppins, roboto } from "@/ui/fonts";
+import { notoSans, patrickHand, poppins, roboto } from "@/lib/fonts";
 
 export const metadata: Metadata = {
   title: "Chill Study",
@@ -17,10 +16,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className={`${poppins.variable}  ${roboto.variable}  ${patrickHand.variable} ${notoSans.variable} antialiased text-black`}>
         <Providers>
-          <main>
-            <Navbar />
-            <div className="px-[5%] pt-28">{children}</div>
-          </main>
+          <main>{children}</main>
         </Providers>
       </body>
     </html>
