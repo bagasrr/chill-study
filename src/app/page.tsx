@@ -1,15 +1,8 @@
-// import AuthButton from "@/components/AuthButton";
-
-import Hero from "@/components/Hero";
-// import Navbar from "@/components/Navbar";
-import Link from "next/link";
+import Hero from "@/ui/Hero";
 
 export default function Home() {
   return (
-    <div className="min-h-screen min-w-screen flex flex-col items-center justify-center">
-      <h2>Hellow</h2>
-      {/* <AuthButton /> */}
-      <Link href="/dashboard">Otw dashboard</Link>
+    <div className="min-h-screen min-w-screen">
       <Hero />
     </div>
   );

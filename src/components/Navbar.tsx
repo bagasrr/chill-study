@@ -26,7 +26,7 @@ const Navbar = () => {
           <div className="flex justify-between h-16 items-center">
             <div className="text-xl font-bold">
               <Link href="/" className="flex items-center gap-2">
-                <Image src="/logo_white.png" alt="Logo" width={60} height={60} />
+                <Image src="/logo_navbar.png" alt="Logo" width={60} height={60} />
                 <Typography variant="h6">Just a Chill Study</Typography>
               </Link>
             </div>

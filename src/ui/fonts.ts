@@ -1,10 +1,8 @@
-import { DM_Serif_Text, M_PLUS_1_Code, Noto_Sans, Patrick_Hand, Roboto } from "next/font/google";
+import { Noto_Sans, Patrick_Hand, Roboto } from "next/font/google";
 import { Poppins } from "next/font/google";
-import { Pinyon_Script } from "next/font/google";
-import localFont from "next/font/local";
 
 export const roboto = Roboto({
-  weight: "100",
+  weight: "500",
   subsets: ["latin"],
   variable: "--font-roboto",
 });

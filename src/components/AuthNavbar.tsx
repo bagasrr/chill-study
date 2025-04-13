@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession, signIn, signOut } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { Button, Avatar, Stack, Typography, Skeleton } from "@mui/material";
 import Link from "next/link";
 
