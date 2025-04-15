@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { Box, Skeleton, Typography } from "@mui/material";
+import { Skeleton, Typography } from "@mui/material";
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);

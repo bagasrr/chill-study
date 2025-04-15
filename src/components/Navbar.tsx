@@ -11,7 +11,7 @@ import { useSession } from "next-auth/react";
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname(); // <-- Ambil path aktif
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
 
   const toggleMenu = () => setIsOpen(!isOpen);
   const closeMenu = () => setIsOpen(false);
