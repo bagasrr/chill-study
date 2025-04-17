@@ -1,0 +1,91 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./node_modules/@prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String        @id @default(cuid())
+  name        String?
+  email       String        @unique
+  image       String?
+  deviceToken String?       // untuk cek 1 user 1 device
+  createdAt   DateTime      @default(now())
+
+  payments    Payment[]
+  kelasUser   KelasUser[]
+  progress    Progress[]
+}
+
+model Kelas {
+  id        String        @id @default(cuid())
+  title     String
+  deskripsi String?
+  thumbnail String?
+  harga     Int
+  createdAt DateTime      @default(now())
+
+  materi    Materi[]
+  kelasUser KelasUser[]
+  paymentItems PaymentItem[]
+}
+
+model KelasUser {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  kelas     Kelas    @relation(fields: [kelasId], references: [id])
+  kelasId   String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, kelasId])
+}
+
+model Materi {
+  id        String    @id @default(cuid())
+  title     String
+  content   String?
+  videoUrl  String?
+  kelas     Kelas     @relation(fields: [kelasId], references: [id])
+  kelasId   String
+  createdAt DateTime  @default(now())
+
+  progress  Progress[]
+}
+
+model Progress {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  materi    Materi   @relation(fields: [materiId], references: [id])
+  materiId  String
+  status    Boolean  @default(false)
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, materiId])
+}
+
+model Payment {
+  id        String        @id @default(cuid())
+  user      User          @relation(fields: [userId], references: [id])
+  userId    String
+  status    String        // pending, success, failed, canceled
+  createdAt DateTime      @default(now())
+
+  items     PaymentItem[]
+
+  @@unique([userId], map: "OneActivePayment") // batasi 1 transaksi aktif per user
+}
+
+model PaymentItem {
+  id         String   @id @default(cuid())
+  payment    Payment  @relation(fields: [paymentId], references: [id])
+  paymentId  String
+  kelas      Kelas    @relation(fields: [kelasId], references: [id])
+  kelasId    String
+  price      Int
+}
