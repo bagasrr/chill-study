@@ -17,6 +17,8 @@ export default function AuthNavbar() {
       </Link>
     );
 
+  console.log(session);
+
   return (
     <Stack direction="row" spacing={2} alignItems="center">
       {session && (
