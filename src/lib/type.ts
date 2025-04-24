@@ -9,3 +9,14 @@ export type PricingCardProps = {
   price: string;
   description: string;
 };
+
+export type User = {
+  id: string;
+  name: string;
+  email: string;
+  deviceToken: string;
+  role: string;
+  createdAt: string;
+};
+
+export type Order = "asc" | "desc";

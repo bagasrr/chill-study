@@ -1,4 +1,4 @@
-export const runtime = "nodejs"; // ⬅️ PENTING BANGET
+export const runtime = "nodejs";
 
 import NextAuth from "next-auth";
 import { authOptions } from "@/lib/auth";

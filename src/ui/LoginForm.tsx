@@ -1,10 +1,23 @@
+"use client";
+
 import ButtonLogin from "@/components/ButtonLogin";
+import { toastError } from "@/lib/toastUtils";
 import { ArrowBack } from "@mui/icons-material";
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useEffect } from "react";
 
 export default function LoginForm() {
+  const params = useSearchParams();
+  const errorMessage = params.get("errorMessage");
+
+  useEffect(() => {
+    if (errorMessage) {
+      toastError(decodeURIComponent(errorMessage));
+    }
+  }, [errorMessage]);
   return (
     <>
       <Head>

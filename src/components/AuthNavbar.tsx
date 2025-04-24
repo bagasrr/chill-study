@@ -23,9 +23,13 @@ export default function AuthNavbar() {
     <Stack direction="row" spacing={2} alignItems="center">
       {session && (
         <>
-          <Avatar alt={session.user?.name || ""} src={session.user?.image || ""} />
-          <Typography>{session.user?.name}</Typography>
-          <Button variant="outlined" color="primary" onClick={() => signOut()}>
+          <Link href="/profile">
+            <Stack direction="row" spacing={2} alignItems="center">
+              <Avatar alt={session.user?.name || ""} src={session.user?.image || ""} />
+              <Typography>{session.user?.name}</Typography>
+            </Stack>
+          </Link>
+          <Button variant="outlined" color="primary" onClick={() => fetch("/api/auth/logout", { method: "GET" }).then(() => signOut())}>
             Logout
           </Button>
         </>

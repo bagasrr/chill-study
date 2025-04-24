@@ -1,7 +1,7 @@
 import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { NextAuthOptions } from "next-auth";
-import { prisma } from "./prisma"; // ✅ tambah ini
+import { prisma } from "./prisma";
 import { randomUUID } from "crypto";
 
 export const authOptions: NextAuthOptions = {
@@ -14,20 +14,11 @@ export const authOptions: NextAuthOptions = {
   ],
   secret: process.env.NEXTAUTH_SECRET,
   session: {
-    strategy: "database",
+    strategy: "database", // kamu pakai database, jadi tetap gunakan ini
   },
-  // callbacks: {
-  //   async signIn({ user }) {
-  //     // logout semua session sebelumnya
-  //     await prisma.session.deleteMany({
-  //       where: { userId: user.id },
-  //     });
-  //     return true;
-  //   },
-  // },
   callbacks: {
     async session({ session, user }) {
-      console.log("DEVICE TOKEN:", user.deviceToken);
+      // Inject deviceToken & role ke session
       if (session.user) {
         session.user.deviceToken = user.deviceToken;
         session.user.role = user.role;
@@ -35,35 +26,57 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
 
-    async signIn({ user, account }) {
-      const existingUser = await prisma.user.findUnique({
-        where: { id: user.id },
-      });
-
-      // Update role ke STUDENT jika belum ada
-      if (!existingUser?.role) {
-        await prisma.user.update({
-          where: { id: user.id },
-          data: {
-            role: "STUDENT",
-          },
-        });
-      }
-
-      // Generate device token seperti sebelumnya
-      if (account?.provider === "google") {
-        const token = randomUUID();
-        await prisma.user.update({
-          where: { id: user.id },
-          data: {
-            deviceToken: token,
-          },
+    signIn: async ({ user, account }) => {
+      try {
+        const existingUser = await prisma.user.findUnique({
+          where: { email: user.email! }, // GUNAKAN EMAIL untuk menghindari error saat akun baru
         });
 
-        user.deviceToken = token;
-      }
+        if (existingUser?.deviceToken) {
+          return "/auth/error?error=DeviceActive";
+        }
 
-      return true;
+        // Jika belum ada role, set default STUDENT
+        if (existingUser && !existingUser.role) {
+          await prisma.user.update({
+            where: { email: user.email! },
+            data: { role: "STUDENT" },
+          });
+        }
+
+        // Generate & simpan deviceToken saat login via Google
+        if (account?.provider === "google" && existingUser) {
+          const token = randomUUID();
+          await prisma.user.update({
+            where: { email: user.email! },
+            data: {
+              deviceToken: token,
+            },
+          });
+
+          user.deviceToken = token;
+        }
+
+        return true;
+      } catch (err) {
+        console.error("Error in signIn callback:", err);
+        return false;
+      }
     },
+  },
+
+  events: {
+    async createUser({ user }) {
+      // Dipanggil saat user baru berhasil dibuat
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { role: "STUDENT", deviceToken: randomUUID() },
+      });
+    },
+  },
+
+  pages: {
+    signIn: "/auth/signin",
+    error: "/auth/error",
   },
 };

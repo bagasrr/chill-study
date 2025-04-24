@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
 import { notoSans, patrickHand, poppins, roboto } from "@/lib/fonts";
+// import { Toaster } from "react-hot-toast";
+import CustomToast from "@/components/CustomToast";
 
 export const metadata: Metadata = {
   title: "Chill Study",
@@ -14,9 +16,13 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className={`${poppins.variable}  ${roboto.variable}  ${patrickHand.variable} ${notoSans.variable} antialiased text-black dark:text-white`}>
+      <body className={`${poppins.variable}  ${roboto.variable}  ${patrickHand.variable} ${notoSans.variable} antialiased `}>
         <Providers>
-          <main>{children}</main>
+          <main>
+            {/* <Toaster position="top-right" /> */}
+            <CustomToast />
+            {children}
+          </main>
         </Providers>
       </body>
     </html>
