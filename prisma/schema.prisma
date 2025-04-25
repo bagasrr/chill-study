@@ -8,23 +8,19 @@ datasource db {
 }
 
 model User {
-  id             String        @id @default(cuid())
-  name           String?
-  email          String        @unique
-  image          String?
-  deviceToken    String?       // untuk cek 1 user 1 device
-  emailVerified  DateTime?
-  
-  // custom fields:
-
-  role        String?       // kalau kamu mau tambahin
-  createdAt   DateTime      @default(now())
-
-  accounts    Account[]
-  sessions    Session[]
-  payments    Payment[]
-  kelasUser   KelasUser[]
-  progress    Progress[]
+  id            String      @id @default(cuid())
+  name          String?
+  email         String      @unique
+  image         String?
+  deviceToken   String?
+  createdAt     DateTime    @default(now())
+  emailVerified DateTime?
+  role          String?
+  accounts      Account[]
+  kelasUser     KelasUser[]
+  payments      Payment?
+  progress      Progress[]
+  sessions      Session[]
 }
 
 model Account {
@@ -35,14 +31,14 @@ model Account {
   providerAccountId String
   refresh_token     String?
   access_token      String?
-  expires_at        Int?  
+  expires_at        Int?
   token_type        String?
   scope             String?
   id_token          String?
   session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  @@unique([provider, providerAccountId]) 
+  @@unique([provider, providerAccountId])
 }
 
 model Session {
@@ -50,8 +46,7 @@ model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model VerificationToken {
@@ -62,76 +57,69 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-
 model Kelas {
-  id        String        @id @default(cuid())
-  title     String
-  deskripsi String?
-  thumbnail String?
-  harga     Int
-  createdAt DateTime      @default(now())
-
-  materi    Materi[]
-  kelasUser KelasUser[]
+  id           String        @id @default(cuid())
+  title        String
+  deskripsi    String?
+  thumbnail    String?
+  harga        Int
+  createdAt    DateTime      @default(now())
+  kelasUser    KelasUser[]
+  materi       Materi[]
   paymentItems PaymentItem[]
 }
 
 model KelasUser {
   id        String   @id @default(cuid())
-  user      User     @relation(fields: [userId], references: [id])
   userId    String
-  kelas     Kelas    @relation(fields: [kelasId], references: [id])
   kelasId   String
   createdAt DateTime @default(now())
+  kelas     Kelas    @relation(fields: [kelasId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 
   @@unique([userId, kelasId])
 }
 
 model Materi {
-  id        String    @id @default(cuid())
+  id        String     @id @default(cuid())
   title     String
   content   String?
   videoUrl  String?
-  kelas     Kelas     @relation(fields: [kelasId], references: [id])
   kelasId   String
-  createdAt DateTime  @default(now())
-
+  createdAt DateTime   @default(now())
+  kelas     Kelas      @relation(fields: [kelasId], references: [id])
   progress  Progress[]
 }
 
 model Progress {
   id        String   @id @default(cuid())
-  user      User     @relation(fields: [userId], references: [id])
   userId    String
-  materi    Materi   @relation(fields: [materiId], references: [id])
   materiId  String
   status    Boolean  @default(false)
   updatedAt DateTime @updatedAt
+  materi    Materi   @relation(fields: [materiId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 
   @@unique([userId, materiId])
 }
 
 model Payment {
   id        String        @id @default(cuid())
-  user      User          @relation(fields: [userId], references: [id])
-  userId    String
-  status    String        // pending, success, failed, canceled
+  userId    String        @unique(map: "OneActivePayment")
+  status    String
   createdAt DateTime      @default(now())
-
+  user      User          @relation(fields: [userId], references: [id])
   items     PaymentItem[]
-
-  @@unique([userId], map: "OneActivePayment") // batasi 1 transaksi aktif per user
 }
 
 model PaymentItem {
-  id         String   @id @default(cuid())
-  payment    Payment  @relation(fields: [paymentId], references: [id])
-  paymentId  String
-  kelas      Kelas    @relation(fields: [kelasId], references: [id])
-  kelasId    String
-  price      Int
+  id        String  @id @default(cuid())
+  paymentId String
+  kelasId   String
+  price     Int
+  kelas     Kelas   @relation(fields: [kelasId], references: [id])
+  payment   Payment @relation(fields: [paymentId], references: [id])
 }
-
 
 enum Role {
   STUDENT

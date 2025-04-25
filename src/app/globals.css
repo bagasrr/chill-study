@@ -8,7 +8,9 @@
   --font-poppins: "Poppins", sans-serif;
   --font-mplus: "M PLUS Rounded 1c", sans-serif;
 }
-
+html {
+  scroll-behavior: smooth;
+}
 /* @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;

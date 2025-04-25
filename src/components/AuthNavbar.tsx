@@ -29,7 +29,7 @@ export default function AuthNavbar() {
               <Typography>{session.user?.name}</Typography>
             </Stack>
           </Link>
-          <Button variant="outlined" color="primary" onClick={() => fetch("/api/auth/logout", { method: "GET" }).then(() => signOut())}>
+          <Button variant="outlined" color="primary" onClick={() => fetch("/api/auth/logout", { method: "GET" }).then(() => signOut({ redirect: true, callbackUrl: "/" }))}>
             Logout
           </Button>
         </>
