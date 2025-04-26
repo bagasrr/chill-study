@@ -8,19 +8,25 @@ datasource db {
 }
 
 model User {
-  id            String      @id @default(cuid())
-  name          String?
-  email         String      @unique
-  image         String?
-  deviceToken   String?
-  createdAt     DateTime    @default(now())
-  emailVerified DateTime?
-  role          String?
-  accounts      Account[]
-  kelasUser     KelasUser[]
-  payments      Payment[]   @relation(name: "UserPayments")
-  progress      Progress[]
-  sessions      Session[]
+  id                String      @id @default(cuid())
+  name              String?
+  email             String      @unique
+  image             String?
+  deviceToken       String?
+  createdAt         DateTime    @default(now())
+  emailVerified     DateTime?
+  role              String?
+  IsDeleted         DateTime?
+  CreatedBy         String?
+  LastUpdatedBy     String?
+  LastUpdateDate    DateTime?
+  Status            Int?
+  CompanyCode       String?
+  accounts          Account[]
+  kelasUser         KelasUser[]
+  payments          Payment[]   @relation(name: "UserPayments")
+  progress          Progress[]
+  sessions          Session[]
 }
 
 model Account {
@@ -41,6 +47,114 @@ model Account {
   @@unique([provider, providerAccountId])
 }
 
+model Kelas {
+  id                String        @id @default(cuid())
+  title             String
+  deskripsi         String?
+  thumbnail         String?
+  createdAt         DateTime      @default(now())
+  IsDeleted         DateTime?
+  CreatedBy         String?
+  LastUpdatedBy     String?
+  LastUpdateDate    DateTime?
+  Status            Int?
+  CompanyCode       String?
+
+  kelasUser         KelasUser[]
+  materi            Materi[]
+}
+
+model KelasUser {
+  id              String      @id @default(cuid())
+  userId          String
+  kelasId         String
+  createdAt       DateTime    @default(now())
+  kelas           Kelas       @relation(fields: [kelasId], references: [id])
+  user            User        @relation(fields: [userId], references: [id])
+  IsDeleted       DateTime?
+  CreatedBy       String?
+  LastUpdatedBy   String?
+  LastUpdateDate  DateTime?
+  Status          Int?
+  CompanyCode     String?
+
+  @@unique([userId, kelasId])
+}
+
+model Materi {
+  id              String       @id @default(cuid())
+  title           String
+  content         String?
+  videoUrl        String?
+  price           Int
+  kelasId         String
+  createdAt       DateTime     @default(now())
+  kelas           Kelas        @relation(fields: [kelasId], references: [id])
+  IsDeleted       DateTime?
+  CreatedBy       String?
+  LastUpdatedBy   String?
+  LastUpdateDate  DateTime?
+  Status          Int?
+  CompanyCode     String?
+
+  progress        Progress[]
+  paymentItems    PaymentItem[]
+  
+}
+
+model Progress {
+  id              String      @id @default(cuid())
+  userId          String
+  materiId        String
+  status          Boolean     @default(false)
+  updatedAt       DateTime    @updatedAt
+  materi          Materi      @relation(fields: [materiId], references: [id])
+  user            User        @relation(fields: [userId], references: [id])
+  IsDeleted       DateTime?
+  CreatedBy       String?
+  LastUpdatedBy   String?
+  LastUpdateDate  DateTime?
+  Status          Int?
+  CompanyCode     String?
+
+  @@unique([userId, materiId])
+}
+
+model Payment {
+  id              String         @id @default(cuid())
+  userId          String
+  status          PaymentStatus
+  createdAt       DateTime       @default(now())
+  IsDeleted       DateTime?
+  CreatedBy       String?
+  LastUpdatedBy   String?
+  LastUpdateDate  DateTime?
+  Status          Int?
+  CompanyCode     String?
+
+  user            User @relation(name: "UserPayments", fields: [userId], references: [id], onDelete: Cascade)
+  items           PaymentItem[]
+
+  @@unique([userId, status], map: "OneActiveCartOrCheckout")
+}
+
+
+model PaymentItem {
+  id              String   @id @default(cuid())
+  paymentId       String
+  materiId        String
+  price           Int
+  createdAt       DateTime     @default(now())
+  IsDeleted       DateTime?
+  CreatedBy       String?
+  LastUpdatedBy   String?
+  LastUpdateDate  DateTime?
+  Status          Int?
+  CompanyCode     String?
+  materi     Materi   @relation(fields: [materiId], references: [id])
+  payment    Payment  @relation(fields: [paymentId], references: [id])
+}
+
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
@@ -55,73 +169,6 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
-}
-
-model Kelas {
-  id           String        @id @default(cuid())
-  title        String
-  deskripsi    String?
-  thumbnail    String?
-  createdAt    DateTime      @default(now())
-  kelasUser    KelasUser[]
-  materi       Materi[]
-}
-
-model KelasUser {
-  id        String   @id @default(cuid())
-  userId    String
-  kelasId   String
-  createdAt DateTime @default(now())
-  kelas     Kelas    @relation(fields: [kelasId], references: [id])
-  user      User     @relation(fields: [userId], references: [id])
-
-  @@unique([userId, kelasId])
-}
-
-model Materi {
-  id            String     @id @default(cuid())
-  title         String
-  content       String?
-  videoUrl      String?
-  price         Int 
-  kelasId       String
-  createdAt     DateTime   @default(now())
-  kelas         Kelas      @relation(fields: [kelasId], references: [id])
-  progress      Progress[]
-  paymentItems  PaymentItem[]
-}
-
-model Progress {
-  id        String   @id @default(cuid())
-  userId    String
-  materiId  String
-  status    Boolean  @default(false)
-  updatedAt DateTime @updatedAt
-  materi    Materi   @relation(fields: [materiId], references: [id])
-  user      User     @relation(fields: [userId], references: [id])
-
-  @@unique([userId, materiId])
-}
-
-model Payment {
-  id        String         @id @default(cuid())
-  userId    String
-  status    PaymentStatus
-  createdAt DateTime       @default(now())
-  user      User @relation(name: "UserPayments", fields: [userId], references: [id], onDelete: Cascade)
-  items     PaymentItem[]
-
-  @@unique([userId, status], map: "OneActiveCartOrCheckout")
-}
-
-
-model PaymentItem {
-  id         String   @id @default(cuid())
-  paymentId  String
-  materiId   String
-  price      Int
-  materi     Materi   @relation(fields: [materiId], references: [id])
-  payment    Payment  @relation(fields: [paymentId], references: [id])
 }
 
 enum Role {

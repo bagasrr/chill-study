@@ -26,3 +26,17 @@ export function formatCellValue(key: string | number | symbol, value: unknown): 
 
   return typeof value === "object" ? JSON.stringify(value) : (value as React.ReactNode);
 }
+
+export function formatCellValueSmart(value: any): React.ReactNode {
+  if (value === null || value === undefined) return "-";
+
+  if (typeof value === "object") {
+    // Kalau object, ambil title, name, atau fallback JSON string
+    if ("title" in value) return value.title;
+    if ("name" in value) return value.name;
+    return JSON.stringify(value); // Fallback biar aman
+  }
+
+  // Kalau bukan object, tetap render biasa
+  return value.toString();
+}

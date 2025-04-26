@@ -56,7 +56,7 @@ const AdminNavbar = () => {
                   );
                 })}
                 {session && (
-                  <Link href="/dashboard" className="transition font-medium px-2 py-1 rounded-md hover:text-linkHover">
+                  <Link href="/admin-dashboard" className={`transition font-medium px-2 py-1 rounded-md hover:text-linkHover ${pathname ? "text-primary ease-out duration-300" : ""}`}>
                     Dashboard
                   </Link>
                 )}

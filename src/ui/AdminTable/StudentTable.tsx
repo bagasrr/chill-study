@@ -12,6 +12,7 @@ const StudentTable = () => {
     <SortableTable
       idSection="accounts"
       tableTitle="Students Account"
+      addLink="/admin-dashboard/add-new/admin"
       data={dataStudent}
       columns={[
         { key: "name", label: "User Name", sortable: true },

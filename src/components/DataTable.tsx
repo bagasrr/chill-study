@@ -1,9 +1,11 @@
 "use client";
 
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TableSortLabel, TextField, Typography, TablePagination, Skeleton } from "@mui/material";
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TableSortLabel, TextField, Typography, TablePagination, Skeleton, Chip } from "@mui/material";
 import { useMemo, useState } from "react";
 import { Order } from "@/lib/type";
-import { formatCellValue } from "@/lib/utils";
+import { formatCellValue, formatCellValueSmart } from "@/lib/utils";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import Link from "next/link";
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) return -1;
@@ -17,6 +19,7 @@ function getComparator<T>(order: Order, orderBy: keyof T): (a: T, b: T) => numbe
 
 type SortableTableProps<T> = {
   data: T[];
+  addLink: string;
   isLoading?: boolean;
   columns: {
     key: keyof T;
@@ -29,13 +32,12 @@ type SortableTableProps<T> = {
   idSection: string;
 };
 
-export function SortableTable<T extends { id: string }>({ data, columns, renderAction, tableTitle = "Table Title", idSection, isLoading = false }: SortableTableProps<T>) {
+export function SortableTable<T extends { id: string }>({ data, columns, renderAction, tableTitle = "Table Title", idSection, isLoading = false, addLink }: SortableTableProps<T>) {
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof T>(columns[0].key);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
-
   const handleSort = (property: keyof T) => {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
@@ -79,7 +81,26 @@ export function SortableTable<T extends { id: string }>({ data, columns, renderA
   return (
     <div className="my-12 flex flex-col gap-5" id={idSection}>
       <div className="flex justify-between">
-        <Typography variant="h4">{tableTitle}</Typography>
+        <div className="flex gap-5 items-center">
+          <Typography variant="h4">{tableTitle}</Typography>
+          <Link href={addLink} className="text-sm hover:underline">
+            <Chip
+              label={`Add New ${tableTitle}`}
+              variant="outlined"
+              color="primary"
+              icon={<AddCircleOutlineIcon />}
+              sx={{
+                transition: "all 0.3s",
+                "&:hover": {
+                  backgroundColor: "primary.main",
+                  borderColor: "primary.main",
+                  color: "black",
+                },
+              }}
+            />
+          </Link>
+        </div>
+
         <TextField label="Search..." variant="outlined" value={searchQuery} onChange={handleSearchChange} />
       </div>
       <TableContainer component={Paper}>
@@ -120,7 +141,7 @@ export function SortableTable<T extends { id: string }>({ data, columns, renderA
               paginatedData.map((row) => (
                 <TableRow key={row.id}>
                   {columns.map((col) => (
-                    <TableCell key={String(col.key)}>{formatCellValue(col.key, row[col.key])}</TableCell>
+                    <TableCell key={String(col.key)}>{formatCellValueSmart(row[col.key])}</TableCell>
                   ))}
                   {renderAction && <TableCell>{renderAction(row)}</TableCell>}
                 </TableRow>

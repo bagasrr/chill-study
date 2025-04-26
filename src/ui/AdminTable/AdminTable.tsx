@@ -2,7 +2,6 @@
 import { SortableTable } from "@/components/DataTable";
 import { useFetchData } from "@/lib/hooks/useFetchData";
 import { User } from "@prisma/client";
-import React from "react";
 
 const AdminTable = () => {
   const { data: admins, loading } = useFetchData<User[]>("/api/users/admins");
@@ -12,6 +11,7 @@ const AdminTable = () => {
     <SortableTable
       idSection="accounts"
       tableTitle="Admin Account"
+      addLink="/admin-dashboard/add-new/admin"
       data={dataAdmin}
       columns={[
         { key: "name", label: "User Name", sortable: true },
