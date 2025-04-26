@@ -18,7 +18,7 @@ model User {
   role          String?
   accounts      Account[]
   kelasUser     KelasUser[]
-  payments      Payment?
+  payments      Payment[]   @relation(name: "UserPayments")
   progress      Progress[]
   sessions      Session[]
 }
@@ -62,11 +62,9 @@ model Kelas {
   title        String
   deskripsi    String?
   thumbnail    String?
-  harga        Int
   createdAt    DateTime      @default(now())
   kelasUser    KelasUser[]
   materi       Materi[]
-  paymentItems PaymentItem[]
 }
 
 model KelasUser {
@@ -81,14 +79,16 @@ model KelasUser {
 }
 
 model Materi {
-  id        String     @id @default(cuid())
-  title     String
-  content   String?
-  videoUrl  String?
-  kelasId   String
-  createdAt DateTime   @default(now())
-  kelas     Kelas      @relation(fields: [kelasId], references: [id])
-  progress  Progress[]
+  id            String     @id @default(cuid())
+  title         String
+  content       String?
+  videoUrl      String?
+  price         Int 
+  kelasId       String
+  createdAt     DateTime   @default(now())
+  kelas         Kelas      @relation(fields: [kelasId], references: [id])
+  progress      Progress[]
+  paymentItems  PaymentItem[]
 }
 
 model Progress {
@@ -104,25 +104,36 @@ model Progress {
 }
 
 model Payment {
-  id        String        @id @default(cuid())
-  userId    String        @unique(map: "OneActivePayment")
-  status    String
-  createdAt DateTime      @default(now())
-  user      User          @relation(fields: [userId], references: [id])
+  id        String         @id @default(cuid())
+  userId    String
+  status    PaymentStatus
+  createdAt DateTime       @default(now())
+  user      User @relation(name: "UserPayments", fields: [userId], references: [id], onDelete: Cascade)
   items     PaymentItem[]
+
+  @@unique([userId, status], map: "OneActiveCartOrCheckout")
 }
 
+
 model PaymentItem {
-  id        String  @id @default(cuid())
-  paymentId String
-  kelasId   String
-  price     Int
-  kelas     Kelas   @relation(fields: [kelasId], references: [id])
-  payment   Payment @relation(fields: [paymentId], references: [id])
+  id         String   @id @default(cuid())
+  paymentId  String
+  materiId   String
+  price      Int
+  materi     Materi   @relation(fields: [materiId], references: [id])
+  payment    Payment  @relation(fields: [paymentId], references: [id])
 }
 
 enum Role {
   STUDENT
   TEACHER
   ADMIN
+}
+
+enum PaymentStatus {
+  CART     
+  PENDING  
+  PAID    
+  FAILED   
+  CANCELLED
 }

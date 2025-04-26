@@ -26,6 +26,5 @@ export function useFetchData<T = unknown>(url: string) {
       isMounted = false;
     };
   }, [url]);
-  console.log("Data :", { data });
   return { data, loading, error };
 }
