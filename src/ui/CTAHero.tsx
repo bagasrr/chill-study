@@ -1,8 +1,40 @@
+"use client";
 // pages/pricing.tsx
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { PricingCard } from "@/components/PricingCard";
+import axios from "@/lib/axios";
 
 const CTAHero = () => {
+  const [dataTKJ, setDataTKJ] = useState([]);
+  const [dataTKR, setDataTKR] = useState([]);
+
+  useEffect(() => {
+    getMateriTKJ();
+    getMateriTKR();
+  }, []);
+
+  const getData = async (kelas: string) => {
+    const res = await axios.get("/api/materi", {
+      params: {
+        limit: 3,
+        kelas, // <-- disini!
+      },
+    });
+    return res.data;
+  };
+
+  const getMateriTKJ = async () => {
+    const data = await getData("Teknik Komputer Jaringan");
+    setDataTKJ(data);
+  };
+
+  const getMateriTKR = async () => {
+    const data = await getData("Teknik Kendaraan Ringan");
+    setDataTKR(data);
+  };
+
+  console.log({ dataTKJ, dataTKR });
+
   return (
     <div className="min-h-screen bg-gray-100 px-[5%] py-12">
       <header className="text-center mb-12">
@@ -17,20 +49,12 @@ const CTAHero = () => {
 
       <section className="mb-10">
         <h2 className="text-2xl font-semibold text-gray-800 mb-4">TKJ - Teknik Komputer dan Jaringan</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <PricingCard title="Dasar Jaringan Komputer" price="Gratis" description="Dasar teori jaringan untuk pemula." />
-          <PricingCard title="Instalasi Sistem Operasi Jaringan" price="Rp10.000" description="Panduan instalasi Linux/Windows Server untuk lab sekolah." />
-          <PricingCard title="Praktikum Mikrotik Dasar" price="Rp15.000" description="Konfigurasi dasar router Mikrotik untuk jaringan lokal." />
-        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">{dataTKJ && dataTKJ.map((materi: any) => <PricingCard key={materi.id} title={materi.title} price={materi.price} description={materi.content} />)}</div>
       </section>
 
       <section className="mb-10">
         <h2 className="text-2xl font-semibold text-gray-800 mb-4">TKR - Teknik Kendaraan Ringan</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <PricingCard title="Pengenalan Mesin Bensin" price="Gratis" description="Kenali dasar mesin bensin dan komponen pentingnya." />
-          <PricingCard title="Tune-Up Mesin Manual" price="Rp10.000" description="Langkah tune-up mesin kendaraan roda dua & empat." />
-          <PricingCard title="Sistem Rem dan Suspensi" price="Rp15.000" description="Belajar mekanisme kerja rem dan suspensi secara visual." />
-        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">{dataTKR && dataTKR.map((materi: any) => <PricingCard key={materi.id} title={materi.title} price={materi.price} description={materi.content} />)}</div>
       </section>
 
       <section className="text-center py-10 px-6 bg-yellow-100 rounded-xl">

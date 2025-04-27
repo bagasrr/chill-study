@@ -6,25 +6,14 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import ProgramCard from "./ProgramCard";
 import SwiperNavButton from "./NavArrow";
-
-const programs = [
-  {
-    image: "https://smknkasiman.sch.id/wp-content/uploads/2023/05/IMG20230215115340-1024x578.jpg",
-    title: "TKR - Teknik Kendaraan Ringan",
-    description: "Pelatihan langsung di bengkel dengan fasilitas lengkap...",
-    buttonText: "Mulai Belajar",
-  },
-  {
-    image: "https://smknkasiman.sch.id/wp-content/uploads/2023/05/IMG20230215115340-1024x578.jpg",
-    title: "TKJ – Teknik Komputer dan Jaringan",
-    description: "Pelatihan langsung di lab jaringan dengan peralatan industri...",
-    buttonText: "Mulai Belajar",
-  },
-];
+import { useFetchData } from "@/lib/hooks/useFetchData";
+import { Kelas } from "@prisma/client";
 
 export default function CustomSwiper() {
   const prevRef = useRef(null);
   const nextRef = useRef(null);
+
+  const { data: kelas } = useFetchData<Kelas[]>("/api/kelas");
 
   return (
     <div className="relative w-full md:w-1/2 px-4 py-10  text-white">
@@ -57,12 +46,16 @@ export default function CustomSwiper() {
           }
         }}
       >
-        {programs.map((program, index) => (
+        {kelas?.map((program, index) => (
           <SwiperSlide
             key={index}
             style={{ width: "90%", maxWidth: "768px" }} // atur ukuran tiap slide biar sisa ruang terlihat
           >
-            <ProgramCard {...program} />
+            <ProgramCard
+              thumbnail={program.thumbnail ?? ""} // provide a default value when thumbnail is null
+              title={program.title}
+              deskripsi={program.deskripsi ?? ""}
+            />
           </SwiperSlide>
         ))}
       </Swiper>

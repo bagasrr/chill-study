@@ -3,7 +3,7 @@
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TableSortLabel, TextField, Typography, TablePagination, Skeleton, Chip } from "@mui/material";
 import { useMemo, useState } from "react";
 import { Order } from "@/lib/type";
-import { formatCellValue, formatCellValueSmart } from "@/lib/utils";
+import { formatCellValueSmart } from "@/lib/utils";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import Link from "next/link";
 

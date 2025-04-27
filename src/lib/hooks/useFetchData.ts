@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState } from "react";
 import axios from "@/lib/axios"; // auto import setelah setup instance
 
@@ -12,10 +13,10 @@ export function useFetchData<T = unknown>(url: string) {
     setLoading(true);
     axios
       .get<T>(url)
-      .then((res) => {
+      .then((res: any) => {
         if (isMounted) setData(res.data);
       })
-      .catch((err) => {
+      .catch((err: any) => {
         if (isMounted) setError(err);
       })
       .finally(() => {

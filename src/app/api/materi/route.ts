@@ -1,14 +1,59 @@
 import { prisma } from "@/lib/prisma";
-import { createMateriSchema } from "@/lib/schemas";
+import { createMateriSchema } from "@/lib/validation/materi";
 import { NextResponse } from "next/server";
 
-// kelasId: true,
-
 // GET semua materi
-export async function GET() {
+// export async function GET() {
+//   try {
+//     const materi = await prisma.materi.findMany({
+//       where: {
+//         IsDeleted: null,
+//         kelas: {
+//           IsDeleted: null,
+//         },
+//       },
+//       select: {
+//         id: true,
+//         title: true,
+//         content: true,
+//         videoUrl: true,
+//         createdAt: true,
+//         price: true,
+//         CreatedBy: true,
+//         LastUpdatedBy: true,
+//         LastUpdateDate: true,
+//         kelas: {
+//           select: {
+//             title: true,
+//           },
+//         },
+//       },
+//     });
+
+//     return NextResponse.json(materi);
+//   } catch (error) {
+//     console.error(error);
+//     return new NextResponse("Internal Server Error", { status: 500 });
+//   }
+// }
+
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const kelasName = searchParams.get("kelas"); // ambil query 'kelas'
+  const limitRaw = searchParams.get("limit");
+  const limit = limitRaw && !isNaN(Number(limitRaw)) ? parseInt(limitRaw) : undefined;
+
   try {
     const materi = await prisma.materi.findMany({
+      where: {
+        IsDeleted: null,
+        kelas: {
+          title: kelasName || undefined, // filter berdasarkan nama kelas
+          IsDeleted: null,
+        },
+      },
       select: {
+        id: true,
         title: true,
         content: true,
         videoUrl: true,
@@ -23,7 +68,12 @@ export async function GET() {
           },
         },
       },
+      take: limit,
+      orderBy: {
+        createdAt: "asc",
+      },
     });
+
     return NextResponse.json(materi);
   } catch (error) {
     console.error(error);

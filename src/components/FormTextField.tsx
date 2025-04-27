@@ -1,6 +1,17 @@
 import { TextField } from "@mui/material";
 
-export const FormTextField = ({ label, name, value, onChange, multiline = false, rows = 1, type = "text", required = false }: any) => (
+type FormTextFieldProps = {
+  label: string;
+  name: string;
+  value: string;
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  multiline?: boolean;
+  rows?: number;
+  type?: string;
+  required?: boolean;
+};
+
+export const FormTextField = ({ label, name, value, onChange, multiline = false, rows = 1, type = "text", required = false }: FormTextFieldProps) => (
   <TextField
     variant="filled"
     label={label}

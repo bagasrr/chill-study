@@ -3,19 +3,19 @@
 import { Button, Card, CardActionArea, CardActions, CardContent, CardMedia, Typography } from "@mui/material";
 
 interface ProgramCardProps {
-  image: string;
+  thumbnail: string;
   title: string;
-  description: string;
+  deskripsi: string;
   buttonText?: string;
   onClick?: () => void;
 }
 
-const ProgramCard = ({ image, title, description, buttonText = "Learn More", onClick }: ProgramCardProps) => {
+const ProgramCard = ({ thumbnail, title, deskripsi, buttonText = "Learn More", onClick }: ProgramCardProps) => {
   return (
     <Card sx={{ display: "flex", width: "100%", maxWidth: 900, height: 300, flexDirection: { xs: "column", lg: "row" }, boxShadow: 4 }}>
       <CardMedia
         component="img"
-        image={image}
+        image={thumbnail}
         alt={title}
         sx={{
           width: { xs: "100%", lg: 300 },
@@ -28,8 +28,8 @@ const ProgramCard = ({ image, title, description, buttonText = "Learn More", onC
             <Typography gutterBottom variant="h5" component="div">
               {title}
             </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {description}
+            <Typography variant="body2" color="text.secondary" className="max-h-[100px] overflow-auto ">
+              {deskripsi}
             </Typography>
           </CardContent>
         </CardActionArea>

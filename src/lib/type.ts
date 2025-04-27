@@ -6,7 +6,7 @@ export type LeadershipCard = {
 };
 export type PricingCardProps = {
   title: string;
-  price: string;
+  price: number;
   description: string;
 };
 
