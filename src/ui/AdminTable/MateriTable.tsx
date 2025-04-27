@@ -2,11 +2,9 @@
 
 import { SortableTable } from "@/components/DataTable";
 import { useFetchData } from "@/lib/hooks/useFetchData";
-import { User } from "@prisma/client";
-import React from "react";
 
 const MateriTable = () => {
-  const { data: materi, loading } = useFetchData<User[]>("/api/materi");
+  const { data: materi, loading } = useFetchData<[]>("/api/materi");
   const dataMateri = materi || [];
   return (
     <SortableTable

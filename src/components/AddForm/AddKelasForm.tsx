@@ -1,6 +1,12 @@
+"use client";
+
 import React, { useState, ChangeEvent, FormEvent } from "react";
-import { Button, TextField, Typography } from "@mui/material";
+import { Button, CircularProgress, Box } from "@mui/material";
 import { FormTextField } from "../FormTextField";
+import axios from "@/lib/axios";
+import { useFormSubmit } from "@/lib/hooks/useSubmitform";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 // Interface buat form state
 interface KelasForm {
@@ -9,18 +15,15 @@ interface KelasForm {
   thumbnail: string;
 }
 
-interface MateriForm {
-  title: string;
-  content: string;
-  videoUrl: string;
-  price: string;
-}
-
-// Komponen reusable TextField yang udah stylingnya fix
-
 export default function AddKelasForm() {
-  const [kelas, setKelas] = useState<KelasForm>({ title: "", deskripsi: "", thumbnail: "" });
-  const [materi, setMateri] = useState<MateriForm>({ title: "", content: "", videoUrl: "", price: "" });
+  const [kelas, setKelas] = useState<KelasForm>({
+    title: "",
+    deskripsi: "",
+    thumbnail: "",
+  });
+
+  const { isLoading, submitWrapper } = useFormSubmit();
+  const router = useRouter();
 
   const handleChange = (setter: Function) => (e: ChangeEvent<HTMLInputElement>) => {
     setter((prev: any) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -28,42 +31,52 @@ export default function AddKelasForm() {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Kelas:", kelas);
-    console.log("Materi:", materi);
-    // TODO: Kirim ke API / Backend
+
+    submitWrapper(async () => {
+      try {
+        await axios.post("/api/kelas", kelas);
+        router.push("/admin-dashboard#kelas");
+        toast.success("Kelas berhasil ditambahkan 🎉");
+      } catch (error) {
+        toast.error("Gagal menambahkan kelas 😢");
+        console.error(error);
+      }
+    });
   };
 
   return (
     <div className="w-screen mx-auto py-12 px-6 bg-slate-200">
       <div className="p-8 rounded-2xl shadow-lg bg-white">
-        <Typography variant="h4" className="font-roboto font-semibold mb-5">
-          Tambah Kelas Baru
-        </Typography>
+        <h1 className="text-3xl font-roboto font-bold mb-5 text-center">Tambah Kelas Baru</h1>
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="col-span-2">
-              <h2 className="text-xl font-semibold mb-4">Informasi Kelas</h2>
+              <h2 className="text-xl font-semibold text-sky-400 mb-4">Informasi Kelas</h2>
             </div>
+
             <FormTextField label="Judul Kelas" name="title" value={kelas.title} onChange={handleChange(setKelas)} required />
             <FormTextField label="Thumbnail URL" name="thumbnail" value={kelas.thumbnail} onChange={handleChange(setKelas)} />
             <div className="col-span-2">
               <FormTextField label="Deskripsi Kelas" name="deskripsi" value={kelas.deskripsi} onChange={handleChange(setKelas)} multiline rows={4} />
             </div>
-
-            <div className="col-span-2">
-              <h2 className="text-xl font-semibold text-emerald-400 mb-4">Informasi Materi Awal</h2>
-            </div>
-            <FormTextField label="Judul Materi" name="title" value={materi.title} onChange={handleChange(setMateri)} required />
-            <FormTextField label="Video URL" name="videoUrl" value={materi.videoUrl} onChange={handleChange(setMateri)} />
-            <div className="col-span-2">
-              <FormTextField label="Konten Materi" name="content" value={materi.content} onChange={handleChange(setMateri)} multiline rows={4} />
-            </div>
-            <FormTextField label="Harga Materi (Rp)" name="price" value={materi.price} onChange={handleChange(setMateri)} type="number" required />
           </div>
 
-          <div className="mt-8">
-            <Button type="submit" variant="outlined" color="info" size="large" fullWidth sx={{ fontWeight: "bold", borderRadius: 6 }}>
-              Simpan Kelas & Materi
+          <div className="mt-8 relative">
+            <Button type="submit" variant="outlined" color="info" size="large" fullWidth disabled={isLoading} sx={{ fontWeight: "bold", borderRadius: 6, position: "relative" }}>
+              {isLoading ? (
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                  }}
+                >
+                  <CircularProgress size={24} color="inherit" />
+                </Box>
+              ) : (
+                "Tambahkan Kelas"
+              )}
             </Button>
           </div>
         </form>

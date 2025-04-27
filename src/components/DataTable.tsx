@@ -107,6 +107,7 @@ export function SortableTable<T extends { id: string }>({ data, columns, renderA
         <Table sx={{ minWidth: 650 }} aria-label="sortable table">
           <TableHead>
             <TableRow>
+              <TableCell>No</TableCell>
               {columns.map((col) => (
                 <TableCell key={String(col.key)}>
                   {col.sortable ? (
@@ -138,8 +139,9 @@ export function SortableTable<T extends { id: string }>({ data, columns, renderA
                 </TableRow>
               ))
             ) : paginatedData.length > 0 ? (
-              paginatedData.map((row) => (
+              paginatedData.map((row, i) => (
                 <TableRow key={row.id}>
+                  <TableCell>{page != 0 ? page * rowsPerPage + i + 1 : i + 1}</TableCell>
                   {columns.map((col) => (
                     <TableCell key={String(col.key)}>{formatCellValueSmart(row[col.key])}</TableCell>
                   ))}
