@@ -19,12 +19,13 @@ function getComparator<T>(order: Order, orderBy: keyof T): (a: T, b: T) => numbe
 
 type SortableTableProps<T> = {
   data: T[];
-  addLink: string;
+  addLink: string | null;
   isLoading?: boolean;
   columns: {
     key: keyof T;
     label: string;
     sortable?: boolean;
+    render?: (value: any, row: T) => React.ReactNode;
   }[];
   renderAction?: (row: T) => React.ReactNode;
   emptyValueFallback?: string;
@@ -32,7 +33,7 @@ type SortableTableProps<T> = {
   idSection: string;
 };
 
-export function SortableTable<T extends { id: string }>({ data, columns, renderAction, tableTitle = "Table Title", idSection, isLoading = false, addLink }: SortableTableProps<T>) {
+export function SortableTable<T extends { id: string }>({ data, columns, renderAction, tableTitle = "Table Title", idSection, isLoading = false, addLink = null }: SortableTableProps<T>) {
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof T>(columns[0].key);
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -83,22 +84,24 @@ export function SortableTable<T extends { id: string }>({ data, columns, renderA
       <div className="flex justify-between">
         <div className="flex gap-5 items-center">
           <Typography variant="h4">{tableTitle}</Typography>
-          <Link href={addLink} className="text-sm hover:underline">
-            <Chip
-              label={`Add New ${tableTitle}`}
-              variant="outlined"
-              color="primary"
-              icon={<AddCircleOutlineIcon />}
-              sx={{
-                transition: "all 0.3s",
-                "&:hover": {
-                  backgroundColor: "primary.main",
-                  borderColor: "primary.main",
-                  color: "black",
-                },
-              }}
-            />
-          </Link>
+          {addLink && (
+            <Link href={addLink} className={`text-sm hover:underline `}>
+              <Chip
+                label={`Add New ${tableTitle}`}
+                variant="outlined"
+                color="primary"
+                icon={<AddCircleOutlineIcon />}
+                sx={{
+                  transition: "all 0.3s",
+                  "&:hover": {
+                    backgroundColor: "primary.main",
+                    borderColor: "primary.main",
+                    color: "black",
+                  },
+                }}
+              />
+            </Link>
+          )}
         </div>
 
         <TextField label="Search..." variant="outlined" value={searchQuery} onChange={handleSearchChange} />
@@ -109,7 +112,7 @@ export function SortableTable<T extends { id: string }>({ data, columns, renderA
             <TableRow>
               <TableCell>No</TableCell>
               {columns.map((col) => (
-                <TableCell key={String(col.key)}>
+                <TableCell key={String(col.key)} sx={{ whiteSpace: "nowrap" }}>
                   {col.sortable ? (
                     <TableSortLabel active={orderBy === col.key} direction={orderBy === col.key ? order : "asc"} onClick={() => handleSort(col.key)}>
                       {col.label}
@@ -119,10 +122,11 @@ export function SortableTable<T extends { id: string }>({ data, columns, renderA
                   )}
                 </TableCell>
               ))}
-              {renderAction && <TableCell>Action</TableCell>}
+              {renderAction && <TableCell sx={{ whiteSpace: "nowrap", textAlign: "center" }}>Action</TableCell>}
             </TableRow>
           </TableHead>
           <TableBody>
+            {/* Skeleton */}
             {isLoading ? (
               skeletonRows.map((_, idx) => (
                 <TableRow key={`skeleton-${idx}`}>
@@ -138,14 +142,16 @@ export function SortableTable<T extends { id: string }>({ data, columns, renderA
                   )}
                 </TableRow>
               ))
-            ) : paginatedData.length > 0 ? (
+            ) : // Skeleton end
+            paginatedData.length > 0 ? (
               paginatedData.map((row, i) => (
                 <TableRow key={row.id}>
                   <TableCell>{page != 0 ? page * rowsPerPage + i + 1 : i + 1}</TableCell>
                   {columns.map((col) => (
-                    <TableCell key={String(col.key)}>{formatCellValueSmart(row[col.key])}</TableCell>
+                    <TableCell key={String(col.key)}>{col.render ? col.render(row[col.key], row) : formatCellValueSmart(row[col.key])}</TableCell>
                   ))}
-                  {renderAction && <TableCell>{renderAction(row)}</TableCell>}
+
+                  {renderAction && <TableCell sx={{ whiteSpace: "nowrap", textAlign: "center" }}>{renderAction(row)}</TableCell>}
                 </TableRow>
               ))
             ) : (

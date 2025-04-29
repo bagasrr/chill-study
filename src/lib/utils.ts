@@ -7,6 +7,15 @@ export const formatCurrency = (value: number) => {
   return formatter.format(value);
 };
 
+export const formattedDate = (date: string) => {
+  const formattedDate = new Date(date).toLocaleDateString("id-ID", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+  return formattedDate;
+};
+
 export function formatCellValue(key: string | number | symbol, value: unknown): React.ReactNode {
   if ((key === "createdAt" || key === "updatedAt") && value) {
     const date = new Date(value as string);

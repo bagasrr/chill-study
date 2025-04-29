@@ -38,6 +38,7 @@ export async function GET() {
         title: true,
         deskripsi: true,
         thumbnail: true,
+        createdAt: true,
         CreatedBy: true,
         LastUpdatedBy: true,
         LastUpdateDate: true,
