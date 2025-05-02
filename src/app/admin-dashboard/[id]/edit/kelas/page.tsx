@@ -1,9 +1,94 @@
 "use client";
-import { useParams } from "next/navigation";
 
-const Page = () => {
-  const { id } = useParams<{ id: string }>();
-  return <div>Id : {id}</div>;
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import InputField from "@/components/InputField";
+import axios from "axios";
+import Image from "next/image";
+import { useParams, useRouter } from "next/navigation";
+
+type FormValues = {
+  title: string;
+  thumbnail: string;
+  deskripsi: string;
 };
 
-export default Page;
+export default function EditKelas() {
+  const { id } = useParams<{ id: string }>();
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    watch,
+    formState: { isSubmitting },
+  } = useForm<FormValues>();
+
+  const thumbnailURL = watch("thumbnail");
+
+  useEffect(() => {
+    if (id) {
+      fetchKelas();
+    }
+  }, [id]);
+
+  const fetchKelas = async () => {
+    try {
+      const res = await axios.get(`/api/${id}/details/kelas`);
+      reset(res.data);
+    } catch (err) {
+      console.error("Failed to fetch data:", err);
+    }
+  };
+
+  const onSubmit = async (data: FormValues) => {
+    setLoading(true);
+    try {
+      await axios.patch(`/api/${id}/edit/kelas`, data);
+      alert("Kelas berhasil diupdate!");
+    } catch (err) {
+      alert("Gagal update kelas.");
+    } finally {
+      setLoading(false);
+      router.push("/admin-dashboard#kelas");
+    }
+  };
+
+  return (
+    <div className="bg-white p-5">
+      <h1>ID : {id}</h1>
+      <div className=" text-2xl max-w-[80%] mx-auto shadow-md bg-slate-100 p-6 rounded-lg ">
+        <h1 className="font-bold text-center mb-6">Edit Kelas</h1>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <InputField label="Judul Kelas" name="title" register={register} />
+          <div className="flex items-center w-full">
+            <div className="flex flex-col mb-4 w-full">
+              <label htmlFor="thumbnail" className="text-sm font-medium text-gray-700">
+                Thumbnail
+              </label>
+              <input type="text" {...register("thumbnail")} placeholder={loading ? "Mengambil data" : "https://example.com/thumb.jpg"} className="w-[90%] p-3 rounded-md text-sm" />
+            </div>
+
+            {thumbnailURL && (
+              <div>
+                <Image src={thumbnailURL} width={100} height={100} alt="Preview Thumbnail" className="rounded-lg object-cover" />
+              </div>
+            )}
+          </div>
+
+          <div>
+            <label htmlFor="deskripsi" className="text-sm font-medium text-gray-700">
+              Deskripsi
+            </label>
+            <textarea {...register("deskripsi")} className="w-full h-40 border border-gray-300 rounded-lg px-4 py-2 text-black focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
+          </div>
+          <button type="submit" disabled={loading || isSubmitting} className="w-full py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
+            {loading || isSubmitting ? "Updating..." : "Update Kelas"}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}

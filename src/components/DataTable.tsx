@@ -122,7 +122,7 @@ export function SortableTable<T extends { id: string }>({ data, columns, renderA
                   )}
                 </TableCell>
               ))}
-              {renderAction && <TableCell sx={{ whiteSpace: "nowrap", textAlign: "center" }}>Action</TableCell>}
+              {renderAction && <TableCell sx={{ whiteSpace: "nowrap" }}>Action</TableCell>}
             </TableRow>
           </TableHead>
           <TableBody>
