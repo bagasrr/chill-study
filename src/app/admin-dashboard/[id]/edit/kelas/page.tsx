@@ -6,6 +6,7 @@ import InputField from "@/components/InputField";
 import axios from "axios";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 type FormValues = {
   title: string;
@@ -47,18 +48,19 @@ export default function EditKelas() {
     setLoading(true);
     try {
       await axios.patch(`/api/${id}/edit/kelas`, data);
-      alert("Kelas berhasil diupdate!");
-    } catch (err) {
-      alert("Gagal update kelas.");
-    } finally {
+      toast.success("Kelas berhasil Diupdate 🎉");
       setLoading(false);
-      router.push("/admin-dashboard#kelas");
+      setTimeout(() => {
+        router.push("/admin-dashboard#kelas");
+      }, 1500);
+    } catch (err) {
+      toast.error(`Gagal update kelas. Err Code : ${err?.response?.status}`);
+      console.log(err);
     }
   };
 
   return (
     <div className="bg-white p-5">
-      <h1>ID : {id}</h1>
       <div className=" text-2xl max-w-[80%] mx-auto shadow-md bg-slate-100 p-6 rounded-lg ">
         <h1 className="font-bold text-center mb-6">Edit Kelas</h1>
         <form onSubmit={handleSubmit(onSubmit)}>

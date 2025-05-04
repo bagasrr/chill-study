@@ -8,14 +8,14 @@ import Link from "next/link";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditSquareIcon from "@mui/icons-material/EditSquare";
 
-const AdminTable = () => {
+const TeacherTable = () => {
   const { data: admins, loading } = useFetchData<User[]>("/api/users/admins");
   const dataAdmin = admins || [];
 
   return (
     <SortableTable
       idSection="accounts"
-      tableTitle="Admin Account"
+      tableTitle="Teacher Account"
       // addLink="/admin-dashboard/add-new/admin"
       data={dataAdmin}
       columns={[
@@ -40,4 +40,4 @@ const AdminTable = () => {
   );
 };
 
-export default AdminTable;
+export default TeacherTable;

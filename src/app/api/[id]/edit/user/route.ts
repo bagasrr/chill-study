@@ -1,6 +1,6 @@
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { updateKelasSchema } from "@/lib/validation/kelas";
+import { updateUserSchema } from "@/lib/validation/user";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -10,19 +10,14 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     const body = await req.json();
     const session = await getServerSession(authOptions);
 
-    // Validasi pakai Zod
-    const validatedData = updateKelasSchema.parse(body);
+    const validatedData = updateUserSchema.parse(body);
 
-    const updatedKelas = await prisma.kelas.update({
+    const updatedUser = await prisma.user.update({
       where: { id },
-      data: {
-        ...validatedData,
-        LastUpdatedBy: session?.user?.email || "system",
-        LastUpdateDate: new Date(),
-      },
+      data: { ...validatedData, LastUpdatedBy: session?.user?.email || "system", LastUpdateDate: new Date() },
     });
 
-    return NextResponse.json(updatedKelas);
+    return NextResponse.json(updatedUser);
   } catch (error) {
     console.error(error);
     // kalau error dari zod, tangkap khusus

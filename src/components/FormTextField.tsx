@@ -67,7 +67,8 @@ export const CurrencyTextField = ({
     variant="filled"
     label={label}
     name={name}
-    value={value.toLocaleString("id-ID")} // <--- cuma kasih separator ribuan, bukan "Rp"
+    value={(value ?? 0).toLocaleString("id-ID")}
+    // value={value.toLocaleString("id-ID")} // <--- cuma kasih separator ribuan, bukan "Rp"
     onChange={(e) => {
       const raw = e.target.value.replace(/\D/g, "");
       const parsed = raw ? parseInt(raw) : 0;

@@ -10,28 +10,46 @@ const AboutPage = () => {
 
   const leaders = [
     {
-      name: "Bagas Ramadhan Rusnadi",
-      role: "Chief Executive Officer (CEO)",
+      name: "BAGAS RAMADHAN RUSNADI",
+      role: "Anggota",
       responsibility: "Mengatur arah dan strategi pengembangan platform",
-      image: "/leaders/bagas.jpeg",
+      image: "https://ecampus.pelitabangsa.ac.id/pb/f/pb/81704/PP_Ecampus.png",
     },
     {
-      name: "Raka Nurhuda",
-      role: "Chief Technology Officer (CTO)",
-      responsibility: "Mengelola arsitektur teknis dan pengembangan sistem",
-      image: "/leaders/bagas.jpeg",
+      name: "ENDANG PUTRI LESTARI ",
+      role: "Anggota",
+      responsibility: "Membuat Design UI/UX",
+      image: "https://ecampus.pelitabangsa.ac.id/pb/f/pb/90606/34C37105-1742-4F74-A457-CD5A6E74CFCD.jpeg",
     },
     {
-      name: "Farhan R. Maulana",
-      role: "Chief Content Officer (CCO)",
-      responsibility: "Bertanggung jawab atas kurikulum dan materi belajar",
-      image: "/leaders/bagas.jpeg",
+      name: "MUHAMMAD DIMAS PRATAMA",
+      role: "Anggota",
+      responsibility: "Bertanggung jawab atas Laporan",
+      image: "https://ecampus.pelitabangsa.ac.id/pb/f/pb/108092/Gambar_WhatsApp_2023-12-11_pukul_19.29.55_5b20690a.jpg",
     },
     {
-      name: "Rizky Saputra",
-      role: "Head of Community & Partnership",
-      responsibility: "Mengelola kerja sama, relasi, dan komunitas pengguna",
-      image: "/leaders/bagas.jpeg",
+      name: "AGUNG CATUR LAKSONO",
+      role: "Anggota",
+      responsibility: "Bertanggung jawab atas Laporan",
+      image: "https://ecampus.pelitabangsa.ac.id/pb/f/pb/103790/20230916_142313.jpg",
+    },
+    {
+      name: "ALIFARIK WIN LABIBAH ",
+      role: "Anggota",
+      responsibility: "Bertanggung jawab atas Koordinasi ",
+      image: "https://ecampus.pelitabangsa.ac.id/pb/f/pb/101048/1692440258458.jpg",
+    },
+    {
+      name: "MUHAMMAD FIKRI RAMADHAN",
+      role: "Anggota",
+      responsibility: "Bertanggung jawab atas Laporan",
+      image: "https://ecampus.pelitabangsa.ac.id/pb/f/pb/109567/IMG_20230913_120459.jpg",
+    },
+    {
+      name: "DESTRIAN MUHAMMAD RAMDANI",
+      role: "Anggota",
+      responsibility: "Bertanggung jawab atas Laporan",
+      image: "https://ecampus.pelitabangsa.ac.id/pb/f/pb/104529/922F4000-C425-472E-9E24-7CCF0849C5D0.jpeg",
     },
   ];
 

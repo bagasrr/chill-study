@@ -22,8 +22,8 @@ export async function POST(req: Request) {
       deskripsi,
       thumbnail,
       CreatedBy: session?.user?.email || "system",
-      LastUpdatedBy: session?.user?.email || "system",
-      LastUpdateDate: new Date(),
+      CompanyCode: "Kelas",
+      Status: 1,
     },
   });
 

@@ -6,11 +6,23 @@ import { formatCurrency, formattedDate } from "@/lib/utils";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditSquareIcon from "@mui/icons-material/EditSquare";
 import { Button } from "@mui/material";
+import axios from "axios";
 import Link from "next/link";
+import toast from "react-hot-toast";
 
 const MateriTable = () => {
   const { data: materi, loading } = useFetchData<[]>("/api/materi");
   const dataMateri = materi || [];
+
+  const handleDelete = (id: string) => {
+    try {
+      axios.delete(`/api/${id}/delete/materi`);
+      toast.success("Materi berhasil dihapus");
+    } catch (error) {
+      toast.error(`Gagal menghapus materi ${error.response.status}`);
+      console.log(error);
+    }
+  };
   return (
     <SortableTable
       idSection="materi"
@@ -33,10 +45,10 @@ const MateriTable = () => {
       isLoading={loading}
       renderAction={(data) => (
         <div className="flex items-center">
-          <Link href={`/admin-dashboard/${data.id}/edit/kelas`}>
+          <Link href={`/admin-dashboard/${data.id}/edit/materi`}>
             <EditSquareIcon color="info" />
           </Link>
-          <Button onClick={() => alert("ID : " + data.id)}>
+          <Button onClick={() => handleDelete(data.id)}>
             <DeleteIcon color="error" />
           </Button>
         </div>

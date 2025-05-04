@@ -29,7 +29,7 @@ const StudentTable = () => {
       isLoading={loading}
       renderAction={(data) => (
         <div className="flex items-center gap-2">
-          <Link href={`/admin-dashboard/${data.id}/edit/kelas`}>
+          <Link href={`/admin-dashboard/${data.id}/edit/user`}>
             <EditSquareIcon color="info" />
           </Link>
           <Button onClick={() => alert("ID : " + data.id)} className="hover:bg-red-100">

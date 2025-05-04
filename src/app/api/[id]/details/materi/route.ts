@@ -18,6 +18,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
         LastUpdateDate: true,
         kelas: {
           select: {
+            id: true,
             title: true,
           },
         },

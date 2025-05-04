@@ -1,5 +1,7 @@
+import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { createMateriSchema } from "@/lib/validation/materi";
+import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
 // GET semua materi
@@ -86,6 +88,7 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     const parsed = createMateriSchema.safeParse(body);
+    const session = await getServerSession(authOptions);
 
     if (!parsed.success) {
       return NextResponse.json({ errors: parsed.error.flatten() }, { status: 400 });
@@ -100,6 +103,9 @@ export async function POST(req: Request) {
         videoUrl,
         price,
         kelasId,
+        CreatedBy: session?.user?.email || "system",
+        CompanyCode: "Materi",
+        Status: 1,
       },
     });
 

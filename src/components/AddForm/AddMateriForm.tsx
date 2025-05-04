@@ -49,7 +49,6 @@ export default function AddMateriForm() {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(materi);
     submitWrapper(async () => {
       try {
         await axios.post("/api/materi", materi);
