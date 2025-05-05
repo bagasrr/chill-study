@@ -17,3 +17,21 @@ export const PricingCard: React.FC<PricingCardProps> = ({ title, price, descript
     </div>
   );
 };
+
+import { Skeleton } from "@mui/material";
+
+export const PricingCardSkeleton: React.FC = () => {
+  return (
+    <div className="border rounded-xl p-4 shadow-md bg-white flex flex-col justify-around">
+      {/* Title */}
+      <Skeleton variant="text" width="70%" height={30} sx={{ bgcolor: "grey.300" }} />
+      {/* Description */}
+      <Skeleton variant="text" width="90%" height={20} className="mb-2" sx={{ bgcolor: "grey.300" }} />
+      <Skeleton variant="text" width="80%" height={20} className="mb-4" sx={{ bgcolor: "grey.300" }} />
+      {/* Price */}
+      <Skeleton variant="text" width="40%" height={25} sx={{ bgcolor: "grey.300" }} />
+      {/* Button */}
+      <Skeleton variant="rectangular" width={120} height={40} className="mt-3 rounded-lg" sx={{ bgcolor: "grey.300" }} />
+    </div>
+  );
+};
