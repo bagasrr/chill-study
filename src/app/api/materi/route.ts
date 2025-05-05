@@ -67,6 +67,7 @@ export async function GET(request: Request) {
         kelas: {
           select: {
             title: true,
+            CompanyCode: true,
           },
         },
       },

@@ -10,8 +10,8 @@ export default async function DashboardPage() {
     redirect("/login");
   }
   return (
-    <div>
-      <div className="bg-white text-black p-5 rounded-lg shadow-md">
+    <div className="bg-slate-100 min-h-screen p-5">
+      <div className=" text-black p-5 rounded-lg shadow-md">
         <Typography variant="h4" className="font-roboto font-semibold">
           Kelas Saya
         </Typography>
@@ -29,9 +29,9 @@ export default async function DashboardPage() {
 export const CardSkeleton = () => {
   return (
     <div className="bg-slate-300 px-4 py-2 rounded-md">
-      <Skeleton variant="rounded" width={200} height={200} animation="wave" sx={{ mt: 2, background: "gray" }}></Skeleton>
-      <Skeleton variant="text" animation="wave" sx={{ mt: 2, background: "gray" }} />
-      <Skeleton variant="text" animation="wave" sx={{ mt: 2, background: "gray" }} />
+      <Skeleton variant="rounded" width={200} height={200} animation="wave" sx={{ mt: 2, background: "white" }}></Skeleton>
+      <Skeleton variant="text" animation="wave" sx={{ mt: 2, background: "white" }} />
+      <Skeleton variant="text" animation="wave" sx={{ mt: 2, background: "white" }} />
     </div>
   );
 };

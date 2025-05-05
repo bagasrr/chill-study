@@ -11,6 +11,7 @@ type FormValues = {
   name: string;
   email: string;
   role: string;
+  deviceToken: string;
 };
 
 export default function EditUser() {
@@ -28,6 +29,7 @@ export default function EditUser() {
       name: "",
       email: "",
       role: "STUDENT",
+      deviceToken: "",
     },
   });
 
@@ -44,7 +46,9 @@ export default function EditUser() {
         name: res.data.name || "",
         email: res.data.email || "",
         role: res.data.role || "STUDENT",
+        deviceToken: res.data.deviceToken || "",
       });
+      console.log(res.data);
     } catch (err) {
       console.error("Failed to fetch data:", err);
     }
@@ -67,7 +71,7 @@ export default function EditUser() {
   };
 
   return (
-    <div className="bg-white p-5">
+    <div className=" p-5">
       <Box className="text-2xl max-w-[80%] mx-auto shadow-md bg-slate-100 p-6 rounded-lg">
         <h1 className="font-bold text-center mb-6">Edit User</h1>
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -144,6 +148,18 @@ export default function EditUser() {
                 <MenuItem value="ADMIN">Admin</MenuItem>
                 <MenuItem value="TEACHER">Teacher</MenuItem>
               </TextField>
+            )}
+          />
+          <Controller
+            control={control}
+            name="deviceToken"
+            render={({ field }) => (
+              <div {...field} className="my-1 flex flex-col gap-2">
+                <label htmlFor="deviceToken" className="text-sm font-medium text-gray-700">
+                  Device Token
+                </label>
+                <input type="text" {...field} className="border border-gray-300 rounded-lg px-4 py-2 text-black focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
+              </div>
             )}
           />
 

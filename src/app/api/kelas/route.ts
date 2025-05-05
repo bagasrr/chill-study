@@ -33,6 +33,7 @@ export async function POST(req: Request) {
 export async function GET() {
   try {
     const kelas = await prisma.kelas.findMany({
+      where: { IsDeleted: null },
       select: {
         id: true,
         title: true,
@@ -42,6 +43,16 @@ export async function GET() {
         CreatedBy: true,
         LastUpdatedBy: true,
         LastUpdateDate: true,
+        CompanyCode: true,
+        materi: {
+          select: {
+            id: true,
+            title: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "asc",
       },
     });
     return NextResponse.json(kelas);

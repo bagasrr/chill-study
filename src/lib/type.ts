@@ -8,6 +8,7 @@ export type PricingCardProps = {
   title: string;
   price: number;
   description: string;
+  link: string;
 };
 
 export type User = {

@@ -1,6 +1,7 @@
 "use client";
 
 import { Button, Card, CardActionArea, CardActions, CardContent, CardMedia, Typography } from "@mui/material";
+import Link from "next/link";
 
 interface ProgramCardProps {
   thumbnail: string;
@@ -8,17 +9,18 @@ interface ProgramCardProps {
   deskripsi: string;
   buttonText?: string;
   onClick?: () => void;
+  link: string;
 }
 
-const ProgramCard = ({ thumbnail, title, deskripsi, buttonText = "Learn More", onClick }: ProgramCardProps) => {
+const ProgramCard = ({ thumbnail, title, deskripsi, buttonText = "Learn More", onClick, link = "" }: ProgramCardProps) => {
   return (
-    <Card sx={{ display: "flex", width: "100%", maxWidth: 900, height: 300, flexDirection: { xs: "column", lg: "row" }, boxShadow: 4 }}>
+    <Card sx={{ display: "flex", width: "100%", maxWidth: 500, height: 300, flexDirection: { xs: "column", lg: "row" }, boxShadow: 4 }}>
       <CardMedia
         component="img"
         image={thumbnail}
         alt={title}
         sx={{
-          width: { xs: "100%", lg: 300 },
+          width: { xs: "100%", lg: 200 },
           objectFit: "cover",
         }}
       />
@@ -34,9 +36,11 @@ const ProgramCard = ({ thumbnail, title, deskripsi, buttonText = "Learn More", o
           </CardContent>
         </CardActionArea>
         <CardActions>
-          <Button size="small" color="primary" onClick={onClick}>
-            {buttonText}
-          </Button>
+          <Link href={link}>
+            <Button size="small" color="primary">
+              {buttonText}
+            </Button>
+          </Link>
         </CardActions>
       </CardContent>
     </Card>

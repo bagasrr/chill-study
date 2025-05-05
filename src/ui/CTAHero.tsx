@@ -4,6 +4,21 @@ import React, { useEffect, useState } from "react";
 import { PricingCard } from "@/components/PricingCard";
 import axios from "@/lib/axios";
 
+type Materi = {
+  id: string;
+  title: string;
+  content: string;
+  videoUrl: string;
+  createdAt: Date;
+  price: number;
+  CreatedBy: string;
+  LastUpdatedBy: Date;
+  LastUpdateDate: Date;
+  kelas: {
+    title: string;
+  };
+};
+
 const CTAHero = () => {
   const [dataTKJ, setDataTKJ] = useState([]);
   const [dataTKR, setDataTKR] = useState([]);
@@ -49,12 +64,16 @@ const CTAHero = () => {
 
       <section className="mb-10">
         <h2 className="text-2xl font-semibold text-gray-800 mb-4">TKJ - Teknik Komputer dan Jaringan</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">{dataTKJ && dataTKJ.map((materi: any) => <PricingCard key={materi.id} title={materi.title} price={materi.price} description={materi.content} />)}</div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {dataTKJ && dataTKJ.map((materi: Materi) => <PricingCard key={materi.id} title={materi.title} price={materi.price} description={materi.content} link={`dashboard/kelas/${materi.kelas.title}/materi/${materi.id}`} />)}
+        </div>
       </section>
 
       <section className="mb-10">
         <h2 className="text-2xl font-semibold text-gray-800 mb-4">TKR - Teknik Kendaraan Ringan</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">{dataTKR && dataTKR.map((materi: any) => <PricingCard key={materi.id} title={materi.title} price={materi.price} description={materi.content} />)}</div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {dataTKR && dataTKR.map((materi: Materi) => <PricingCard key={materi.id} title={materi.title} price={materi.price} description={materi.content} link={`/dashboard/kelas/${materi.kelas.CompanyCode}/materi`} />)}
+        </div>
       </section>
 
       <section className="text-center py-10 px-6 bg-yellow-100 rounded-xl">

@@ -11,6 +11,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
         name: true,
         email: true,
         role: true,
+        deviceToken: true,
         CreatedBy: true,
         LastUpdatedBy: true,
         LastUpdateDate: true,
