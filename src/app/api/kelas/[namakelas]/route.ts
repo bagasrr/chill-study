@@ -1,11 +1,14 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
-export async function GET({ params }: { params: { name: string } }) {
-  const { name } = params;
+export async function GET(req: Request, { params }: { params: { namakelas: string } }) {
+  const { namakelas } = params;
   try {
-    const kelas = await prisma.kelas.findUnique({
-      where: { CompanyCode: name, IsDeleted: null },
+    const kelas = await prisma.kelas.findFirst({
+      where: {
+        CompanyCode: namakelas,
+        IsDeleted: null,
+      },
       select: {
         id: true,
         title: true,
@@ -15,10 +18,15 @@ export async function GET({ params }: { params: { name: string } }) {
         CreatedBy: true,
         LastUpdatedBy: true,
         LastUpdateDate: true,
+        CompanyCode: true,
         materi: {
           select: {
             id: true,
             title: true,
+            price: true,
+          },
+          orderBy: {
+            createdAt: "asc",
           },
         },
       },
@@ -26,6 +34,6 @@ export async function GET({ params }: { params: { name: string } }) {
     return NextResponse.json(kelas);
   } catch (error) {
     console.error(error);
-    return new NextResponse("Internal Server Error", { status: 500 });
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

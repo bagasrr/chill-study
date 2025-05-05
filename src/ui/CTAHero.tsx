@@ -16,6 +16,7 @@ type Materi = {
   LastUpdateDate: Date;
   kelas: {
     title: string;
+    CompanyCode: string;
   };
 };
 
@@ -65,7 +66,7 @@ const CTAHero = () => {
       <section className="mb-10">
         <h2 className="text-2xl font-semibold text-gray-800 mb-4">TKJ - Teknik Komputer dan Jaringan</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {dataTKJ && dataTKJ.map((materi: Materi) => <PricingCard key={materi.id} title={materi.title} price={materi.price} description={materi.content} link={`dashboard/kelas/${materi.kelas.title}/materi/${materi.id}`} />)}
+          {dataTKJ && dataTKJ.map((materi: Materi) => <PricingCard key={materi.id} title={materi.title} price={materi.price} description={materi.content} link={`dashboard/kelas/${materi.kelas.CompanyCode}/materi/${materi.id}`} />)}
         </div>
       </section>
 

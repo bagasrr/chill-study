@@ -7,7 +7,7 @@ const layout = ({ children }: { children: React.ReactNode }) => {
     <>
       <div>
         <Navbar />
-        <div className="pt-20 md:pt-24 bg-slate-100 min-h-screen text-black">{children}</div>
+        <div className="pt-20 md:pt-[12vh] bg-slate-100 min-h-screen text-black">{children}</div>
         <Footer />
       </div>
     </>

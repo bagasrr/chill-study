@@ -76,7 +76,7 @@ model KelasUser {
   LastUpdatedBy   String?
   LastUpdateDate  DateTime?
   Status          Int?
-  CompanyCode     String?     @unique
+  CompanyCode     String?     
 
   @@unique([userId, kelasId])
 }
