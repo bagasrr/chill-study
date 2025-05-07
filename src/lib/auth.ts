@@ -32,8 +32,12 @@ export const authOptions: NextAuthOptions = {
           where: { email: user.email! }, // GUNAKAN EMAIL untuk menghindari error saat akun baru
         });
 
-        if (existingUser?.deviceToken) {
-          return "/auth/error?error=DeviceActive";
+        // Kalau ada token & belum expired -> blok login
+        if (existingUser?.deviceToken && existingUser?.devTokenExpiredAt) {
+          const now = new Date();
+          if (existingUser.devTokenExpiredAt > now) {
+            return "/auth/error?error=DeviceActive";
+          }
         }
 
         // Jika belum ada role, set default STUDENT
@@ -47,10 +51,14 @@ export const authOptions: NextAuthOptions = {
         // Generate & simpan deviceToken saat login via Google
         if (account?.provider === "google" && existingUser) {
           const token = randomUUID();
+          const expiredAt = new Date();
+          expiredAt.setHours(expiredAt.getHours() + 3);
+
           await prisma.user.update({
             where: { email: user.email! },
             data: {
               deviceToken: token,
+              devTokenExpiredAt: expiredAt,
             },
           });
 

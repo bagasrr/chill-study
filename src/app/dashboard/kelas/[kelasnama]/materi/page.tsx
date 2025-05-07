@@ -1,7 +1,6 @@
 "use client";
 import { PricingCard, PricingCardSkeleton } from "@/components/PricingCard";
-import { NavigateBefore, Preview, SkipPrevious } from "@mui/icons-material";
-import { Typography } from "@mui/material";
+import { NavigateBefore } from "@mui/icons-material";
 import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";

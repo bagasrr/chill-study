@@ -27,6 +27,7 @@ model User {
   payments          Payment[]   @relation(name: "UserPayments")
   progress          Progress[]
   sessions          Session[]
+  devTokenExpiredAt DateTime?
 }
 
 model Account {

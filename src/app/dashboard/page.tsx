@@ -16,17 +16,17 @@ export default async function DashboardPage() {
           Kelas Saya
         </Typography>
         <div className="flex mt-7 gap-5 items-center">
-          <CardSkeleton />
-          <CardSkeleton />
-          <CardSkeleton />
-          <CardSkeleton />
+          <DashboardCardSkeleton />
+          <DashboardCardSkeleton />
+          <DashboardCardSkeleton />
+          <DashboardCardSkeleton />
         </div>
       </div>
     </div>
   );
 }
 
-export const CardSkeleton = () => {
+export const DashboardCardSkeleton = () => {
   return (
     <div className="bg-slate-300 px-4 py-2 rounded-md">
       <Skeleton variant="rounded" width={200} height={200} animation="wave" sx={{ mt: 2, background: "white" }}></Skeleton>

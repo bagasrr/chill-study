@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { PricingCard } from "@/components/PricingCard";
 import axios from "@/lib/axios";
+import Link from "next/link";
 
 type Materi = {
   id: string;
@@ -64,15 +65,19 @@ const CTAHero = () => {
       </section>
 
       <section className="mb-10">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4">TKJ - Teknik Komputer dan Jaringan</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Link href="/dashboard/kelas/TKJ/materi" className="text-2xl font-semibold text-gray-800">
+          TKJ - Teknik Komputer dan Jaringan
+        </Link>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-5">
           {dataTKJ && dataTKJ.map((materi: Materi) => <PricingCard key={materi.id} title={materi.title} price={materi.price} description={materi.content} link={`dashboard/kelas/${materi.kelas.CompanyCode}/materi/${materi.id}`} />)}
         </div>
       </section>
 
       <section className="mb-10">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4">TKR - Teknik Kendaraan Ringan</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Link href="/dashboard/kelas/TKR/materi" className="text-2xl font-semibold text-gray-800 ">
+          TKR - Teknik Kendaraan Ringan
+        </Link>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-5">
           {dataTKR && dataTKR.map((materi: Materi) => <PricingCard key={materi.id} title={materi.title} price={materi.price} description={materi.content} link={`/dashboard/kelas/${materi.kelas.CompanyCode}/materi`} />)}
         </div>
       </section>
