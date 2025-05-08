@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { PricingCard } from "@/components/PricingCard";
 import axios from "@/lib/axios";
 import Link from "next/link";
+import CardSkeleton from "@/components/Skeleton/CardSkeleton";
 
 type Materi = {
   id: string;
@@ -73,7 +74,15 @@ const CTAHero = () => {
           TKJ - Teknik Komputer dan Jaringan
         </Link>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-5">
-          {dataTKJ && dataTKJ.map((materi: Materi) => <PricingCard key={materi.id} title={materi.title} price={materi.price} description={materi.content} link={`dashboard/kelas/${materi.kelas.CompanyCode}/materi/${materi.id}`} />)}
+          {dataTKJ.length === 0 ? (
+            <>
+              <CardSkeleton />
+              <CardSkeleton />
+              <CardSkeleton />
+            </>
+          ) : (
+            dataTKJ.map((materi: Materi) => <PricingCard key={materi.id} title={materi.title} price={materi.price} description={materi.content} link={`dashboard/kelas/${materi.kelas.CompanyCode}/materi/${materi.id}`} />)
+          )}
         </div>
       </section>
 
@@ -82,7 +91,15 @@ const CTAHero = () => {
           TKR - Teknik Kendaraan Ringan
         </Link>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-5">
-          {dataTKR && dataTKR.map((materi: Materi) => <PricingCard key={materi.id} title={materi.title} price={materi.price} description={materi.content} link={`/dashboard/kelas/${materi.kelas.CompanyCode}/materi`} />)}
+          {dataTKR.length === 0 ? (
+            <>
+              <CardSkeleton />
+              <CardSkeleton />
+              <CardSkeleton />
+            </>
+          ) : (
+            dataTKR.map((materi: Materi) => <PricingCard key={materi.id} title={materi.title} price={materi.price} description={materi.content} link={`/dashboard/kelas/${materi.kelas.CompanyCode}/materi`} />)
+          )}
         </div>
       </section>
 
