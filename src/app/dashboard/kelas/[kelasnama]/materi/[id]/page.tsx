@@ -57,7 +57,9 @@ const Page = () => {
 
       {/* Sidebar Section */}
       <div className="w-1/3 flex flex-col gap-4 px-4 py-2">
-        <div className="grid grid-cols-1 gap-4 w-full">{materiInClass ? materiInClass.map((materi: any) => <PricingCard key={materi._id} {...materi} />) : [...Array(3)].map((_, index) => <CardSkeleton key={index} />)}</div>
+        <div className="grid grid-cols-1 gap-4 w-full">
+          {materiInClass ? materiInClass.map((materi: any) => <PricingCard key={materi._id} {...materi} link={`/dashboard/kelas/${kelasnama}/materi/${materi.id}`} />) : [...Array(3)].map((_, index) => <CardSkeleton key={index} />)}
+        </div>
       </div>
     </div>
   );
