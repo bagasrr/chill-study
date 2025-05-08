@@ -4,41 +4,6 @@ import { createMateriSchema } from "@/lib/validation/materi";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
-// GET semua materi
-// export async function GET() {
-//   try {
-//     const materi = await prisma.materi.findMany({
-//       where: {
-//         IsDeleted: null,
-//         kelas: {
-//           IsDeleted: null,
-//         },
-//       },
-//       select: {
-//         id: true,
-//         title: true,
-//         content: true,
-//         videoUrl: true,
-//         createdAt: true,
-//         price: true,
-//         CreatedBy: true,
-//         LastUpdatedBy: true,
-//         LastUpdateDate: true,
-//         kelas: {
-//           select: {
-//             title: true,
-//           },
-//         },
-//       },
-//     });
-
-//     return NextResponse.json(materi);
-//   } catch (error) {
-//     console.error(error);
-//     return new NextResponse("Internal Server Error", { status: 500 });
-//   }
-// }
-
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const kelasName = searchParams.get("kelas"); // ambil query 'kelas'

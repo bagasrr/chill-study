@@ -104,7 +104,7 @@ export function SortableTable<T extends { id: string }>({ data, columns, renderA
           )}
         </div>
 
-        <TextField label="Search..." variant="outlined" value={searchQuery} onChange={handleSearchChange} />
+        <TextField label="Search by Title..." variant="outlined" value={searchQuery} onChange={handleSearchChange} />
       </div>
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="sortable table">

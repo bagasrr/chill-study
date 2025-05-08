@@ -60,8 +60,12 @@ const CTAHero = () => {
       </header>
 
       <section className="mb-10 text-center">
-        <button className="mr-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">🔍 Lihat Materi Gratis</button>
-        <button className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">🚀 Mulai Belajar Sekarang</button>
+        <Link href="/dashboard/kelas/" className="mr-4 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+          🔍 Lihat Materi Gratis
+        </Link>
+        <Link href={"/dashboard/kelas/"} className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700">
+          🚀 Mulai Belajar Sekarang
+        </Link>
       </section>
 
       <section className="mb-10">

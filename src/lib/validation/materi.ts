@@ -12,7 +12,7 @@ export const createMateriSchema = z.object({
 export const updateMateriSchema = z.object({
   title: z.string().optional(),
   content: z.string().optional(),
-  videoUrl: z.string().url().optional(),
+  videoUrl: z.string().optional(),
   price: z.number().optional(),
   kelasId: z.string().optional(),
 });

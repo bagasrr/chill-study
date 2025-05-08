@@ -1,6 +1,7 @@
 import YouTube from "react-youtube";
 
 const VideoPlayer = ({ videoId }: { videoId: string }) => {
+  console.log("Video Id : ", videoId);
   const opts = {
     height: "400",
     width: "100%",

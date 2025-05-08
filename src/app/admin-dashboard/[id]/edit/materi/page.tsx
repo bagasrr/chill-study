@@ -66,6 +66,7 @@ export default function EditMateriForm() {
   // 🔥 Update Materi
   const onSubmit = async (data: MateriForm) => {
     setIsLoading(true);
+    console.log(data);
     try {
       await axios.patch(`/api/${id}/edit/materi`, data);
       toast.success("Materi berhasil diperbarui 🎉");
