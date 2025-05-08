@@ -17,26 +17,3 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
     return NextResponse.json({ error: "Gagal soft delete materi" }, { status: 500 });
   }
 }
-
-export async function GET(req: Request, { params }: { params: { id: string } }) {
-  const { id } = params;
-
-  try {
-    const materi = await prisma.materi.findUnique({
-      where: { id },
-      select: {
-        id: true,
-        title: true,
-        deskripsi: true,
-        thumbnail: true,
-        CreatedBy: true,
-        LastUpdatedBy: true,
-        LastUpdateDate: true,
-      },
-    });
-    return NextResponse.json(materi);
-  } catch (error) {
-    console.error(error);
-    return new NextResponse("Internal Server Error", { status: 500 });
-  }
-}

@@ -3,7 +3,7 @@ import React from "react";
 
 const VideoSkeleton = () => {
   return (
-    <div className="flex flex-col w-2/3 gap-4">
+    <div className="flex flex-col w-full gap-4">
       {/* Video Player Skeleton */}
       <Skeleton variant="rectangular" className="rounded-lg" sx={{ bgcolor: "#cccccc" }} width="100%" height={400} />
       {/* Video Title */}
