@@ -3,11 +3,12 @@ import VideoPlayer from "@/components/MediaPlayer/VideoPlayer";
 import { PricingCard } from "@/components/PricingCard";
 import CardSkeleton from "@/components/Skeleton/CardSkeleton";
 import VideoSkeleton from "@/components/Skeleton/VideoSkeleton";
+import { completeProgress, saveProgress } from "@/lib/api/progress";
 import { Typography } from "@mui/material";
 import { Materi } from "@prisma/client";
 import axios from "axios";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const Page = () => {
   const { kelasnama, id } = useParams<{ kelasnama: string; id: string }>();
@@ -37,6 +38,14 @@ const Page = () => {
     getMateriInClass();
   }, [kelasnama, id]);
 
+  useEffect(() => {
+    saveProgress(id).catch((err) => console.error("Gagal simpan progress:", err));
+  }, [id]);
+
+  const onEnd = () => {
+    completeProgress(id).catch((err: React.SetStateAction<unknown>) => console.error("Gagal update complete:", err));
+  };
+
   console.log({ materiDetail });
   return (
     <div className="flex gap-6 px-8 py-4 bg-gray-50 min-h-screen text-gray-900">
@@ -44,7 +53,7 @@ const Page = () => {
       <div className="w-2/3">
         {materiDetail ? (
           <>
-            <VideoPlayer videoId={materiDetail.videoUrl || ""} />
+            <VideoPlayer videoId={materiDetail.videoUrl || ""} onEnd={onEnd} />
 
             <Typography variant="h6" sx={{ fontWeight: "bold", marginTop: "1rem" }}>
               {materiDetail.title}
