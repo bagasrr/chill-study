@@ -13,14 +13,25 @@ import React, { useEffect, useState } from "react";
 const Page = () => {
   const { kelasnama, id } = useParams<{ kelasnama: string; id: string }>();
   const [materiDetail, setMateriDetails] = useState<Materi>();
-  const [materiInClass, setKelasDetails] = useState();
+  const [materiInClass, setMateriInClass] = useState();
 
   const getMateriInClass = async () => {
     try {
       const res = await axios.get(`/api/kelas/${kelasnama}`);
-      setKelasDetails(res.data.materi || []);
+      getMateriList(res.data.id);
+      // setMateriInClass(res.data.materi || []);
+      console.log(res);
     } catch (error) {
       console.error(error);
+    }
+  };
+  const getMateriList = async (kelasId: string) => {
+    try {
+      const res = await axios.get(`/api/materi/${kelasId}/materi-user`);
+      console.log(res.data);
+      setMateriInClass(res.data); // berisi materi + canAccess
+    } catch (error) {
+      console.error("Gagal ambil materi-user:", error);
     }
   };
 
@@ -38,15 +49,33 @@ const Page = () => {
     getMateriInClass();
   }, [kelasnama, id]);
 
+  // useEffect(() => {
+  //   saveProgress(id).catch((err) => console.error("Gagal simpan progress:", err));
+  // }, [id]);
   useEffect(() => {
-    saveProgress(id).catch((err) => console.error("Gagal simpan progress:", err));
+    const save = async () => {
+      try {
+        const res = await saveProgress(id); // pakai axios call dari /lib/api/progress.ts
+
+        // Handle if server bilang: user belum bayar
+        if (res?.data?.need_payment) {
+          alert(`Materi ini berbayar (${res.data.materiPrice} IDR). Silakan lakukan pembayaran untuk mengakses.`);
+          // Optional redirect:
+          // router.push(`/payment/kelas/${res.data.kelasId}`);
+          return;
+        }
+      } catch (err) {
+        console.error("Gagal simpan progress:", err);
+      }
+    };
+
+    save();
   }, [id]);
 
   const onEnd = () => {
     completeProgress(id).catch((err: React.SetStateAction<unknown>) => console.error("Gagal update complete:", err));
   };
 
-  console.log({ materiDetail });
   return (
     <div className="flex gap-6 px-8 py-4 bg-gray-50 min-h-screen text-gray-900">
       {/* Video Section */}

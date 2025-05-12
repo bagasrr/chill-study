@@ -9,6 +9,8 @@ export type PricingCardProps = {
   price: number;
   description: string;
   link: string;
+  canAccess: boolean;
+  hasProgress: boolean;
 };
 
 export type User = {

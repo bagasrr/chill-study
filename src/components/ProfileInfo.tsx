@@ -11,6 +11,7 @@ const ProfileInfo = () => {
       <Stack direction="row" spacing={2} alignItems="center">
         <Avatar alt={session?.user?.name || ""} src={session?.user?.image || ""} />
         <Typography>{session?.user?.name}</Typography>
+        <p>tess</p>
       </Stack>
     </div>
   );

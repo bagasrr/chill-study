@@ -25,6 +25,7 @@
     "react-hot-toast": "^2.5.2",
     "react-youtube": "^10.1.0",
     "swiper": "^11.2.6",
+    "swr": "^2.3.3",
     "zod": "^3.24.3"
   },
   "devDependencies": {

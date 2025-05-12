@@ -81,7 +81,7 @@ const CTAHero = () => {
               <CardSkeleton />
             </>
           ) : (
-            dataTKJ.map((materi: Materi) => <PricingCard key={materi.id} title={materi.title} price={materi.price} description={materi.content} link={`dashboard/kelas/${materi.kelas.CompanyCode}/materi/${materi.id}`} />)
+            dataTKJ.map((materi: Materi) => <PricingCard key={materi.id} title={materi.title} price={materi.price} description={materi.content} link={`dashboard/kelas/${materi.kelas.CompanyCode}/materi`} canAccess={true} />)
           )}
         </div>
       </section>

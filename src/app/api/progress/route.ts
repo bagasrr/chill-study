@@ -10,39 +10,107 @@ export async function POST(req: NextRequest) {
   }
 
   const { materiId } = await req.json();
-  const userId = session.user.id; // pastikan ID user tersedia di session
+  const userId = session.user.id;
 
   if (!materiId) {
     return NextResponse.json({ message: "materiId required" }, { status: 400 });
   }
 
-  // Cek apakah sudah ada progress
-  const existing = await prisma.progress.findUnique({
-    where: {
-      userId_materiId: { userId, materiId },
-    },
-  });
+  try {
+    // Ambil data materi + kelasnya
+    const materi = await prisma.materi.findUnique({
+      where: { id: materiId },
+      include: { kelas: true },
+    });
 
-  if (existing) {
-    // Kalau sudah ada, update waktu terakhir diakses
-    await prisma.progress.update({
-      where: { id: existing.id },
-      data: {
-        LastUpdatedBy: session.user.email || "system",
-        LastUpdateDate: new Date(),
-        CreatedBy: session.user.name || "system",
+    if (!materi) {
+      return NextResponse.json({ message: "Materi not found" }, { status: 404 });
+    }
+
+    // ❌ Kalau materi berbayar dan user belum punya akses, tolak
+    if (materi.price > 0) {
+      const hasAccess = await prisma.kelasUser.findUnique({
+        where: {
+          userId_kelasId: {
+            userId,
+            kelasId: materi.kelasId,
+          },
+        },
+      });
+
+      if (!hasAccess) {
+        return NextResponse.json(
+          {
+            message: "Payment required to access this materi.",
+            need_payment: true,
+            kelasId: materi.kelasId,
+            materiTitle: materi.title,
+            materiPrice: materi.price,
+          },
+          { status: 200 }
+        ); // status 200 karena ini bukan error, tapi info
+      }
+    }
+
+    // ✅ Kalau materi gratis dan user belum punya kelas, enroll otomatis
+    if (materi.price === 0) {
+      const enrolled = await prisma.kelasUser.findUnique({
+        where: {
+          userId_kelasId: {
+            userId,
+            kelasId: materi.kelasId,
+          },
+        },
+      });
+
+      if (!enrolled) {
+        await prisma.kelasUser.create({
+          data: {
+            userId,
+            kelasId: materi.kelasId,
+            CreatedBy: session.user.email || "system",
+            CompanyCode: "KelasUser",
+            Status: 1,
+            LastUpdateDate: new Date(),
+            LastUpdatedBy: session.user.email || "system",
+          },
+        });
+      }
+    }
+
+    // 🚀 Simpan atau update progress
+    const existingProgress = await prisma.progress.findUnique({
+      where: {
+        userId_materiId: {
+          userId,
+          materiId,
+        },
       },
     });
-  } else {
-    // Kalau belum ada, buat baru
-    await prisma.progress.create({
-      data: {
-        userId,
-        materiId,
-        CreatedBy: session.user.email || "system",
-      },
-    });
+
+    if (existingProgress) {
+      await prisma.progress.update({
+        where: { id: existingProgress.id },
+        data: {
+          LastUpdatedBy: session.user.email || "system",
+          LastUpdateDate: new Date(),
+        },
+      });
+    } else {
+      await prisma.progress.create({
+        data: {
+          userId,
+          materiId,
+          CreatedBy: session.user.email || "system",
+          CompanyCode: "Progress",
+          Status: 1,
+        },
+      });
+    }
+
+    return NextResponse.json({ message: "Progress saved successfully." });
+  } catch (error) {
+    console.error("🔥 Error in progress API:", error);
+    return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
   }
-
-  return NextResponse.json({ message: "Progress saved/updated." });
 }

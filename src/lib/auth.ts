@@ -22,6 +22,7 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.deviceToken = user.deviceToken;
         session.user.role = user.role;
+        session.user.id = user.id;
       }
       return session;
     },
