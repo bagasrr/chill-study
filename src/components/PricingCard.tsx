@@ -8,7 +8,7 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 
-export const PricingCard: React.FC<PricingCardProps> = ({ id, title, price, content, canAccess, hasProgress, link = "", onRefresh }) => {
+export const PricingCard: React.FC<PricingCardProps> = ({ id, title, price, content, canAccess = false, hasProgress = false, link = "", onRefresh }) => {
   const { data: session } = useSession();
 
   const handleBayar = async () => {
@@ -36,17 +36,17 @@ export const PricingCard: React.FC<PricingCardProps> = ({ id, title, price, cont
 
       const snapToken = res.data.token;
 
-      window.snap.pay(snapToken, {
+      (window as any).snap.pay(snapToken, {
         onSuccess: async function () {
           toast.success("Pembayaran berhasil! 🎉");
           console.log("🔥 Triggering mutate...");
           onRefresh?.(); // ini harusnya trigger mutate
           console.log("✅ Mutate dipanggil");
         },
-        onPending: function (result) {
+        onPending: function (result: any) {
           console.log("⏳ Pending", result);
         },
-        onError: function (result) {
+        onError: function (result: any) {
           console.log("❌ Error", result);
         },
         onClose: function () {
@@ -66,11 +66,11 @@ export const PricingCard: React.FC<PricingCardProps> = ({ id, title, price, cont
         {!canAccess && <p className="text-lg font-semibold text-green-600">{price === 0 ? "Gratis" : formatCurrency(price)}</p>}
 
         {canAccess ? (
-          <Link href={link} className={`mt-3 w-fit px-4 py-2 text-white rounded-lg ${hasProgress ? "bg-green-600 hover:bg-green-700" : "bg-sky-600 hover:bg-sky-700"}`}>
+          <Link href={link} className={`mt-3 w-fit px-4 py-2 text-white rounded-lg ${hasProgress ? "bg-emerald-600 hover:bg-emerald-700" : "bg-rose-600 hover:bg-rose-700"}`}>
             {hasProgress ? "Lihat Materi" : "Mulai Belajar"}
           </Link>
         ) : (
-          <button onClick={handleBayar} className="mt-3 w-fit px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
+          <button onClick={handleBayar} className="mt-3 w-fit px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg bg-">
             Beli Kelas Sekarang
           </button>
         )}

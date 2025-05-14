@@ -42,9 +42,6 @@ export type MateriCard = {
   LastUpdatedBy: Date;
   LastUpdateDate: Date;
   kelas: {
-    title: string;
     CompanyCode: string;
   };
-
-  CompanyCode: string;
 };

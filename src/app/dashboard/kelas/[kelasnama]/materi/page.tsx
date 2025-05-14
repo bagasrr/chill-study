@@ -7,7 +7,6 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useKelasDetail } from "@/lib/hooks/useKelasDetail";
 import { useMateriList } from "@/lib/hooks/useMateriList";
-import { Materi } from "@prisma/client";
 import { PricingCardProps } from "@/lib/type";
 
 const Page = () => {
@@ -45,6 +44,8 @@ const Page = () => {
               canAccess={materi.canAccess}
               hasProgress={materi.hasProgress}
               onRefresh={() => refreshMateri()}
+              CompanyCode={materi?.kelas?.CompanyCode}
+              kelas={materi?.kelas}
             />
           ))
         ) : (

@@ -24,6 +24,7 @@ export async function GET(req: Request, { params }: { params: { namakelas: strin
             id: true,
             title: true,
             price: true,
+            content: true,
             videoUrl: true,
           },
           orderBy: {

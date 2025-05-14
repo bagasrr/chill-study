@@ -5,54 +5,14 @@ import { PricingCard } from "@/components/PricingCard";
 import axios from "@/lib/axios";
 import Link from "next/link";
 import CardSkeleton from "@/components/Skeleton/CardSkeleton";
-import { PricingCardProps } from "@/lib/type";
-
-type Materi = {
-  id: string;
-  title: string;
-  content: string;
-  videoUrl: string;
-  createdAt: Date;
-  price: number;
-  CreatedBy: string;
-  LastUpdatedBy: Date;
-  LastUpdateDate: Date;
-  kelas: {
-    title: string;
-    CompanyCode: string;
-  };
-};
+import { MateriCard, PricingCardProps } from "@/lib/type";
+import { useKelasDetail } from "@/lib/hooks/useKelasDetail";
+import KelasShowCase from "@/components/KelasShowCase";
+import { useAllKelas } from "@/lib/hooks/useAllKelas";
 
 const CTAHero = () => {
-  const [dataTKJ, setDataTKJ] = useState([]);
-  const [dataTKR, setDataTKR] = useState([]);
-
-  useEffect(() => {
-    getMateriTKJ();
-    getMateriTKR();
-  }, []);
-
-  const getData = async (kelas: string) => {
-    const res = await axios.get("/api/materi", {
-      params: {
-        limit: 3,
-        kelas, // <-- disini!
-      },
-    });
-    return res.data;
-  };
-
-  const getMateriTKJ = async () => {
-    const data = await getData("Teknik Komputer Jaringan");
-    setDataTKJ(data);
-  };
-
-  const getMateriTKR = async () => {
-    const data = await getData("Teknik Kendaraan Ringan");
-    setDataTKR(data);
-  };
-
-  console.log({ dataTKJ, dataTKR });
+  const { kelas, isLoading, error, mutate } = useAllKelas();
+  console.log(kelas);
 
   return (
     <div className="min-h-screen bg-gray-100 px-[5%] py-12">
@@ -69,67 +29,12 @@ const CTAHero = () => {
           🚀 Mulai Belajar Sekarang
         </Link>
       </section>
-
       <section className="mb-10">
-        <Link href="/dashboard/kelas/TKJ/materi" className="text-2xl font-semibold text-gray-800">
-          TKJ - Teknik Komputer dan Jaringan
-        </Link>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-5">
-          {dataTKJ.length === 0 ? (
-            <>
-              <CardSkeleton />
-              <CardSkeleton />
-              <CardSkeleton />
-            </>
-          ) : (
-            dataTKJ.map((materi: PricingCardProps) => (
-              <PricingCard
-                key={materi.id}
-                id={materi.id}
-                title={materi.title}
-                price={materi.price}
-                content={materi.content}
-                link={`/dashboard/kelas/${materi.kelas.CompanyCode}/materi`}
-                canAccess={true}
-                hasProgress={false} // Replace with actual value
-                onRefresh={() => {}} // Replace with actual function
-                CompanyCode={materi.kelas.CompanyCode}
-                kelas={materi.kelas}
-              />
-            ))
-          )}
-        </div>
-      </section>
-
-      <section className="mb-10">
-        <Link href="/dashboard/kelas/TKR/materi" className="text-2xl font-semibold text-gray-800 ">
-          TKR - Teknik Kendaraan Ringan
-        </Link>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-5">
-          {dataTKR.length === 0 ? (
-            <>
-              <CardSkeleton />
-              <CardSkeleton />
-              <CardSkeleton />
-            </>
-          ) : (
-            dataTKR.map((materi: Materi) => (
-              <PricingCard
-                key={materi.id}
-                id={materi.id}
-                title={materi.title}
-                price={materi.price}
-                content={materi.content}
-                link={`/dashboard/kelas/${materi.kelas.CompanyCode}/materi`}
-                canAccess={true}
-                hasProgress={false} // Replace with actual value
-                onRefresh={() => {}} // Replace with actual function
-                CompanyCode={materi.kelas.CompanyCode}
-                kelas={materi.kelas}
-              />
-            ))
-          )}
-        </div>
+        {kelas
+          ?.filter((kelas: any) => kelas.materi && kelas.materi.length > 0) // ⬅️ filter hanya kelas yang punya materi
+          .map((kelas: any) => (
+            <KelasShowCase kelasnama={kelas.CompanyCode} key={kelas.id} />
+          ))}
       </section>
 
       <section className="text-center py-10 px-6 bg-yellow-100 rounded-xl">

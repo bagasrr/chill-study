@@ -1,4 +1,4 @@
-export function highlightMatch(text: string | undefined, query: string) {
+export function formatSearch(text: string, query: string) {
   if (!text || !query) return text;
 
   const parts = text.split(new RegExp(`(${query})`, "gi"));

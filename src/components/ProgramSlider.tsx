@@ -8,6 +8,7 @@ import ProgramCard from "./ProgramCard";
 import SwiperNavButton from "./NavArrow";
 import { useFetchData } from "@/lib/hooks/useFetchData";
 import { Kelas } from "@prisma/client";
+import ProgramCardSkeleton from "./Skeleton/ProgramCardSkeleton";
 
 export default function CustomSwiper() {
   const prevRef = useRef(null);
@@ -46,18 +47,18 @@ export default function CustomSwiper() {
           }
         }}
       >
-        {kelas?.map((program, index) => (
-          <SwiperSlide
-            key={index}
-            style={{ width: "90%", maxWidth: "768px" }} // atur ukuran tiap slide biar sisa ruang terlihat
-          >
-            <ProgramCard
-              thumbnail={program.thumbnail ?? ""} // provide a default value when thumbnail is null
-              title={program.title}
-              deskripsi={program.deskripsi ?? ""}
-            />
-          </SwiperSlide>
-        ))}
+        {kelas ? (
+          kelas.map((program, index) => (
+            <SwiperSlide
+              key={index}
+              style={{ width: "90%", maxWidth: "768px" }} // atur ukuran tiap slide biar sisa ruang terlihat
+            >
+              <ProgramCard thumbnail={program.thumbnail ?? ""} title={program.title} deskripsi={program.deskripsi ?? ""} link={`/dashboard/kelas/${program.CompanyCode}/materi`} />
+            </SwiperSlide>
+          ))
+        ) : (
+          <ProgramCardSkeleton />
+        )}
       </Swiper>
 
       {/* Custom Pagination */}
