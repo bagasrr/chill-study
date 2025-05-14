@@ -124,6 +124,7 @@ model Progress {
 model Payment {
   id              String         @id @default(cuid())
   userId          String
+  orderId         String         @unique
   status          PaymentStatus
   createdAt       DateTime       @default(now())
   IsDeleted       DateTime?
@@ -136,7 +137,6 @@ model Payment {
   user            User @relation(name: "UserPayments", fields: [userId], references: [id], onDelete: Cascade)
   items           PaymentItem[]
 
-  @@unique([userId, status], map: "OneActiveCartOrCheckout")
 }
 
 

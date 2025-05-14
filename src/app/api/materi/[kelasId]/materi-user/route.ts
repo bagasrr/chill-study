@@ -17,12 +17,27 @@ export async function GET(req: NextRequest, { params }: { params: { kelasId: str
         id: true,
         title: true,
         price: true,
+        content: true,
       },
       orderBy: {
         createdAt: "asc",
       },
     });
 
+    // ✅ Ambil semua payment PAID milik user untuk materi
+    const paidItems = await prisma.paymentItem.findMany({
+      where: {
+        payment: {
+          userId,
+          status: "PAID",
+        },
+      },
+      select: {
+        materiId: true,
+      },
+    });
+
+    // ✅ Ambil progress materi
     const progress = await prisma.progress.findMany({
       where: {
         userId,
@@ -30,11 +45,13 @@ export async function GET(req: NextRequest, { params }: { params: { kelasId: str
       },
     });
 
+    const paidMateriIds = new Set(paidItems.map((p) => p.materiId));
     const accessedMateriIds = new Set(progress.map((p) => p.materiId));
 
     const materiWithAccess = materi.map((m) => {
       const hasProgress = accessedMateriIds.has(m.id);
-      const canAccess = hasProgress || m.price === 0;
+      const hasPaid = paidMateriIds.has(m.id);
+      const canAccess = hasProgress || hasPaid || m.price === 0;
 
       return {
         ...m,

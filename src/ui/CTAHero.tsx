@@ -5,6 +5,7 @@ import { PricingCard } from "@/components/PricingCard";
 import axios from "@/lib/axios";
 import Link from "next/link";
 import CardSkeleton from "@/components/Skeleton/CardSkeleton";
+import { PricingCardProps } from "@/lib/type";
 
 type Materi = {
   id: string;
@@ -81,7 +82,21 @@ const CTAHero = () => {
               <CardSkeleton />
             </>
           ) : (
-            dataTKJ.map((materi: Materi) => <PricingCard key={materi.id} title={materi.title} price={materi.price} description={materi.content} link={`dashboard/kelas/${materi.kelas.CompanyCode}/materi`} canAccess={true} />)
+            dataTKJ.map((materi: PricingCardProps) => (
+              <PricingCard
+                key={materi.id}
+                id={materi.id}
+                title={materi.title}
+                price={materi.price}
+                content={materi.content}
+                link={`/dashboard/kelas/${materi.kelas.CompanyCode}/materi`}
+                canAccess={true}
+                hasProgress={false} // Replace with actual value
+                onRefresh={() => {}} // Replace with actual function
+                CompanyCode={materi.kelas.CompanyCode}
+                kelas={materi.kelas}
+              />
+            ))
           )}
         </div>
       </section>
@@ -98,7 +113,21 @@ const CTAHero = () => {
               <CardSkeleton />
             </>
           ) : (
-            dataTKR.map((materi: Materi) => <PricingCard key={materi.id} title={materi.title} price={materi.price} description={materi.content} link={`/dashboard/kelas/${materi.kelas.CompanyCode}/materi`} />)
+            dataTKR.map((materi: Materi) => (
+              <PricingCard
+                key={materi.id}
+                id={materi.id}
+                title={materi.title}
+                price={materi.price}
+                content={materi.content}
+                link={`/dashboard/kelas/${materi.kelas.CompanyCode}/materi`}
+                canAccess={true}
+                hasProgress={false} // Replace with actual value
+                onRefresh={() => {}} // Replace with actual function
+                CompanyCode={materi.kelas.CompanyCode}
+                kelas={materi.kelas}
+              />
+            ))
           )}
         </div>
       </section>

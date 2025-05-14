@@ -5,12 +5,19 @@ export type LeadershipCard = {
   responsibility: string;
 };
 export type PricingCardProps = {
+  id: string;
   title: string;
   price: number;
-  description: string;
+  content: string | null;
   link: string;
   canAccess: boolean;
   hasProgress: boolean;
+  onRefresh: () => void;
+  CompanyCode: string;
+  kelas: {
+    title: string;
+    CompanyCode: string;
+  };
 };
 
 export type User = {
@@ -23,3 +30,21 @@ export type User = {
 };
 
 export type Order = "asc" | "desc";
+
+export type MateriCard = {
+  id: string;
+  title: string;
+  content: string;
+  videoUrl: string;
+  createdAt: Date;
+  price: number;
+  CreatedBy: string;
+  LastUpdatedBy: Date;
+  LastUpdateDate: Date;
+  kelas: {
+    title: string;
+    CompanyCode: string;
+  };
+
+  CompanyCode: string;
+};

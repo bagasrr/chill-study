@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
 import { notoSans, patrickHand, poppins, roboto } from "@/lib/fonts";
-// import { Toaster } from "react-hot-toast";
 import CustomToast from "@/components/CustomToast";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "Chill Study",
@@ -16,6 +16,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
+      <head>
+        <Script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key={process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY} strategy="beforeInteractive" />
+      </head>
       <body className={`${poppins.variable}  ${roboto.variable}  ${patrickHand.variable} ${notoSans.variable} antialiased `}>
         <Providers>
           <main>
