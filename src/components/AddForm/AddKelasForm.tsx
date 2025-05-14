@@ -13,6 +13,7 @@ interface KelasForm {
   title: string;
   deskripsi: string;
   thumbnail: string;
+  CompanyCode: string;
 }
 
 export default function AddKelasForm() {
@@ -20,6 +21,7 @@ export default function AddKelasForm() {
     title: "",
     deskripsi: "",
     thumbnail: "",
+    CompanyCode: "",
   });
 
   const { isLoading, submitWrapper } = useFormSubmit();
@@ -53,9 +55,12 @@ export default function AddKelasForm() {
             <div className="col-span-2">
               <h2 className="text-xl font-semibold text-sky-400 mb-4">Informasi Kelas</h2>
             </div>
-
-            <FormTextField label="Judul Kelas" name="title" value={kelas.title} onChange={handleChange(setKelas)} required />
+            <div className="col-span-2">
+              <FormTextField label="Judul Kelas" name="title" value={kelas.title} onChange={handleChange(setKelas)} required />
+            </div>
             <FormTextField label="Thumbnail URL" name="thumbnail" value={kelas.thumbnail} onChange={handleChange(setKelas)} />
+            <FormTextField label="Kode Kelas" name="CompanyCode" value={kelas.CompanyCode} onChange={handleChange(setKelas)} />
+
             <div className="col-span-2">
               <FormTextField label="Deskripsi Kelas" name="deskripsi" value={kelas.deskripsi} onChange={handleChange(setKelas)} multiline rows={4} />
             </div>

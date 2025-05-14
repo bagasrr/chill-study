@@ -15,6 +15,14 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
         CreatedBy: true,
         LastUpdatedBy: true,
         LastUpdateDate: true,
+        CompanyCode: true,
+        materi: {
+          select: {
+            id: true,
+            title: true,
+            price: true,
+          },
+        },
       },
     });
     return NextResponse.json(kelas);

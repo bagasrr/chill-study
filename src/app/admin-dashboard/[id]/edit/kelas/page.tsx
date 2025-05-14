@@ -7,6 +7,7 @@ import axios, { AxiosError } from "axios";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { FormTextField } from "@/components/FormTextField";
 
 type FormValues = {
   title: string;
@@ -65,6 +66,7 @@ export default function EditKelas() {
         <h1 className="font-bold text-center mb-6">Edit Kelas</h1>
         <form onSubmit={handleSubmit(onSubmit)}>
           <InputField label="Judul Kelas" name="title" register={register} />
+          <InputField label="Kode Kelas" name="CompanyCode" register={register} />
           <div className="flex items-center w-full">
             <div className="flex flex-col mb-4 w-full">
               <label htmlFor="thumbnail" className="text-sm font-medium text-gray-700">

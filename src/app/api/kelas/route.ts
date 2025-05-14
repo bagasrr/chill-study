@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ errors: parsed.error.flatten() }, { status: 400 });
   }
 
-  const { title, deskripsi, thumbnail } = parsed.data;
+  const { title, deskripsi, thumbnail, CompanyCode } = parsed.data;
 
   const kelas = await prisma.kelas.create({
     data: {
@@ -22,8 +22,10 @@ export async function POST(req: Request) {
       deskripsi,
       thumbnail,
       CreatedBy: session?.user?.email || "system",
-      CompanyCode: "Kelas",
+      CompanyCode,
       Status: 1,
+      LastUpdateDate: new Date(),
+      LastUpdatedBy: session?.user?.email || "system",
     },
   });
 
