@@ -25,7 +25,7 @@ const ProgramCard = ({ thumbnail, title, deskripsi, buttonText = "Learn More", o
           objectFit: "cover",
         }}
       />
-      <CardContent sx={{ flex: "1 1 auto" }}>
+      <div className="flex flex-col justify-evenly">
         <CardActionArea onClick={onClick}>
           <CardContent>
             <Typography gutterBottom variant="h5" component="div">
@@ -36,6 +36,7 @@ const ProgramCard = ({ thumbnail, title, deskripsi, buttonText = "Learn More", o
             </Typography>
           </CardContent>
         </CardActionArea>
+
         <CardActions>
           <Link href={link}>
             <Button size="small" color="primary">
@@ -43,7 +44,7 @@ const ProgramCard = ({ thumbnail, title, deskripsi, buttonText = "Learn More", o
             </Button>
           </Link>
         </CardActions>
-      </CardContent>
+      </div>
     </Card>
   );
 };
