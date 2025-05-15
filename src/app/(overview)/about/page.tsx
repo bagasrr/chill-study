@@ -123,7 +123,7 @@ const AboutPage = () => {
           }}
         >
           <iframe
-            src="https://www.google.com/maps/embed?pb=..." // ganti link maps sesuai lokasi
+            src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d7930.127939217752!2d107.12260399999997!3d-6.385745999999995!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2s!5e0!3m2!1sid!2sid!4v1747292326952!5m2!1sid!2sid" // ganti link maps sesuai lokasi
             width="100%"
             height="100%"
             allowFullScreen

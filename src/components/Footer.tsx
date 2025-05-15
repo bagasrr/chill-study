@@ -22,18 +22,13 @@ const Footer = () => {
               </Link>
             </li>
             <li>
-              <Link href="/program" className="hover:underline">
+              <Link href="/learning" className="hover:underline">
                 Program
               </Link>
             </li>
             <li>
-              <Link href="/tentang" className="hover:underline">
+              <Link href="/about" className="hover:underline">
                 Tentang Kami
-              </Link>
-            </li>
-            <li>
-              <Link href="/kontak" className="hover:underline">
-                Kontak
               </Link>
             </li>
           </ul>
