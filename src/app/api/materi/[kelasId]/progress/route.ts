@@ -42,6 +42,22 @@ export async function GET(req: NextRequest, { params }: { params: { kelasId: str
         materiId: { in: materiIds },
         status: true,
       },
+      select: {
+        materiId: true,
+        materi: {
+          select: {
+            id: true,
+            title: true,
+            content: true,
+            videoUrl: true,
+            createdAt: true,
+            price: true,
+            CreatedBy: true,
+            LastUpdatedBy: true,
+            LastUpdateDate: true,
+          },
+        },
+      },
     });
 
     const progressPercent = materiIds.length > 0 ? Math.round((completed.length / materiIds.length) * 100) : 0;
@@ -50,6 +66,7 @@ export async function GET(req: NextRequest, { params }: { params: { kelasId: str
       totalMateri: materiIds.length,
       selesai: completed.length,
       progressPercent,
+      materiCompleted: completed,
     });
   } catch (err) {
     console.error("🔥 Error kelas progress:", err);

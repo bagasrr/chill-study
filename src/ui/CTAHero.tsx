@@ -34,7 +34,9 @@ const CTAHero = () => {
       <section className="text-center py-10 px-6 bg-yellow-100 rounded-xl">
         <h3 className="text-xl font-bold text-gray-800 mb-2">🎁 GRATIS! 2 Materi Pertama Buat Kamu yang Baru Gabung!</h3>
         <p className="text-gray-600 mb-4">Mulai dari yang gratis, lanjut ke yang pro. Gak usah ragu!</p>
-        <button className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">👇 Akses Materi Gratis</button>
+        <button className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+          <Link href="/dashboard/kelas/">👇 Akses Materi Gratis</Link>
+        </button>
       </section>
     </div>
   );

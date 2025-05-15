@@ -4,9 +4,11 @@ import { useKelasProgress } from "@/lib/hooks/useKelasProgress";
 import { useEffect, useRef, useState } from "react";
 
 export const KelasProgressInfo = ({ kelasId }: { kelasId: string }) => {
-  const { percent, isLoading } = useKelasProgress(kelasId);
+  const { total, selesai, materiCompleted, percent, isLoading } = useKelasProgress(kelasId);
   const [animatedPercent, setAnimatedPercent] = useState(0);
   const requestRef = useRef<number>();
+
+  // console.log({ total, selesai, percent, materiCompleted });
 
   useEffect(() => {
     if (isLoading || percent === 0) return;
