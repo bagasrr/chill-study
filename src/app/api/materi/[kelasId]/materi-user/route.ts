@@ -9,6 +9,7 @@ export async function GET(req: NextRequest, { params }: { params: { kelasId: str
 
   const { kelasId } = params;
   const userId = session.user.id;
+  const userRole = session.user.role;
 
   try {
     const materi = await prisma.materi.findMany({
@@ -51,7 +52,7 @@ export async function GET(req: NextRequest, { params }: { params: { kelasId: str
     const materiWithAccess = materi.map((m) => {
       const hasProgress = accessedMateriIds.has(m.id);
       const hasPaid = paidMateriIds.has(m.id);
-      const canAccess = hasProgress || hasPaid || m.price === 0;
+      const canAccess = hasProgress || hasPaid || m.price === 0 || userRole === "ADMIN";
 
       return {
         ...m,

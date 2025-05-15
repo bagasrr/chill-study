@@ -1,18 +1,12 @@
 "use client";
 // pages/pricing.tsx
 import React, { useEffect, useState } from "react";
-import { PricingCard } from "@/components/PricingCard";
-import axios from "@/lib/axios";
 import Link from "next/link";
-import CardSkeleton from "@/components/Skeleton/CardSkeleton";
-import { MateriCard, PricingCardProps } from "@/lib/type";
-import { useKelasDetail } from "@/lib/hooks/useKelasDetail";
 import KelasShowCase from "@/components/KelasShowCase";
 import { useAllKelas } from "@/lib/hooks/useAllKelas";
 
 const CTAHero = () => {
   const { kelas, isLoading, error, mutate } = useAllKelas();
-  console.log(kelas);
 
   return (
     <div className="min-h-screen bg-gray-100 px-[5%] py-12">

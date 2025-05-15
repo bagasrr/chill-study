@@ -3,9 +3,6 @@ import { Skeleton } from "@mui/material";
 import React from "react";
 
 const LearningSkeleton = () => {
-  // Misalnya ada 6 skeleton card
-  // const skeletonCards = Array(6).fill(0);
-
   return (
     <div className="px-8 py-4 bg-gray-50 min-h-screen">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">

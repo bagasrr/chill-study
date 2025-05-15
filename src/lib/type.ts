@@ -45,3 +45,11 @@ export type MateriCard = {
     CompanyCode: string;
   };
 };
+
+export type ProgramCardType = {
+  id: string;
+  thumbnail: string;
+  title: string;
+  deskripsi: string;
+  CompanyCode: string;
+};
