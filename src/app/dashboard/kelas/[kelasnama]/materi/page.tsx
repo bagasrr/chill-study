@@ -30,7 +30,7 @@ const Page = () => {
           </div>
         )}
       </div>
-      <div className="px-[5%]">
+      <div className="px-[5%] pt-5">
         <Breadcrumb
           items={[
             { label: "Dashboard", href: "/dashboard/kelas" },

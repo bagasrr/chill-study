@@ -1,4 +1,5 @@
 "use client";
+import Breadcrumb from "@/components/Breadcrump";
 import ListKelas from "@/components/ListKelas";
 import ProgramCardSkeleton from "@/components/Skeleton/ProgramCardSkeleton";
 import { useAllKelas } from "@/lib/hooks/useAllKelas";
@@ -10,6 +11,15 @@ const Page = () => {
 
   return (
     <>
+      <div className="px-10 pt-5">
+        <Breadcrumb
+          items={[
+            { label: "Dashboard", href: "/dashboard" },
+            { label: "Kelas", href: "/dashboard/kelas" },
+          ]}
+        />
+      </div>
+
       {loadingKelas ? (
         <div className="px-10 py-6">
           <Skeleton variant="rounded" width={200} height={50} animation="wave" sx={{ mt: 2, background: "#cccccc", mb: 5 }} />
