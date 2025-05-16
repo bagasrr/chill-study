@@ -1,9 +1,19 @@
 import AdminNavbar from "@/components/AdminNavbar";
 import Footer from "@/components/Footer";
+import { authOptions } from "@/lib/auth";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
 
 import React from "react";
 
-const layout = ({ children }: { children: React.ReactNode }) => {
+const layout = async ({ children }: { children: React.ReactNode }) => {
+  const session = await getServerSession(authOptions);
+
+  console.log("session: ", session);
+  if (session?.user?.role !== "ADMIN") {
+    redirect("/?error=not-admin");
+  }
+
   return (
     <>
       <div>

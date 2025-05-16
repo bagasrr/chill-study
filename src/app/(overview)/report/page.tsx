@@ -7,6 +7,7 @@ import { ReportPdf } from "@/components/ReportPdf";
 export default function AdminLaporanPage() {
   const [data, setData] = useState([]);
   const [ready, setReady] = useState(false);
+  const currentDate = new Date().toLocaleDateString("id-ID").replaceAll("/", "-");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -21,7 +22,7 @@ export default function AdminLaporanPage() {
   }, []);
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6 text-white">
       <h1 className="text-2xl font-bold">Laporan Semua Siswa</h1>
 
       {ready ? (
@@ -30,7 +31,7 @@ export default function AdminLaporanPage() {
             <ReportPdf data={data} />
           </PDFViewer>
 
-          <PDFDownloadLink document={<ReportPdf data={data} />} fileName="laporan-semua-siswa.pdf" className="bg-blue-600 text-white px-4 py-2 rounded inline-block">
+          <PDFDownloadLink document={<ReportPdf data={data} />} fileName={`laporan-siswa-${currentDate}.pdf`} className="bg-blue-600 text-white px-4 py-2 rounded inline-block">
             {({ loading }) => (loading ? "Menyiapkan file..." : "Download PDF")}
           </PDFDownloadLink>
         </>

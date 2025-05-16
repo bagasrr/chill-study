@@ -9,14 +9,14 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditSquareIcon from "@mui/icons-material/EditSquare";
 
 const TeacherTable = () => {
-  const { data: admins, loading } = useFetchData<User[]>("/api/users/admins");
+  const { data: admins, loading } = useFetchData<User[]>("/api/users/teachers");
   const dataAdmin = admins || [];
 
   return (
     <SortableTable
       idSection="accounts"
       tableTitle="Teacher Account"
-      // addLink="/admin-dashboard/add-new/admin"
+      addLink={null}
       data={dataAdmin}
       columns={[
         { key: "name", label: "User Name", sortable: true },
