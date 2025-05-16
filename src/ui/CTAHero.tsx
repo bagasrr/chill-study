@@ -15,7 +15,7 @@ const CTAHero = () => {
         <p className="text-gray-600 mt-2">Mulai dari 10.000 aja, akses materi berkualitas dari mentor profesional. Belajar praktis, cocok buat kamu yang pengen jago di dunia kerja!</p>
       </header>
 
-      <section className="mb-10 text-center">
+      <section className="mb-10 text-center flex gap-2 items-center  justify-center">
         <Link href="/dashboard/kelas/" className="mr-4 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
           🔍 Lihat Materi Gratis
         </Link>
@@ -23,9 +23,10 @@ const CTAHero = () => {
           🚀 Mulai Belajar Sekarang
         </Link>
       </section>
+
       <section className="mb-10">
         {kelas
-          ?.filter((kelas: any) => kelas.materi && kelas.materi.length > 0) // ⬅️ filter hanya kelas yang punya materi
+          ?.filter((kelas: any) => kelas.materi && kelas.materi.length > 0)
           .map((kelas: any) => (
             <KelasShowCase kelasnama={kelas.CompanyCode} key={kelas.id} />
           ))}

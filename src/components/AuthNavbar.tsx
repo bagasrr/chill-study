@@ -18,7 +18,7 @@ export default function AuthNavbar() {
     );
 
   return (
-    <Stack direction="row" spacing={2} alignItems="center">
+    <div className="flex flex-col gap-4 items-center lg:flex-row">
       {session && (
         <>
           <Link href="/profile">
@@ -32,6 +32,6 @@ export default function AuthNavbar() {
           </Button>
         </>
       )}
-    </Stack>
+    </div>
   );
 }

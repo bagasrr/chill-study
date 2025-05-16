@@ -13,7 +13,7 @@ const Page = () => {
       {loadingKelas ? (
         <div className="px-10 py-6">
           <Skeleton variant="rounded" width={200} height={50} animation="wave" sx={{ mt: 2, background: "#cccccc", mb: 5 }} />
-          <div className="grid grid-cols-3 gap-6 ">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ">
             {[...Array(6)].map((_, i) => (
               <ProgramCardSkeleton key={i} />
             ))}

@@ -5,9 +5,10 @@ import { useKelasDetail } from "@/lib/hooks/useKelasDetail";
 import { useMateriList } from "@/lib/hooks/useMateriList";
 import Link from "next/link";
 import { Skeleton } from "@mui/material";
+import { PricingCardProps } from "@/lib/type";
 
 const KelasShowCase = ({ kelasnama }: { kelasnama: string }) => {
-  const { kelas, isLoading, error, mutate } = useKelasDetail(kelasnama);
+  const { kelas, isLoading, mutate } = useKelasDetail(kelasnama);
   const { materiList, isLoading: loadingMateri } = useMateriList(kelas?.id);
 
   if (isLoading || loadingMateri) {
@@ -15,7 +16,7 @@ const KelasShowCase = ({ kelasnama }: { kelasnama: string }) => {
       <div className="grid grid-cols-1 gap-4 my-10">
         <Skeleton variant="text" width="40%" height={40} sx={{ bgcolor: "#cccccc" }} />
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {[...Array(3)].map((_, i) => (
             <PricingCardSkeleton key={i} />
           ))}
@@ -29,8 +30,8 @@ const KelasShowCase = ({ kelasnama }: { kelasnama: string }) => {
       <Link href={`/dashboard/kelas/${kelasnama}/materi`} className="text-2xl font-bold hover:text-sky-500">
         {kelasnama + " - " + kelas?.title}{" "}
       </Link>
-      <div className="grid grid-cols-3 gap-4 overflow-clip">
-        {materiList?.slice(0, 3).map((materi: any) => (
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 overflow-clip">
+        {materiList?.slice(0, 3).map((materi: PricingCardProps) => (
           <PricingCard
             key={materi.id}
             id={materi.id}
