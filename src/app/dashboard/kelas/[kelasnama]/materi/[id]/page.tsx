@@ -1,4 +1,5 @@
 "use client";
+import Breadcrumb from "@/components/Breadcrump";
 import VideoPlayer from "@/components/MediaPlayer/VideoPlayer";
 import { PricingCard } from "@/components/PricingCard";
 import CardSkeleton from "@/components/Skeleton/CardSkeleton";
@@ -15,6 +16,7 @@ const Page = () => {
   const { kelasnama, id } = useParams<{ kelasnama: string; id: string }>();
   const [materiDetail, setMateriDetails] = useState<Materi>();
   const [materiInClass, setMateriInClass] = useState<[]>();
+  console.log({ materiDetail });
 
   const getMateriInClass = async () => {
     try {
@@ -73,10 +75,18 @@ const Page = () => {
     completeProgress(id).catch((err: React.SetStateAction<unknown>) => console.error("Gagal update complete:", err));
   };
 
+  const judulMateri = materiDetail?.title || "Loading...";
   return (
-    <div>
-      <p>Tes</p>
-      <div className="flex flex-col md:flex-row gap-6 py-2 md:px-8 md:py-4 bg-gray-50 min-h-screen text-gray-900">
+    <div className="py-2 md:px-8 md:py-4">
+      <Breadcrumb
+        items={[
+          { label: "Dashboard", href: "/dashboard" },
+          { label: "Kelas", href: `/dashboard/kelas/${kelasnama}/materi` },
+          { label: `${kelasnama}`, href: `/dashboard/kelas/${kelasnama}/materi` },
+          { label: `${judulMateri}`, href: `/dashboard/kelas/${kelasnama}/materi/${id}` },
+        ]}
+      />
+      <div className="flex flex-col md:flex-row gap-6  bg-gray-50 min-h-screen text-gray-900">
         {/* Video Section */}
 
         <div className="w-full md:w-2/3 ">
