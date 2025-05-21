@@ -9,8 +9,20 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditSquareIcon from "@mui/icons-material/EditSquare";
 import Link from "next/link";
 
+interface Kelas {
+  id: string;
+  title: string;
+  deskripsi: string;
+  thumbnail: string;
+  createdAt: string;
+  LastUpdateDate: string;
+  LastUpdatedBy: string;
+  CompanyCode: string;
+  Status: number;
+}
+
 const KelasTable = () => {
-  const { data: kelas, loading } = useFetchData<[]>("/api/kelas");
+  const { data: kelas, loading } = useFetchData<Kelas[]>("/api/kelas");
   const dataKelas = kelas || [];
   console.log(dataKelas);
   return (
@@ -26,6 +38,8 @@ const KelasTable = () => {
         { key: "createdAt", label: "Created At", sortable: true, render: (value) => <p>{formattedDate(value)}</p> },
         { key: "LastUpdateDate", label: "Last Update At", sortable: true, render: (value) => <p>{formattedDate(value)}</p> },
         { key: "LastUpdatedBy", label: "Last Update By", sortable: true },
+        { key: "Status", label: "Status" },
+        { key: "CompanyCode", label: "Company Code" },
       ]}
       isLoading={loading}
       renderAction={(data) => (

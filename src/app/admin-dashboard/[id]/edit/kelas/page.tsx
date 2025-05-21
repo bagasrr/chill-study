@@ -88,7 +88,7 @@ export default function EditKelas() {
             </label>
             <textarea {...register("deskripsi")} className="w-full h-40 border border-gray-300 rounded-lg px-4 py-2 text-black focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
           </div>
-          <button type="submit" disabled={loading || isSubmitting} className="w-full py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
+          <button type="submit" disabled={loading || isSubmitting} className="w-1/3 py-2 border border-sky-400 text-sky-600 rounded-lg hover:bg-sky-100 transition">
             {loading || isSubmitting ? "Updating..." : "Update Kelas"}
           </button>
         </form>

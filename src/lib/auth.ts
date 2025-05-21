@@ -45,7 +45,9 @@ export const authOptions: NextAuthOptions = {
         if (existingUser && !existingUser.role) {
           await prisma.user.update({
             where: { email: user.email! },
-            data: { role: "STUDENT" },
+            data: {
+              role: "STUDENT",
+            },
           });
         }
 
@@ -79,7 +81,14 @@ export const authOptions: NextAuthOptions = {
       // Dipanggil saat user baru berhasil dibuat
       await prisma.user.update({
         where: { id: user.id },
-        data: { role: "STUDENT", deviceToken: randomUUID() },
+        data: {
+          role: "STUDENT",
+          deviceToken: randomUUID(),
+          CreatedBy: "System",
+          LastUpdatedBy: "System",
+          Status: 1,
+          CompanyCode: "User",
+        },
       });
     },
   },

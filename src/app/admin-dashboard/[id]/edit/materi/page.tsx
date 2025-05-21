@@ -129,7 +129,7 @@ export default function EditMateriForm() {
           </div>
 
           {/* Tombol Submit */}
-          <div className="mt-8 relative">
+          <div className="mt-8 relative w-1/3">
             <Button type="submit" variant="outlined" color="info" size="large" fullWidth disabled={isLoading} sx={{ fontWeight: "bold", borderRadius: 6 }}>
               {isLoading ? (
                 <Box

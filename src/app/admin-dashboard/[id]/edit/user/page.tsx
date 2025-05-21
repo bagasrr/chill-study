@@ -164,7 +164,7 @@ export default function EditUser() {
           />
 
           {/* Submit Button */}
-          <Box mt={3}>
+          <Box mt={3} sx={{ width: "30%" }}>
             <Button
               type="submit"
               fullWidth

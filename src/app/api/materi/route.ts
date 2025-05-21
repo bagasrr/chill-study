@@ -19,16 +19,24 @@ export async function GET(request: Request) {
           IsDeleted: null,
         },
       },
-      select: {
-        id: true,
-        title: true,
-        content: true,
-        videoUrl: true,
-        createdAt: true,
-        price: true,
-        CreatedBy: true,
-        LastUpdatedBy: true,
-        LastUpdateDate: true,
+      // select: {
+      //   id: true,
+      //   title: true,
+      //   content: true,
+      //   videoUrl: true,
+      //   createdAt: true,
+      //   price: true,
+      //   CreatedBy: true,
+      //   LastUpdatedBy: true,
+      //   LastUpdateDate: true,
+      //   kelas: {
+      //     select: {
+      //       title: true,
+      //       CompanyCode: true,
+      //     },
+      //   },
+      // },
+      include: {
         kelas: {
           select: {
             title: true,
@@ -38,7 +46,7 @@ export async function GET(request: Request) {
       },
       take: limit,
       orderBy: {
-        createdAt: "asc",
+        createdAt: "desc",
       },
     });
 

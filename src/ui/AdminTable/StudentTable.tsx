@@ -16,7 +16,7 @@ const StudentTable = () => {
     <SortableTable
       idSection="accounts"
       tableTitle="Students Account"
-      // addLink="/admin-dashboard/add-new/admin"
+      addLink={null}
       data={dataStudent}
       columns={[
         { key: "name", label: "User Name", sortable: true },
@@ -25,6 +25,11 @@ const StudentTable = () => {
         { key: "role", label: "Role", sortable: true },
         { key: "createdAt", label: "Joined At", sortable: true, render: (value) => <p>{formattedDate(value)}</p> },
         { key: "emailVerified", label: "Verified", sortable: false },
+        { key: "CreatedBy", label: "Created By", sortable: true },
+        { key: "LastUpdateDate", label: "Last Update At", sortable: true, render: (value) => <p>{formattedDate(value)}</p> },
+        { key: "LastUpdatedBy", label: "Last Update By", sortable: true },
+        { key: "CompanyCode", label: "Company Code" },
+        { key: "Status", label: "Status" },
       ]}
       isLoading={loading}
       renderAction={(data) => (

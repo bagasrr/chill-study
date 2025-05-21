@@ -10,8 +10,23 @@ import axios from "axios";
 import Link from "next/link";
 import toast from "react-hot-toast";
 
+interface Materi {
+  id: string;
+  title: string;
+  content: string;
+  createdAt: Date;
+  LastUpdateDate: Date;
+  LastUpdatedBy: Date;
+  price: number;
+  kelas: {
+    title: string;
+  };
+  Status: number;
+  CompanyCode: string;
+}
+
 const MateriTable = () => {
-  const { data: materi, loading } = useFetchData<[]>("/api/materi");
+  const { data: materi, loading } = useFetchData<Materi[]>("/api/materi");
   const dataMateri = materi || [];
 
   const handleDelete = (id: string) => {
@@ -19,7 +34,7 @@ const MateriTable = () => {
       axios.delete(`/api/${id}/delete/materi`);
       toast.success("Materi berhasil dihapus");
     } catch (error) {
-      toast.error(`Gagal menghapus materi ${error.response.status}`);
+      toast.error(`Gagal menghapus materi ${error?.response?.status}`);
       console.log(error);
     }
   };
@@ -41,6 +56,10 @@ const MateriTable = () => {
           render: (value) => <p>{formatCurrency(value)}</p>,
         },
         { key: "kelas", label: "Kelas Nama", sortable: true },
+        { key: "LastUpdateDate", label: "Last Update At", sortable: true, render: (value) => (value ? <p>{formattedDate(value)}</p> : <p>-</p>) },
+        { key: "LastUpdatedBy", label: "Last Update By", sortable: true },
+        { key: "Status", label: "Status" },
+        { key: "CompanyCode", label: "Company Code" },
       ]}
       isLoading={loading}
       renderAction={(data) => (

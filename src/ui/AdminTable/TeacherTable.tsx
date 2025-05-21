@@ -24,6 +24,11 @@ const TeacherTable = () => {
         { key: "deviceToken", label: "Device Token", render: (value) => <p>{value ? "True" : "False"}</p> },
         { key: "role", label: "Role", sortable: true },
         { key: "createdAt", label: "Joined At", sortable: true, render: (value) => <p>{formattedDate(value)}</p> },
+        { key: "CreatedBy", label: "Created By", sortable: true },
+        { key: "LastUpdateDate", label: "Last Update At", sortable: true, render: (value) => <p>{formattedDate(value)}</p> },
+        { key: "LastUpdatedBy", label: "Last Update By", sortable: true },
+        { key: "CompanyCode", label: "Company Code" },
+        { key: "Status", label: "Status" },
       ]}
       isLoading={loading}
       renderAction={(data) => (

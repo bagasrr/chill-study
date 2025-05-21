@@ -56,10 +56,24 @@ const AdminNavbar = () => {
                   );
                 })}
                 {session && (
-                  <Link href="/admin-dashboard" className={`transition font-medium px-2 py-1 rounded-md hover:text-linkHover ${pathname ? "text-primary ease-out duration-300" : ""}`}>
-                    Dashboard
-                  </Link>
+                  <div className="relative group">
+                    <button className="font-medium px-2 py-1 hover:text-linkHover">Dashboard</button>
+
+                    {/* dropdown harus anak langsung dari div.group */}
+                    <div className="absolute top-full mt-2 w-48 bg-white shadow-md rounded-md py-2 hidden group-hover:block z-50">
+                      <Link href="/admin-dashboard" className="block px-4 py-2 hover:bg-gray-100">
+                        Dashboard Admin
+                      </Link>
+                      <Link href="/dashboard" className="block px-4 py-2 hover:bg-gray-100">
+                        Dashboard
+                      </Link>
+                      <Link href="/dashboard/report" className="block px-4 py-2 hover:bg-gray-100">
+                        Report
+                      </Link>
+                    </div>
+                  </div>
                 )}
+
                 <AuthNavbar />
               </Stack>
             </div>

@@ -110,6 +110,7 @@ export function SortableTable<T extends { id: string }>({ data, columns, renderA
         <Table sx={{ minWidth: 650 }} aria-label="sortable table">
           <TableHead>
             <TableRow>
+              {renderAction && <TableCell sx={{ whiteSpace: "nowrap" }}>Action</TableCell>}
               <TableCell>No</TableCell>
               {columns.map((col) => (
                 <TableCell key={String(col.key)} sx={{ whiteSpace: "nowrap" }}>
@@ -122,7 +123,6 @@ export function SortableTable<T extends { id: string }>({ data, columns, renderA
                   )}
                 </TableCell>
               ))}
-              {renderAction && <TableCell sx={{ whiteSpace: "nowrap" }}>Action</TableCell>}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -146,12 +146,21 @@ export function SortableTable<T extends { id: string }>({ data, columns, renderA
             paginatedData.length > 0 ? (
               paginatedData.map((row, i) => (
                 <TableRow key={row.id}>
+                  {renderAction && <TableCell sx={{ whiteSpace: "nowrap", textAlign: "center" }}>{renderAction(row)}</TableCell>}
                   <TableCell>{page != 0 ? page * rowsPerPage + i + 1 : i + 1}</TableCell>
                   {columns.map((col) => (
-                    <TableCell key={String(col.key)}>{col.render ? col.render(row[col.key], row) : formatCellValueSmart(row[col.key])}</TableCell>
+                    <TableCell
+                      key={String(col.key)}
+                      sx={{
+                        maxWidth: 250,
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "pre",
+                      }}
+                    >
+                      {col.render ? col.render(row[col.key], row) : formatCellValueSmart(row[col.key])}
+                    </TableCell>
                   ))}
-
-                  {renderAction && <TableCell sx={{ whiteSpace: "nowrap", textAlign: "center" }}>{renderAction(row)}</TableCell>}
                 </TableRow>
               ))
             ) : (

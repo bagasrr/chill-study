@@ -10,7 +10,7 @@ import { useSession } from "next-auth/react";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const pathname = usePathname(); // <-- Ambil path aktif
+  const pathname = usePathname();
   const { data: session } = useSession();
 
   const toggleMenu = () => setIsOpen(!isOpen);
@@ -55,11 +55,28 @@ const Navbar = () => {
                     </Link>
                   );
                 })}
-                {session && session.user.role === "ADMIN" && (
-                  <Link href="/admin-dashboard" className="transition font-medium px-2 py-1 rounded-md hover:text-linkHover">
+
+                {session && session.user.role === "ADMIN" ? (
+                  <div className="relative group ">
+                    <button className="transition font-medium px-2 py-1 rounded-md cursor-default text-linkHover">Dashboard</button>
+                    <div className="absolute top-full  left-0 bg-green-700 shadow-lg  border border-gray-200 z-50 hidden group-hover:block min-w-[150px]">
+                      <Link href="/admin-dashboard" className="block px-4 py-2 text-sm hover:bg-green-900">
+                        Admin Dashboard
+                      </Link>
+                      <Link href="/dashboard" className="block px-4 py-2 text-sm hover:bg-green-900">
+                        Dashboard
+                      </Link>
+                      <Link href="/report" className="block px-4 py-2 text-sm hover:bg-green-900">
+                        Report
+                      </Link>
+                    </div>
+                  </div>
+                ) : (
+                  <Link href="/dashboard" className="transition font-medium px-2 py-1 rounded-md hover:text-linkHover">
                     Dashboard
                   </Link>
                 )}
+
                 {session && session.user.role !== "ADMIN" && (
                   <Link href="/dashboard" className="transition font-medium px-2 py-1 rounded-md hover:text-linkHover">
                     Dashboard
