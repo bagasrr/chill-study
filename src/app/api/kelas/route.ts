@@ -36,7 +36,24 @@ export async function GET() {
   try {
     const kelas = await prisma.kelas.findMany({
       where: { IsDeleted: null },
-
+      select: {
+        id: true,
+        title: true,
+        deskripsi: true,
+        thumbnail: true,
+        createdAt: true,
+        CreatedBy: true,
+        LastUpdatedBy: true,
+        LastUpdateDate: true,
+        CompanyCode: true,
+        materi: {
+          select: {
+            id: true,
+            title: true,
+            price: true,
+          },
+        },
+      },
       orderBy: {
         createdAt: "asc",
       },

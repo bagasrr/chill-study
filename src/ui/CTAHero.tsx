@@ -7,6 +7,7 @@ import { useAllKelas } from "@/lib/hooks/useAllKelas";
 
 const CTAHero = () => {
   const { kelas, isLoading, error, mutate } = useAllKelas();
+  console.log(kelas);
 
   return (
     <div className="min-h-screen bg-gray-100 px-[5%] py-12">

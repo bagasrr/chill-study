@@ -1,10 +1,10 @@
 "use client";
 
-import { useKelasProgress } from "@/lib/hooks/useKelasProgress";
+// import { useKelasProgress } from "@/lib/hooks/useKelasProgress";
 import { useEffect, useRef, useState } from "react";
 
-export const KelasProgressInfo = ({ kelasId }: { kelasId: string }) => {
-  const { total, selesai, materiCompleted, percent, isLoading } = useKelasProgress(kelasId);
+export const KelasProgressInfo = ({ percent, isLoading }: { percent: number; isLoading: boolean }) => {
+  // const { total, selesai, materiCompleted, percent, isLoading } = useKelasProgress(kelasId);
   const [animatedPercent, setAnimatedPercent] = useState(0);
   const requestRef = useRef<number>();
 
@@ -49,30 +49,44 @@ export const KelasProgressInfo = ({ kelasId }: { kelasId: string }) => {
   const strokeDashoffset = circumference - (animatedPercent / 100) * circumference;
 
   return (
-    <div className="relative flex flex-col items-center justify-center">
-      <svg height={radius * 2} width={radius * 2} className="rotate-[-90deg]">
-        <circle
-          stroke="#e5e7eb" // gray-200
-          fill="transparent"
-          strokeWidth={stroke}
-          r={normalizedRadius}
-          cx={radius}
-          cy={radius}
-        />
-        <circle
-          stroke="#10b981" // green-500
-          fill="transparent"
-          strokeWidth={stroke}
-          strokeLinecap="round"
-          strokeDasharray={circumference}
-          strokeDashoffset={strokeDashoffset}
-          r={normalizedRadius}
-          cx={radius}
-          cy={radius}
-          style={{ transition: "stroke-dashoffset 0.2s linear" }}
-        />
-      </svg>
-      <div className="absolute text-center text-xs font-semibold text-sky-200">{animatedPercent}%</div>
+    <div>
+      <div className="relative flex flex-col items-center justify-center">
+        <svg height={radius * 2} width={radius * 2} className="rotate-[-90deg]">
+          <circle
+            stroke="#e5e7eb" // gray-200
+            fill="transparent"
+            strokeWidth={stroke}
+            r={normalizedRadius}
+            cx={radius}
+            cy={radius}
+          />
+          <circle
+            stroke="#10b981" // green-500
+            fill="transparent"
+            strokeWidth={stroke}
+            strokeLinecap="round"
+            strokeDasharray={circumference}
+            strokeDashoffset={strokeDashoffset}
+            r={normalizedRadius}
+            cx={radius}
+            cy={radius}
+            style={{ transition: "stroke-dashoffset 0.2s linear" }}
+          />
+        </svg>
+        <div className="absolute text-center text-xs font-semibold text-sky-200">{animatedPercent}%</div>
+      </div>
+      {/* 
+      <p className="text-white">
+        selesai {selesai} dari {total} Materi
+        {percent === 100 ? <span className="text-green-500"> (Lulus)</span> : <span className="text-red-500"> (Belum Lulus)</span>}
+      </p>
+
+      {materiCompleted &&
+        materiCompleted.map((materi, index) => (
+          <p key={index} className="text-white">
+            Materi {index + 1} (Lulus)
+          </p>
+        ))} */}
     </div>
   );
 };

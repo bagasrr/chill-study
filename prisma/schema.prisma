@@ -28,6 +28,8 @@ model User {
   progress          Progress[]
   sessions          Session[]
   devTokenExpiredAt DateTime?
+  certificates     Certificate[]
+
 }
 
 model Account {
@@ -63,6 +65,8 @@ model Kelas {
 
   kelasUser         KelasUser[]
   materi            Materi[]
+  certificates      Certificate[]
+
 }
 
 model KelasUser {
@@ -171,6 +175,30 @@ model VerificationToken {
 
   @@unique([identifier, token])
 }
+
+model Official {
+  id              String        @id @default(cuid())
+  name            String
+  position        String
+  signatureUrl    String     // URL to signature image in Supabase
+  isActive        Boolean       @default(true)
+  createdAt       DateTime      @default(now())
+  certificates    Certificate[]
+}
+
+model Certificate {
+  id           String    @id @default(cuid())
+  number       String    @unique
+  userId       String
+  kelasId      String
+  officialId   String
+  issuedAt     DateTime  @default(now())
+
+  user         User      @relation(fields: [userId], references: [id])
+  kelas        Kelas     @relation(fields: [kelasId], references: [id])
+  official     Official  @relation(fields: [officialId], references: [id])
+}
+
 
 enum Role {
   STUDENT
