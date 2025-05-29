@@ -13,10 +13,10 @@ export function useFetchData<T = unknown>(url: string) {
     setLoading(true);
     axios
       .get<T>(url)
-      .then((res: any) => {
+      .then((res) => {
         if (isMounted) setData(res.data);
       })
-      .catch((err: any) => {
+      .catch((err) => {
         if (isMounted) setError(err);
       })
       .finally(() => {

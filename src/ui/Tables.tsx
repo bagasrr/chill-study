@@ -1,4 +1,5 @@
 import AdminTable from "./AdminTable/AdminTable";
+import ExamTable from "./AdminTable/ExamTable";
 import KelasTable from "./AdminTable/KelasTable";
 import MateriTable from "./AdminTable/MateriTable";
 import StudentTable from "./AdminTable/StudentTable";
@@ -12,6 +13,7 @@ const Tables = () => {
       <StudentTable />
       <KelasTable />
       <MateriTable />
+      <ExamTable />
     </div>
   );
 };

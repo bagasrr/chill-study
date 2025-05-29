@@ -180,6 +180,12 @@ model Official {
   signatureUrl String // URL to signature image in Supabase
   isActive     Boolean       @default(true)
   createdAt    DateTime      @default(now())
+
+  isDeleted        Boolean  @default(false)
+  CreatedBy        String?
+  LastUpdateDate   DateTime?
+  LastUpdatedBy    DateTime?
+
   certificates Certificate[]
 }
 
@@ -191,6 +197,12 @@ model Certificate {
   officialId String
   issuedAt   DateTime @default(now())
   pdfUrl     String?
+
+  isDeleted     Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedDate   DateTime?
+  LastUpdatedBy String?
+  CreatedBy     String?
 
   user     User     @relation(fields: [userId], references: [id])
   kelas    Kelas    @relation(fields: [kelasId], references: [id])
@@ -205,6 +217,11 @@ model Exam {
   kelas       Kelas        @relation(fields: [kelasId], references: [id])
   questions   Question[]
   createdAt   DateTime     @default(now())
+
+  isDeleted        Boolean  @default(false)
+  CreatedBy        String?
+  LastUpdateDate   DateTime?
+  LastUpdatedBy    DateTime?
   examResult  ExamResult[]
   graduate    Int          @default(0)
 }
@@ -218,6 +235,12 @@ model Question {
   optionC       String
   optionD       String
   correctAnswer String // 'A', 'B', 'C', 'D'
+  isDeleted     Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  CreatedBy        String?
+  LastUpdateDate   DateTime?
+  LastUpdatedBy    DateTime?
+
   exam          Exam   @relation(fields: [examId], references: [id])
 }
 
@@ -227,6 +250,13 @@ model ExamResult {
   examId      String
   score       Int
   submittedAt DateTime @default(now())
+
+  isDeleted        Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  CreatedBy        String?
+  LastUpdateDate   DateTime?
+  LastUpdatedBy    DateTime?
+
   exam        Exam     @relation(fields: [examId], references: [id])
   user        User     @relation(fields: [userId], references: [id])
 }

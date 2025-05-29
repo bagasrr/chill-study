@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
-  // if (!session?.user || session.user.role !== "ADMIN") return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  if (!session?.user || session.user.role !== "ADMIN") return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
   try {
     const certificates = await prisma.certificate.findMany({

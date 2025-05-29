@@ -3,11 +3,10 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import InputField from "@/components/InputField";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { FormTextField } from "@/components/FormTextField";
 
 type FormValues = {
   title: string;
@@ -54,7 +53,7 @@ export default function EditKelas() {
       setTimeout(() => {
         router.push("/admin-dashboard#kelas");
       }, 1500);
-    } catch (err: AxiosError | any) {
+    } catch (err) {
       toast.error(`Gagal update kelas. Err Code : ${err?.response?.status}`);
       console.log(err);
     }
