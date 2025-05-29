@@ -10,13 +10,35 @@ import { useMateriList } from "@/lib/hooks/useMateriList";
 import { PricingCardProps } from "@/lib/type";
 import Breadcrumb from "@/components/Breadcrump";
 import { useKelasProgress } from "@/lib/hooks/useKelasProgress";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { Skeleton } from "@mui/material";
 
 const Page = () => {
   const { kelasnama } = useParams<{ kelasnama: string }>();
 
   const { kelas, isLoading: loadingKelas } = useKelasDetail(kelasnama);
   const { materiList, isLoading: loadingMateri, mutate: refreshMateri } = useMateriList(kelas?.id);
-  const { total, selesai, materiCompleted, percent, isLoading } = useKelasProgress(kelas?.id);
+  const { percent, isLoading } = useKelasProgress(kelas?.id);
+  const [sertif, setSertif] = useState<any | null>(null);
+  const [loadingSertif, setLoadingSertif] = useState(true);
+
+  useEffect(() => {
+    if (!kelas?.id) return;
+    const isGraduate = async () => {
+      try {
+        const res = await axios.get(`/api/certificate/${kelas?.id}`);
+        setSertif(res.data);
+      } catch (error) {
+        console.log({ error });
+        toast.error("Gagal mendapatkan sertifikat");
+      } finally {
+        setLoadingSertif(false);
+      }
+    };
+    isGraduate();
+  }, [kelas?.id]);
 
   return (
     <div className="flex flex-col">
@@ -33,7 +55,7 @@ const Page = () => {
         )}
       </div>
       <div className="px-[5%] pt-5">
-        <div className="flex justify-between ">
+        <div className="flex justify-between items-center">
           <Breadcrumb
             items={[
               { label: "Dashboard", href: "/dashboard/kelas" },
@@ -41,15 +63,21 @@ const Page = () => {
               { label: `${kelasnama}`, href: `/dashboard/kelas/${kelasnama}/materi` },
             ]}
           />
-          {/* {percent === 100 ? (
-            <Link href={`/dashboard/kelas/${kelasnama}/quiz`} className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+
+          {loadingSertif || isLoading ? (
+            <Skeleton variant="rectangular" width={180} height={40} sx={{ bgcolor: "#cfcfcf" }} />
+          ) : sertif?.length > 0 ? (
+            <Link href={`/dashboard/certificate/${kelas?.id}`} className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition">
+              🎓 Lihat Sertifikat
+            </Link>
+          ) : percent === 100 ? (
+            <Link href={`/exam/${kelas?.id}`} className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">
               <NavigateBefore /> Mulai Quiz
             </Link>
-          ) : null} */}
-          {percent === 100 && (
-            <Link href={`/dashboard/certificate/${kelas?.id}`} className={`flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600`}>
-              Sertifikat
-            </Link>
+          ) : (
+            <button className="flex items-center gap-2 bg-gray-300 text-gray-600 px-4 py-2 rounded cursor-not-allowed" disabled>
+              <NavigateBefore /> Mulai Quiz
+            </button>
           )}
         </div>
 

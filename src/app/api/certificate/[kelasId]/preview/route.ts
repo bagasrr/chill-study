@@ -6,19 +6,41 @@ import { prisma } from "@/lib/prisma";
 import { readFile } from "fs/promises";
 import path from "path";
 
-export async function GET(req: NextRequest) {
+export async function GET(req: NextRequest, { params }: { params: { kelasId: string } }) {
   const session = await getServerSession(authOptions);
-  const kelasId = req.nextUrl.searchParams.get("kelasId");
+
+  const { kelasId } = params;
 
   if (!session?.user || !kelasId) {
     return new Response("Unauthorized or missing kelasId", { status: 401 });
   }
 
-  const user = session.user;
-  const kelas = await prisma.kelas.findUnique({ where: { id: kelasId } });
-  const latestOfficial = await prisma.official.findFirst({
-    orderBy: { createdAt: "desc" },
+  const certificate = await prisma.certificate.findFirst({
+    where: { userId: session.user.id, kelasId },
+    include: {
+      kelas: {
+        select: {
+          title: true,
+          CompanyCode: true,
+        },
+      },
+      official: {
+        select: {
+          name: true,
+          signatureUrl: true,
+          position: true,
+        },
+      },
+      user: {
+        select: {
+          name: true,
+        },
+      },
+    },
   });
+  const user = certificate?.user;
+  const kelas = certificate?.kelas;
+  const latestOfficial = certificate?.official;
 
   const pdfDoc = await PDFDocument.create();
   const page = pdfDoc.addPage([842, 595]); // A4 landscape
@@ -34,7 +56,7 @@ export async function GET(req: NextRequest) {
 
   // Draw texts
   const font = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
-  page.drawText(user.name, { x: 65, y: 315, size: 24, font, color: rgb(0, 0.2, 0.2) });
+  page.drawText(user?.name, { x: 65, y: 315, size: 24, font, color: rgb(0, 0.2, 0.2) });
   page.drawText(kelas?.title || kelasId, { x: 65, y: 250, size: 18, font, color: rgb(0, 0.2, 0.2) });
 
   if (latestOfficial?.signatureUrl) {
@@ -49,7 +71,6 @@ export async function GET(req: NextRequest) {
     });
   }
 
-  //   page.drawText(latestOfficial?.signatureUrl || "text", { x: 65, y: 100, width: 100, height: 100 });
   page.drawText(latestOfficial?.name || "Unknown", { x: 65, y: 100, size: 14, font });
   page.drawText(latestOfficial?.position || "Pejabat", { x: 65, y: 80, size: 12, font });
 
@@ -57,7 +78,7 @@ export async function GET(req: NextRequest) {
   return new Response(pdfBytes, {
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": "inline; filename=sertifikat-preview.pdf",
+      "Content-Disposition": `inline; filename=${certificate?.number}-${user?.name}.pdf`,
     },
   });
 }

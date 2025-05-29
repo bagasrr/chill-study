@@ -3,7 +3,7 @@ import Link from "next/link";
 
 const Breadcrumb = ({ items }: { items: { label: string; href?: string }[] }) => {
   return (
-    <nav className="text-sm text-gray-600 mb-4 bg-green-500">
+    <nav className="text-sm text-gray-600 mb-4">
       {items.map((item, index) => (
         <span key={index}>
           {item.href ? (

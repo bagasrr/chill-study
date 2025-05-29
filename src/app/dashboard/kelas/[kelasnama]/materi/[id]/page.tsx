@@ -20,7 +20,7 @@ const Page = () => {
 
   const getMateriInClass = async () => {
     try {
-      const res = await axios.get(`/api/kelas/${kelasnama}`);
+      const res = await axios.get(`/api/kelas/kelas-detail/${kelasnama}`);
       getMateriList(res.data.id);
       // setMateriInClass(res.data.materi || []);
       console.log(res);

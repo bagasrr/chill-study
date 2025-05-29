@@ -1,5 +1,6 @@
 "use client";
 import AddAdminForm from "@/components/AddForm/AddAdminForm";
+import AddExamForm from "@/components/AddForm/AddExamForm";
 import AddKelasForm from "@/components/AddForm/AddKelasForm";
 import AddMateriForm from "@/components/AddForm/AddMateriForm";
 import AddStudentForm from "@/components/AddForm/AddStudentForm";
@@ -10,6 +11,7 @@ const formComponents: Record<string, JSX.Element> = {
   student: <AddStudentForm />,
   materi: <AddMateriForm />,
   kelas: <AddKelasForm />,
+  exam: <AddExamForm />,
 };
 
 export default function AddNewAccountPage() {

@@ -1,36 +1,89 @@
-import { PDFDocument } from "pdf-lib";
-import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { getServerSession } from "next-auth";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(req: Request) {
-  const { name, courseTitle, issuedDate, officialName } = await req.json();
+export async function POST(req: NextRequest) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
-  const templatePath = path.join(process.cwd(), "public", "certificate-template.png");
-  const templateBytes = fs.readFileSync(templatePath);
+  const { kelasId } = await req.json();
+  const userId = session.user.id;
 
-  const pdfDoc = await PDFDocument.create();
-  const page = pdfDoc.addPage([842, 595]);
+  if (!kelasId) {
+    return NextResponse.json({ message: "kelasId is required" }, { status: 400 });
+  }
 
-  const templateImage = await pdfDoc.embedPng(templateBytes);
-  page.drawImage(templateImage, {
-    x: 0,
-    y: 0,
-    width: 842,
-    height: 595,
-  });
+  try {
+    const existing = await prisma.certificate.findFirst({
+      where: { userId, kelasId },
+    });
 
-  page.drawText(name, { x: 280, y: 300, size: 24 });
-  page.drawText(courseTitle, { x: 240, y: 270, size: 18 });
-  page.drawText(issuedDate, { x: 240, y: 240, size: 12 });
-  page.drawText(officialName, { x: 580, y: 130, size: 12 });
+    if (existing) {
+      return NextResponse.json({ message: "Sertifikat sudah ada", certificate: existing });
+    }
 
-  const pdfBytes = await pdfDoc.save();
+    const official = await prisma.official.findFirst({
+      where: { isActive: true },
+      orderBy: { createdAt: "desc" },
+    });
 
-  return new NextResponse(pdfBytes, {
-    headers: {
-      "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename=certificate-${name}.pdf`,
-    },
-  });
+    if (!official) {
+      return NextResponse.json({ message: "Official tidak ditemukan" }, { status: 500 });
+    }
+
+    // ⬇️ INI dia generate nomor sertifikat di dalam POST
+    const kelas = await prisma.kelas.findFirst({
+      where: { id: kelasId },
+      select: { CompanyCode: true },
+    });
+
+    const kodeKelas = (kelas?.CompanyCode || "XXXX").toUpperCase();
+    const randomStr = Math.random().toString(36).substring(2, 6).toUpperCase();
+    const timestamp = Date.now().toString().slice(-4);
+    const number = `JCS-${kodeKelas}-${randomStr}-${timestamp}`;
+
+    const certificate = await prisma.certificate.create({
+      data: {
+        userId,
+        kelasId,
+        officialId: official.id,
+        number,
+        pdfUrl: null,
+      },
+    });
+
+    return NextResponse.json({ message: "Sertifikat berhasil dibuat", certificate });
+  } catch (err) {
+    console.error("❌ Error buat sertifikat:", err);
+    return NextResponse.json({ message: "Server error" }, { status: 500 });
+  }
+}
+
+export async function GET(req: NextRequest) {
+  const session = await getServerSession(authOptions);
+  // if (!session?.user || session.user.role !== "ADMIN") return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+
+  try {
+    const certificates = await prisma.certificate.findMany({
+      include: {
+        kelas: {
+          select: {
+            title: true,
+            CompanyCode: true,
+          },
+        },
+        official: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+
+    return NextResponse.json(certificates);
+  } catch (err) {
+    console.error("❌ Error fetch sertifikat:", err);
+    return NextResponse.json({ message: "Server error" }, { status: 500 });
+  }
 }

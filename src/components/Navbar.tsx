@@ -71,11 +71,7 @@ const Navbar = () => {
                       </Link>
                     </div>
                   </div>
-                ) : (
-                  <Link href="/dashboard" className="transition font-medium px-2 py-1 rounded-md hover:text-linkHover">
-                    Dashboard
-                  </Link>
-                )}
+                ) : null}
 
                 {session && session.user.role !== "ADMIN" && (
                   <Link href="/dashboard" className="transition font-medium px-2 py-1 rounded-md hover:text-linkHover">

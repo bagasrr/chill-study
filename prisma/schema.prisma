@@ -8,12 +8,12 @@ datasource db {
 }
 
 model User {
-  id                String      @id @default(cuid())
+  id                String        @id @default(cuid())
   name              String?
-  email             String      @unique
+  email             String        @unique
   image             String?
   deviceToken       String?
-  createdAt         DateTime    @default(now())
+  createdAt         DateTime      @default(now())
   emailVerified     DateTime?
   role              String?
   IsDeleted         DateTime?
@@ -24,12 +24,12 @@ model User {
   CompanyCode       String?
   accounts          Account[]
   kelasUser         KelasUser[]
-  payments          Payment[]   @relation(name: "UserPayments")
+  payments          Payment[]     @relation(name: "UserPayments")
   progress          Progress[]
   sessions          Session[]
   devTokenExpiredAt DateTime?
-  certificates     Certificate[]
-
+  certificates      Certificate[]
+  examResult        ExamResult[]
 }
 
 model Account {
@@ -51,113 +51,110 @@ model Account {
 }
 
 model Kelas {
-  id                String        @id @default(cuid())
-  title             String
-  deskripsi         String?
-  thumbnail         String?
-  createdAt         DateTime      @default(now())
-  IsDeleted         DateTime?
-  CreatedBy         String?
-  LastUpdatedBy     String?
-  LastUpdateDate    DateTime?
-  Status            Int?
-  CompanyCode       String?
+  id             String    @id @default(cuid())
+  title          String
+  deskripsi      String?
+  thumbnail      String?
+  createdAt      DateTime  @default(now())
+  IsDeleted      DateTime?
+  CreatedBy      String?
+  LastUpdatedBy  String?
+  LastUpdateDate DateTime?
+  Status         Int?
+  CompanyCode    String?
 
-  kelasUser         KelasUser[]
-  materi            Materi[]
-  certificates      Certificate[]
-
+  kelasUser    KelasUser[]
+  materi       Materi[]
+  certificates Certificate[]
+  exam         Exam[]
 }
 
 model KelasUser {
-  id              String      @id @default(cuid())
-  userId          String
-  kelasId         String
-  createdAt       DateTime    @default(now())
-  kelas           Kelas       @relation(fields: [kelasId], references: [id])
-  user            User        @relation(fields: [userId], references: [id])
-  IsDeleted       DateTime?
-  CreatedBy       String?
-  LastUpdatedBy   String?
-  LastUpdateDate  DateTime?
-  Status          Int?
-  CompanyCode     String?     
+  id             String    @id @default(cuid())
+  userId         String
+  kelasId        String
+  createdAt      DateTime  @default(now())
+  kelas          Kelas     @relation(fields: [kelasId], references: [id])
+  user           User      @relation(fields: [userId], references: [id])
+  IsDeleted      DateTime?
+  CreatedBy      String?
+  LastUpdatedBy  String?
+  LastUpdateDate DateTime?
+  Status         Int?
+  CompanyCode    String?
 
   @@unique([userId, kelasId])
 }
 
 model Materi {
-  id              String       @id @default(cuid())
-  title           String
-  content         String?
-  videoUrl        String?
-  price           Int
-  kelasId         String
-  createdAt       DateTime     @default(now())
-  kelas           Kelas        @relation(fields: [kelasId], references: [id])
-  IsDeleted       DateTime?
-  CreatedBy       String?
-  LastUpdatedBy   String?
-  LastUpdateDate  DateTime?
-  Status          Int?
-  CompanyCode     String?
+  id             String    @id @default(cuid())
+  title          String
+  content        String?
+  videoUrl       String?
+  price          Int
+  kelasId        String
+  createdAt      DateTime  @default(now())
+  kelas          Kelas     @relation(fields: [kelasId], references: [id])
+  IsDeleted      DateTime?
+  CreatedBy      String?
+  LastUpdatedBy  String?
+  LastUpdateDate DateTime?
+  Status         Int?
+  CompanyCode    String?
 
-  progress        Progress[]
-  paymentItems    PaymentItem[]
-  
+  progress     Progress[]
+  paymentItems PaymentItem[]
 }
 
 model Progress {
-  id              String      @id @default(cuid())
-  userId          String
-  materiId        String
-  status          Boolean     @default(false)
-  updatedAt       DateTime    @updatedAt
-  materi          Materi      @relation(fields: [materiId], references: [id])
-  user            User        @relation(fields: [userId], references: [id])
-  IsDeleted       DateTime?
-  CreatedBy       String?
-  LastUpdatedBy   String?
-  LastUpdateDate  DateTime?
-  Status          Int?
-  CompanyCode     String?
+  id             String    @id @default(cuid())
+  userId         String
+  materiId       String
+  status         Boolean   @default(false)
+  updatedAt      DateTime  @updatedAt
+  materi         Materi    @relation(fields: [materiId], references: [id])
+  user           User      @relation(fields: [userId], references: [id])
+  IsDeleted      DateTime?
+  CreatedBy      String?
+  LastUpdatedBy  String?
+  LastUpdateDate DateTime?
+  Status         Int?
+  CompanyCode    String?
 
   @@unique([userId, materiId])
 }
 
 model Payment {
-  id              String         @id @default(cuid())
-  userId          String
-  orderId         String         @unique
-  status          PaymentStatus
-  createdAt       DateTime       @default(now())
-  IsDeleted       DateTime?
-  CreatedBy       String?
-  LastUpdatedBy   String?
-  LastUpdateDate  DateTime?
-  Status          Int?
-  CompanyCode     String?
+  id             String        @id @default(cuid())
+  userId         String
+  orderId        String        @unique
+  status         PaymentStatus
+  createdAt      DateTime      @default(now())
+  IsDeleted      DateTime?
+  CreatedBy      String?
+  LastUpdatedBy  String?
+  LastUpdateDate DateTime?
+  Status         Int?
+  CompanyCode    String?
 
-  user            User @relation(name: "UserPayments", fields: [userId], references: [id], onDelete: Cascade)
-  items           PaymentItem[]
-
+  user  User          @relation(name: "UserPayments", fields: [userId], references: [id], onDelete: Cascade)
+  items PaymentItem[]
 }
 
-
 model PaymentItem {
-  id              String   @id @default(cuid())
-  paymentId       String
-  materiId        String
-  price           Int
-  createdAt       DateTime     @default(now())
-  IsDeleted       DateTime?
-  CreatedBy       String?
-  LastUpdatedBy   String?
-  LastUpdateDate  DateTime?
-  Status          Int?
-  CompanyCode     String?
-  materi     Materi   @relation(fields: [materiId], references: [id])
-  payment    Payment  @relation(fields: [paymentId], references: [id])
+  id             String    @id @default(cuid())
+  paymentId      String
+  materiId       String
+  price          Int
+  createdAt      DateTime  @default(now())
+  IsDeleted      DateTime?
+  CreatedBy      String?
+  LastUpdatedBy  String?
+  LastUpdateDate DateTime?
+  Status         Int?
+  CompanyCode    String?
+  materi         Materi    @relation(fields: [materiId], references: [id])
+  payment        Payment   @relation(fields: [paymentId], references: [id])
 }
 
 model Session {
@@ -177,28 +174,62 @@ model VerificationToken {
 }
 
 model Official {
-  id              String        @id @default(cuid())
-  name            String
-  position        String
-  signatureUrl    String     // URL to signature image in Supabase
-  isActive        Boolean       @default(true)
-  createdAt       DateTime      @default(now())
-  certificates    Certificate[]
+  id           String        @id @default(cuid())
+  name         String
+  position     String
+  signatureUrl String // URL to signature image in Supabase
+  isActive     Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  certificates Certificate[]
 }
 
 model Certificate {
-  id           String    @id @default(cuid())
-  number       String    @unique
-  userId       String
-  kelasId      String
-  officialId   String
-  issuedAt     DateTime  @default(now())
+  id         String   @id @default(cuid())
+  number     String   @unique
+  userId     String
+  kelasId    String
+  officialId String
+  issuedAt   DateTime @default(now())
+  pdfUrl     String?
 
-  user         User      @relation(fields: [userId], references: [id])
-  kelas        Kelas     @relation(fields: [kelasId], references: [id])
-  official     Official  @relation(fields: [officialId], references: [id])
+  user     User     @relation(fields: [userId], references: [id])
+  kelas    Kelas    @relation(fields: [kelasId], references: [id])
+  official Official @relation(fields: [officialId], references: [id])
 }
 
+model Exam {
+  id          String       @id @default(cuid())
+  kelasId     String
+  title       String
+  description String?
+  kelas       Kelas        @relation(fields: [kelasId], references: [id])
+  questions   Question[]
+  createdAt   DateTime     @default(now())
+  examResult  ExamResult[]
+  graduate    Int          @default(0)
+}
+
+model Question {
+  id            String @id @default(cuid())
+  examId        String
+  questionText  String
+  optionA       String
+  optionB       String
+  optionC       String
+  optionD       String
+  correctAnswer String // 'A', 'B', 'C', 'D'
+  exam          Exam   @relation(fields: [examId], references: [id])
+}
+
+model ExamResult {
+  id          String   @id @default(cuid())
+  userId      String
+  examId      String
+  score       Int
+  submittedAt DateTime @default(now())
+  exam        Exam     @relation(fields: [examId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
+}
 
 enum Role {
   STUDENT
@@ -207,9 +238,9 @@ enum Role {
 }
 
 enum PaymentStatus {
-  CART     
-  PENDING  
-  PAID    
-  FAILED   
+  CART
+  PENDING
+  PAID
+  FAILED
   CANCELLED
 }
