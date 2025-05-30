@@ -39,3 +39,12 @@ export async function POST(req: Request) {
 
   return NextResponse.json(official);
 }
+
+export async function GET() {
+  try {
+    const officials = await prisma.official.findMany();
+    return NextResponse.json(officials, { status: 200 });
+  } catch (error) {
+    return NextResponse.json({ message: error }, { status: 500 });
+  }
+}

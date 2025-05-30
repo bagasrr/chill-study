@@ -8,32 +8,34 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditSquareIcon from "@mui/icons-material/EditSquare";
 import Link from "next/link";
 
-interface Exam {
+interface Official {
   id: string;
-  title: string;
-  description: string;
+  name: string;
+  position: string;
+  isActive: boolean;
   createdAt: Date;
 }
 
-const ExamTable = () => {
-  const { data: exam, loading } = useFetchData<Exam[]>("/api/exam");
-  const dataExam = exam || [];
+const OfficialTable = () => {
+  const { data: official, loading } = useFetchData<Official[]>("/api/official");
+  const dataOfficial = official || [];
 
   return (
     <SortableTable
-      idSection="exam"
-      tableTitle="Exam"
-      addLink="/admin-dashboard/add-new/exam"
-      data={dataExam}
+      idSection="official"
+      tableTitle="Official"
+      addLink="/admin-dashboard/add-new/official"
+      data={dataOfficial}
       columns={[
-        { key: "title", label: "Title", sortable: true },
-        { key: "description", label: "Deskripsi", sortable: true },
+        { key: "name", label: "Name", sortable: true },
+        { key: "position", label: "Position", sortable: true },
+        { key: "isActive", label: "Status", sortable: true, render: (value) => <p>{value === true ? "Active" : "Not Active"}</p> },
         { key: "createdAt", label: "Created At", sortable: true, render: (value) => <p>{formattedDate(value)}</p> },
       ]}
       isLoading={loading}
       renderAction={(data) => (
         <div className="flex items-center">
-          <Link href={`/admin-dashboard/${data.id}/edit/exam`}>
+          <Link href={`/admin-dashboard/${data.id}/edit/official`}>
             <EditSquareIcon color="info" />
           </Link>
           <Button onClick={() => alert("ID : " + data.id)}>
@@ -45,4 +47,4 @@ const ExamTable = () => {
   );
 };
 
-export default ExamTable;
+export default OfficialTable;

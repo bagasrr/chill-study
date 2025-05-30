@@ -6,7 +6,7 @@ import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
 import { useAllKelas } from "@/lib/hooks/useAllKelas";
 import toast from "react-hot-toast";
-import { Delete } from "@mui/icons-material";
+import { ArrowLeft, Delete, NavigateBefore } from "@mui/icons-material";
 import { GradientCircularProgress } from "@/components/GradientCircularProgress";
 
 type QuestionType = {
@@ -140,13 +140,16 @@ export default function EditExamForm() {
         + Tambah Soal
       </button>
 
-      <button type="submit" disabled={isSubmitting} className="w-full py-2 bg-green-600 text-white rounded hover:bg-green-700">
-        {isSubmitting ? "Menyimpan..." : "Simpan Perubahan"}
-      </button>
+      <div className="flex justify-between">
+        <button type="button" onClick={() => router.back()} className="w-fit py-2 px-5 border border-blue-300 text-blue-800 rounded hover:bg-blue-300/20">
+          <NavigateBefore />
+          Kembali
+        </button>
 
-      <button type="button" onClick={() => router.back()} className="w-full py-2 mt-4 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">
-        Kembali
-      </button>
+        <button type="submit" disabled={isSubmitting} className="w-fit px-5 border border-green-600 text-green-600 hover:text-green-800 rounded hover:bg-green-700/20">
+          {isSubmitting ? "Menyimpan..." : "Simpan Perubahan"}
+        </button>
+      </div>
 
       {isSubmitting && <GradientCircularProgress />}
     </form>

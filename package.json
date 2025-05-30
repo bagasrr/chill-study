@@ -29,6 +29,7 @@
     "react-dom": "^18",
     "react-hook-form": "^7.56.1",
     "react-hot-toast": "^2.5.2",
+    "react-signature-canvas": "1.0.5",
     "react-youtube": "^10.1.0",
     "swiper": "^11.2.6",
     "swr": "^2.3.3",
@@ -48,6 +49,7 @@
     "onlyBuiltDependencies": [
       "@prisma/client",
       "@prisma/engines",
+      "canvas",
       "esbuild",
       "prisma",
       "unrs-resolver"

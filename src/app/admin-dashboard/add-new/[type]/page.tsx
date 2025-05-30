@@ -3,6 +3,8 @@ import AddAdminForm from "@/components/AddForm/AddAdminForm";
 import AddExamForm from "@/components/AddForm/AddExamForm";
 import AddKelasForm from "@/components/AddForm/AddKelasForm";
 import AddMateriForm from "@/components/AddForm/AddMateriForm";
+import AddOfficialForm from "@/components/AddForm/AddOfficialForm";
+import AddOfficialNewForm from "@/components/AddForm/AddOfficialNewForm";
 import AddStudentForm from "@/components/AddForm/AddStudentForm";
 import { useParams } from "next/navigation";
 
@@ -12,6 +14,7 @@ const formComponents: Record<string, JSX.Element> = {
   materi: <AddMateriForm />,
   kelas: <AddKelasForm />,
   exam: <AddExamForm />,
+  official: <AddOfficialNewForm />,
 };
 
 export default function AddNewAccountPage() {

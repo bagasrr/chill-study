@@ -24,7 +24,6 @@ interface Kelas {
 const KelasTable = () => {
   const { data: kelas, loading } = useFetchData<Kelas[]>("/api/kelas");
   const dataKelas = kelas || [];
-  console.log(dataKelas);
   return (
     <SortableTable
       idSection="kelas"

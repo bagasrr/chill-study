@@ -1,0 +1,15 @@
+import useSWR from "swr";
+import axios from "axios";
+
+const fetcher = (url: string) => axios.get(url).then((res) => res.data);
+
+export function useKelasWithoutExam() {
+  const { data, error, isLoading, mutate } = useSWR("/api/kelas/no-exam", fetcher);
+
+  return {
+    kelas: data,
+    isLoading,
+    error,
+    mutate,
+  };
+}

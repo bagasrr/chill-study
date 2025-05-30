@@ -49,7 +49,7 @@ export default function ExamPage() {
 
         const examRes = await axios.get(`/api/kelas/${kelasId}/exam`);
         setExam(examRes.data);
-      } catch (err: any) {
+      } catch (err) {
         const msg = err?.response?.data?.message || err.message;
         setError(msg);
       } finally {
