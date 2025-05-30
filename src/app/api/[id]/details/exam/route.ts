@@ -9,8 +9,9 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       include: {
         questions: {
           where: { isDeleted: false },
-          orderBy: "createdAt",
-          
+          orderBy: {
+            createdAt: "asc",
+          },
         },
       },
     });

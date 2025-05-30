@@ -10,7 +10,7 @@ const ListKelas = ({ kelas }: { kelas: ProgramCardType[] }) => {
         <Typography variant="h4">Kelas Yang Tersedia</Typography>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mt-7 ">
           {kelas?.map((item: ProgramCardType) => (
-            <ProgramCard key={item?.id} {...item} buttonText="Lihat Kelas" link={`/dashboard/kelas/${item?.CompanyCode}/materi`} />
+            <ProgramCard key={item?.id} {...item} buttonText="Lihat Kelas" link={`/dashboard/kelas/${item?.CompanyCode}`} />
           ))}
         </div>
       </div>

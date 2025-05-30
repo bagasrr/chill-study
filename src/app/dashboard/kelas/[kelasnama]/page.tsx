@@ -13,7 +13,8 @@ import { useKelasProgress } from "@/lib/hooks/useKelasProgress";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Skeleton } from "@mui/material";
+import { Button, Skeleton } from "@mui/material";
+import { useRouter } from "next/navigation";
 
 const Page = () => {
   const { kelasnama } = useParams<{ kelasnama: string }>();
@@ -23,6 +24,7 @@ const Page = () => {
   const { percent, isLoading } = useKelasProgress(kelas?.id);
   const [sertif, setSertif] = useState<any | null>(null);
   const [loadingSertif, setLoadingSertif] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     if (!kelas?.id) return;
@@ -44,6 +46,10 @@ const Page = () => {
     <div className="flex flex-col">
       <div className="w-screen h-[50dvh] relative">
         <Image src={kelas?.thumbnail} alt="Hero" width={768} height={512} className="w-full h-full object-cover object-center" />
+        <button onClick={() => router.back()} className="absolute py-1 px-3 bottom-5 left-5 z-10 text-emerald-600  hover:text-emerald-400 transition items-center justify-start">
+          <NavigateBefore />
+          Back
+        </button>
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/10 flex items-center justify-center ">
           <p className="text-white text-center font-bold text-5xl">{kelas?.title}</p>
         </div>

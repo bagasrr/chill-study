@@ -184,7 +184,7 @@ model Official {
   isDeleted        Boolean  @default(false)
   CreatedBy        String?
   LastUpdateDate   DateTime?
-  LastUpdatedBy    DateTime?
+  LastUpdatedBy    String?
 
   certificates Certificate[]
 }
@@ -221,7 +221,7 @@ model Exam {
   isDeleted        Boolean  @default(false)
   CreatedBy        String?
   LastUpdateDate   DateTime?
-  LastUpdatedBy    DateTime?
+  LastUpdatedBy    String?
   examResult  ExamResult[]
   graduate    Int          @default(0)
 }
@@ -239,7 +239,7 @@ model Question {
   createdAt        DateTime @default(now())
   CreatedBy        String?
   LastUpdateDate   DateTime?
-  LastUpdatedBy    DateTime?
+  LastUpdatedBy    String?
 
   exam          Exam   @relation(fields: [examId], references: [id])
 }
@@ -255,7 +255,7 @@ model ExamResult {
   createdAt        DateTime @default(now())
   CreatedBy        String?
   LastUpdateDate   DateTime?
-  LastUpdatedBy    DateTime?
+  LastUpdatedBy    String?
 
   exam        Exam     @relation(fields: [examId], references: [id])
   user        User     @relation(fields: [userId], references: [id])

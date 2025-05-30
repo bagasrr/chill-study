@@ -118,6 +118,6 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     return NextResponse.json({ message: "Exam updated with upserted questions" });
   } catch (err) {
     console.error("❌ Error upserting exam:", err);
-    return NextResponse.json({ message: "Server error" }, { status: 500 });
+    return NextResponse.json({ message: "Cant Update, Server error" }, { status: 500 });
   }
 }
