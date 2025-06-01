@@ -6,6 +6,7 @@ import { TextField, MenuItem, Button, Box, CircularProgress } from "@mui/materia
 import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import BackSubmitButton from "@/components/BackSubmitButton";
 
 type FormValues = {
   name: string;
@@ -164,7 +165,7 @@ export default function EditUser() {
           />
 
           {/* Submit Button */}
-          <Box mt={3} sx={{ width: "30%" }}>
+          {/* <Box mt={3} sx={{ width: "30%" }}>
             <Button
               type="submit"
               fullWidth
@@ -176,7 +177,10 @@ export default function EditUser() {
             >
               {loading || isSubmitting ? "Updating..." : "Update User"}
             </Button>
-          </Box>
+          </Box> */}
+          <div className="mt-5 text-xs">
+            <BackSubmitButton submit={loading || isSubmitting ? "Updating..." : "Update User"} disable={loading || isSubmitting} />
+          </div>
         </form>
       </Box>
     </div>

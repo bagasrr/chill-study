@@ -7,6 +7,7 @@ import axios from "axios";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import BackSubmitButton from "@/components/BackSubmitButton";
 
 type FormValues = {
   title: string;
@@ -87,9 +88,10 @@ export default function EditKelas() {
             </label>
             <textarea {...register("deskripsi")} className="w-full h-40 border border-gray-300 rounded-lg px-4 py-2 text-black focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" />
           </div>
-          <button type="submit" disabled={loading || isSubmitting} className="w-1/3 py-2 border border-sky-400 text-sky-600 rounded-lg hover:bg-sky-100 transition">
+          {/* <button type="submit" disabled={loading || isSubmitting} className="w-1/3 py-2 border border-sky-400 text-sky-600 rounded-lg hover:bg-sky-100 transition">
             {loading || isSubmitting ? "Updating..." : "Update Kelas"}
-          </button>
+          </button> */}
+          <BackSubmitButton submit={loading ? "Updating..." : "Update Kelas"} disable={loading || isSubmitting} />
         </form>
       </div>
     </div>

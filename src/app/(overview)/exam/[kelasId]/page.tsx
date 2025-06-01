@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import toast from "react-hot-toast";
 import Link from "next/link";
 import { ArrowBack } from "@mui/icons-material";
@@ -19,17 +19,19 @@ type Question = {
 };
 
 type Exam = {
+  id: string;
   title: string;
-  description?: string;
+  description: string;
   graduate: number;
   questions: Question[];
+  questionText: string;
 };
 
 export default function ExamPage() {
   const { kelasId } = useParams();
   const { data: session } = useSession();
 
-  const [exam, setExam] = useState<Exam | null>(null);
+  const [exam, setExam] = useState<Exam[]>([]);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [score, setScore] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -84,7 +86,7 @@ export default function ExamPage() {
       if (passed) {
         await axios.post("/api/certificate", { kelasId });
       }
-    } catch (err: any) {
+    } catch (err) {
       toast.error(err?.response?.data || err.message);
     }
   };
@@ -126,14 +128,14 @@ export default function ExamPage() {
       <h1 className="text-2xl font-bold mb-4 text-center">{exam?.title}</h1>
       <p className="text-center mb-6 text-gray-600">{exam?.description}</p>
 
-      {exam?.map((q, index: number) => (
+      {exam?.questions?.map((q, index: number) => (
         <div key={q.id} className="mb-6">
           <p className="font-semibold mb-2">
             {index + 1}. {q.questionText}
           </p>
           <div className="ml-4 space-y-1">
             {(["A", "B", "C", "D"] as const).map((opt) => {
-              const label = q[`option${opt}` as keyof Question];
+              const label = q[`option${opt}` as keyof Exam];
               return (
                 <label key={opt} className="block">
                   <input type="radio" name={`question-${q.id}`} value={opt} checked={answers[q.id] === opt} onChange={() => handleChange(q.id, opt)} className="mr-2" />

@@ -7,6 +7,7 @@ import axios from "@/lib/axios";
 import { useFormSubmit } from "@/lib/hooks/useSubmitform";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import BackSubmitButton from "../BackSubmitButton";
 
 // Interface buat form state
 interface KelasForm {
@@ -67,7 +68,7 @@ export default function AddKelasForm() {
           </div>
 
           <div className="mt-8 relative">
-            <Button type="submit" variant="outlined" color="info" size="large" fullWidth disabled={isLoading} sx={{ fontWeight: "bold", borderRadius: 6, position: "relative" }}>
+            {/* <Button type="submit" variant="outlined" color="info" size="large" fullWidth disabled={isLoading} sx={{ fontWeight: "bold", borderRadius: 6, position: "relative" }}>
               {isLoading ? (
                 <Box
                   sx={{
@@ -82,7 +83,8 @@ export default function AddKelasForm() {
               ) : (
                 "Tambahkan Kelas"
               )}
-            </Button>
+            </Button> */}
+            <BackSubmitButton submit="Tambah Kelas" disable={isLoading} />
           </div>
         </form>
       </div>

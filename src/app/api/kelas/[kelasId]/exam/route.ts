@@ -49,7 +49,7 @@ export async function GET(req: NextRequest, { params }: { params: { kelasId: str
 
     const shuffled = exam.questions.sort(() => Math.random() - 0.5);
 
-    return Response.json(shuffled);
+    return Response.json({ ...exam, questions: shuffled });
   } catch (err) {
     console.error("🔥 ERROR DI API /kelas/[kelasId]/exam:", err);
     return new Response("Internal Server Error", { status: 500 });

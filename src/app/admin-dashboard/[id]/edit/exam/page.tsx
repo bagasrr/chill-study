@@ -8,6 +8,7 @@ import { useAllKelas } from "@/lib/hooks/useAllKelas";
 import toast from "react-hot-toast";
 import { Delete, NavigateBefore } from "@mui/icons-material";
 import { GradientCircularProgress } from "@/components/GradientCircularProgress";
+import BackSubmitButton from "@/components/BackSubmitButton";
 
 type QuestionType = {
   questionText: string;
@@ -140,7 +141,7 @@ export default function EditExamForm() {
         + Tambah Soal
       </button>
 
-      <div className="flex justify-between">
+      {/* <div className="flex justify-between">
         <button type="button" onClick={() => router.back()} className="w-fit py-2 px-5 border border-blue-300 text-blue-800 rounded hover:bg-blue-300/20">
           <NavigateBefore />
           Kembali
@@ -149,7 +150,8 @@ export default function EditExamForm() {
         <button type="submit" disabled={isSubmitting} className="w-fit px-5 border border-green-600 text-green-600 hover:text-green-800 rounded hover:bg-green-700/20">
           {isSubmitting ? "Menyimpan..." : "Simpan Perubahan"}
         </button>
-      </div>
+      </div> */}
+      <BackSubmitButton submit={isSubmitting ? "Menyimpan..." : "Simpan Perubahan"} disable={isSubmitting} />
 
       {isSubmitting && <GradientCircularProgress />}
     </form>

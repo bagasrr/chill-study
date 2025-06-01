@@ -7,6 +7,7 @@ import axios from "@/lib/axios";
 import { useForm, Controller } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useParams, useRouter } from "next/navigation";
+import BackSubmitButton from "@/components/BackSubmitButton";
 
 interface MateriForm {
   title: string;
@@ -129,7 +130,7 @@ export default function EditMateriForm() {
           </div>
 
           {/* Tombol Submit */}
-          <div className="mt-8 relative w-1/3">
+          {/* <div className="mt-8 relative w-1/3">
             <Button type="submit" variant="outlined" color="info" size="large" fullWidth disabled={isLoading} sx={{ fontWeight: "bold", borderRadius: 6 }}>
               {isLoading ? (
                 <Box
@@ -146,6 +147,9 @@ export default function EditMateriForm() {
                 "Simpan Perubahan"
               )}
             </Button>
+          </div> */}
+          <div className="mt-5">
+            <BackSubmitButton submit={isLoading ? "Menyimpan ..." : "Simpan Perubahan"} disable={isLoading} />
           </div>
         </form>
       </div>

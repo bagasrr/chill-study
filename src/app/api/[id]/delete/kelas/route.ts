@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 
 export async function DELETE(req: Request, { params }: { params: { id: string } }) {
   const { id } = params;
-  const session = getServerSession(authOptions);
+  const session = await getServerSession(authOptions);
   const user = session?.user.email;
   try {
     await prisma.kelas.update({
