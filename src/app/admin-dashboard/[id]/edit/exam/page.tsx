@@ -6,7 +6,7 @@ import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
 import { useAllKelas } from "@/lib/hooks/useAllKelas";
 import toast from "react-hot-toast";
-import { ArrowLeft, Delete, NavigateBefore } from "@mui/icons-material";
+import { Delete, NavigateBefore } from "@mui/icons-material";
 import { GradientCircularProgress } from "@/components/GradientCircularProgress";
 
 type QuestionType = {

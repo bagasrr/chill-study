@@ -4,7 +4,6 @@ import { useRef, useState } from "react";
 import { GradientCircularProgress } from "../GradientCircularProgress";
 import toast from "react-hot-toast";
 import SignatureCanvas from "react-signature-canvas";
-import type { ReactSignatureCanvas } from "react-signature-canvas";
 
 export default function AddOfficialNewForm() {
   const [name, setName] = useState("");

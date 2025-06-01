@@ -7,6 +7,7 @@ import { Button } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditSquareIcon from "@mui/icons-material/EditSquare";
 import Link from "next/link";
+import Image from "next/image";
 
 interface Official {
   id: string;
@@ -14,6 +15,7 @@ interface Official {
   position: string;
   isActive: boolean;
   createdAt: Date;
+  signatureUrl: string;
 }
 
 const OfficialTable = () => {
@@ -30,6 +32,12 @@ const OfficialTable = () => {
         { key: "name", label: "Name", sortable: true },
         { key: "position", label: "Position", sortable: true },
         { key: "isActive", label: "Status", sortable: true, render: (value) => <p>{value === true ? "Active" : "Not Active"}</p> },
+        {
+          key: "signatureUrl",
+          label: "Signature",
+          sortable: false,
+          render: (value) => <Image src={value} width={20} height={20} alt="Signature" className="w-20 h-20 object-cover rounded" />,
+        },
         { key: "createdAt", label: "Created At", sortable: true, render: (value) => <p>{formattedDate(value)}</p> },
       ]}
       isLoading={loading}
