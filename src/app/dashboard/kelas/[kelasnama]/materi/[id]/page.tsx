@@ -13,6 +13,7 @@ import { Materi } from "@prisma/client";
 const Page = () => {
   const { id } = useParams<{ id: string }>();
   const [materiDetail, setMateriDetails] = useState<Materi>();
+  console.log({ materiDetail });
 
   useEffect(() => {
     const fetch = async () => {
@@ -30,6 +31,7 @@ const Page = () => {
     const save = async () => {
       try {
         const res = await saveProgress(id);
+        console.log(res);
         if (res?.data?.need_payment) {
           alert(`Materi ini berbayar (${res.data.materiPrice} IDR). Silakan bayar dulu ya.`);
         }

@@ -14,6 +14,7 @@ import { NavigateBefore } from "@mui/icons-material";
 export default function MateriLayout({ children }: { children: React.ReactNode }) {
   const { kelasnama } = useParams<{ kelasnama: string }>();
   const [materiInClass, setMateriInClass] = useState<PricingCardProps[] | null>(null);
+  console.log({ materiInClass });
   const router = useRouter();
 
   useEffect(() => {

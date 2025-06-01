@@ -51,8 +51,8 @@ export async function GET(req: NextRequest, { params }: { params: { kelasId: str
 
     const materiWithAccess = materi.map((m) => {
       const hasProgress = accessedMateriIds.has(m.id);
-      const hasPaid = paidMateriIds.has(m.id);
-      const canAccess = hasProgress || hasPaid || m.price === 0 || userRole === "ADMIN";
+      const hasPaid = paidMateriIds.has(m.id) || userRole === "ADMIN";
+      const canAccess = hasProgress || hasPaid || m.price === 0;
 
       return {
         ...m,

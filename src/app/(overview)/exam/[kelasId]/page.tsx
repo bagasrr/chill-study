@@ -2,11 +2,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import Link from "next/link";
+import { ArrowBack } from "@mui/icons-material";
 
 type Question = {
   id: string;
@@ -34,6 +35,7 @@ export default function ExamPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [lulus, setLulus] = useState<boolean>(false);
+  const router = useRouter();
 
   useEffect(() => {
     if (!kelasId) return;
@@ -90,12 +92,13 @@ export default function ExamPage() {
   if (loading) return <p className="text-center py-4">Loading soal...</p>;
   if (error)
     return (
-      <div className="text-center text-red-600 py-4">
-        ⚠️ {error}
-        <br />
-        <a href={`/dashboard/kelas/${kelasId}/materi`} className="text-blue-600 underline">
-          Kembali ke Materi
-        </a>
+      <div className={"flex flex-col items-center justify-center text-center rounded-xl shadow-xl bg-white text-red-600 w-full max-w-md mx-auto mt-28 p-8"}>
+        <h2 className="text-xl font-semibold mb-2">Terjadi Kesalahan</h2>
+        <p className="mb-6">{error || "Request gagal diproses."}</p>
+
+        <button onClick={() => router.back()} className="text-sm px-6 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition">
+          <ArrowBack /> Kembali ke Materi
+        </button>
       </div>
     );
 
@@ -117,13 +120,13 @@ export default function ExamPage() {
         )}
       </div>
     );
-
+  console.log(exam);
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white mt-10 rounded shadow">
       <h1 className="text-2xl font-bold mb-4 text-center">{exam?.title}</h1>
       <p className="text-center mb-6 text-gray-600">{exam?.description}</p>
 
-      {exam?.questions.map((q, index) => (
+      {exam?.map((q, index: number) => (
         <div key={q.id} className="mb-6">
           <p className="font-semibold mb-2">
             {index + 1}. {q.questionText}

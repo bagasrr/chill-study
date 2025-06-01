@@ -47,7 +47,9 @@ export async function GET(req: NextRequest, { params }: { params: { kelasId: str
       return new Response("Ujian tidak tersedia", { status: 404 });
     }
 
-    return Response.json(exam);
+    const shuffled = exam.questions.sort(() => Math.random() - 0.5);
+
+    return Response.json(shuffled);
   } catch (err) {
     console.error("🔥 ERROR DI API /kelas/[kelasId]/exam:", err);
     return new Response("Internal Server Error", { status: 500 });
