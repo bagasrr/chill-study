@@ -43,20 +43,26 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
         },
         update: {
           questionText: q.questionText,
+          questionImage: q.questionImage,
           optionA: q.optionA,
           optionB: q.optionB,
           optionC: q.optionC,
           optionD: q.optionD,
           correctAnswer: q.correctAnswer,
+          LastUpdateDate: new Date(),
+          LastUpdatedBy: session.user.email,
         },
         create: {
           examId: id,
           questionText: q.questionText,
+          questionImage: q.questionImage,
           optionA: q.optionA,
           optionB: q.optionB,
           optionC: q.optionC,
           optionD: q.optionD,
           correctAnswer: q.correctAnswer,
+          LastUpdateDate: new Date(),
+          LastUpdatedBy: session.user.email,
         },
       })
     );
@@ -83,20 +89,26 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
             where: { id: q.id },
             update: {
               questionText: q.questionText,
+              questionImage: q.questionImage,
               optionA: q.optionA,
               optionB: q.optionB,
               optionC: q.optionC,
               optionD: q.optionD,
               correctAnswer: q.correctAnswer,
+              LastUpdateDate: new Date(),
+              LastUpdatedBy: session.user.email,
             },
             create: {
               examId: id,
               questionText: q.questionText,
+              questionImage: q.questionImage,
               optionA: q.optionA,
               optionB: q.optionB,
               optionC: q.optionC,
               optionD: q.optionD,
               correctAnswer: q.correctAnswer,
+              LastUpdateDate: new Date(),
+              LastUpdatedBy: session.user.email,
             },
           });
         } else {
@@ -104,11 +116,14 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
             data: {
               examId: id,
               questionText: q.questionText,
+              questionImage: q.questionImage,
               optionA: q.optionA,
               optionB: q.optionB,
               optionC: q.optionC,
               optionD: q.optionD,
               correctAnswer: q.correctAnswer,
+              LastUpdateDate: new Date(),
+              LastUpdatedBy: session.user.email,
             },
           });
         }

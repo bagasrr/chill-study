@@ -13,12 +13,13 @@ interface Exam {
   title: string;
   description: string;
   createdAt: Date;
+  LastUpdateDate: Date;
 }
 
 const ExamTable = () => {
   const { data: exam, loading } = useFetchData<Exam[]>("/api/exam");
   const dataExam = exam || [];
-
+  console.log(dataExam);
   return (
     <SortableTable
       idSection="exam"
@@ -29,6 +30,7 @@ const ExamTable = () => {
         { key: "title", label: "Title", sortable: true },
         { key: "description", label: "Deskripsi", sortable: true },
         { key: "createdAt", label: "Created At", sortable: true, render: (value) => <p>{formattedDate(value)}</p> },
+        { key: "LastUpdateDate", label: "Updated At", sortable: true, render: (value) => (value ? <p>{formattedDate(value)}</p> : <p>NA</p>) },
       ]}
       isLoading={loading}
       renderAction={(data) => (

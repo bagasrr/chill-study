@@ -9,10 +9,18 @@ declare module "next-auth" {
       deviceToken?: string;
       role?: string;
     } & DefaultSession["user"];
+    id_token?: string;
+    access_token?: string;
   }
 
   interface User extends DefaultUser {
     deviceToken?: string;
+    googleAccessToken?: string;
+    googleIdToken?: string;
     role?: string;
+  }
+
+  interface JWT {
+    access_token?: string;
   }
 }

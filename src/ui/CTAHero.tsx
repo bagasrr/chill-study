@@ -4,10 +4,13 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import KelasShowCase from "@/components/KelasShowCase";
 import { useAllKelas } from "@/lib/hooks/useAllKelas";
+import { useSession } from "next-auth/react";
 
 const CTAHero = () => {
   const { kelas, isLoading, error, mutate } = useAllKelas();
-  console.log(kelas);
+  // console.log(kelas);
+  const session = useSession();
+  console.log(session);
 
   return (
     <div className="min-h-screen bg-gray-100 px-[5%] py-12">

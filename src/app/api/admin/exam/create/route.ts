@@ -35,6 +35,7 @@ export async function POST(req: NextRequest) {
             optionC: q.optionC,
             optionD: q.optionD,
             correctAnswer: q.correctAnswer,
+            questionImage: q.questionImage,
           })),
         },
       },

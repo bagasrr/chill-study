@@ -4,10 +4,11 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import toast from "react-hot-toast";
 import Link from "next/link";
 import { ArrowBack } from "@mui/icons-material";
+import Image from "next/image";
 
 type Question = {
   id: string;
@@ -130,6 +131,10 @@ export default function ExamPage() {
 
       {exam?.questions?.map((q, index: number) => (
         <div key={q.id} className="mb-6">
+          {/* <Image src={q.questionImage} alt={q.questionText} width={500} height={500} className="h-[100px] mb-2" /> */}
+          <div className="w-full mb-2">
+            <Image src={q.questionImage} alt={q.questionText} width={500} height={500} className="h-[30vh] mb-2 w-fit" />
+          </div>
           <p className="font-semibold mb-2">
             {index + 1}. {q.questionText}
           </p>

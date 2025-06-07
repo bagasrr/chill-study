@@ -56,7 +56,7 @@ export async function GET(req: NextRequest, { params }: { params: { kelasId: str
 
   // Draw texts
   const font = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
-  page.drawText(user?.name, { x: 65, y: 315, size: 24, font, color: rgb(0, 0.2, 0.2) });
+  page.drawText(user?.name as string, { x: 65, y: 315, size: 24, font, color: rgb(0, 0.2, 0.2) });
   page.drawText(kelas?.title || kelasId, { x: 65, y: 250, size: 18, font, color: rgb(0, 0.2, 0.2) });
 
   if (latestOfficial?.signatureUrl) {

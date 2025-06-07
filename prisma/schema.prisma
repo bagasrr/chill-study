@@ -30,6 +30,11 @@ model User {
   devTokenExpiredAt DateTime?
   certificates      Certificate[]
   examResult        ExamResult[]
+  googleAccessToken   String?    
+  googleRefreshToken  String?
+  googleTokenExpiry   DateTime?
+  googleIdToken       String?
+
 }
 
 model Account {
@@ -230,6 +235,7 @@ model Question {
   id            String @id @default(cuid())
   examId        String
   questionText  String
+  questionImage String?
   optionA       String
   optionB       String
   optionC       String
@@ -260,6 +266,17 @@ model ExamResult {
   exam        Exam     @relation(fields: [examId], references: [id])
   user        User     @relation(fields: [userId], references: [id])
 }
+
+
+model TemporaryUpload {
+  id        String   @id @default(uuid())
+  userId    String
+  path      String
+  bucket    String   @default("questions")
+  isUsed    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
 
 enum Role {
   STUDENT

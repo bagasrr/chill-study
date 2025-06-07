@@ -53,3 +53,4 @@ export type ProgramCardType = {
   deskripsi: string;
   CompanyCode: string;
 };
+

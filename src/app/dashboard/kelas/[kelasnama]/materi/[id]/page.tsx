@@ -32,9 +32,10 @@ const Page = () => {
       try {
         const res = await saveProgress(id);
         console.log(res);
-        if (res?.data?.need_payment) {
-          alert(`Materi ini berbayar (${res.data.materiPrice} IDR). Silakan bayar dulu ya.`);
-        }
+        // ini need
+        // if (res?.data?.need_payment) {
+        //   alert(`Materi ini berbayar (${res.data.materiPrice} IDR). Silakan bayar dulu ya.`);
+        // }
       } catch (err) {
         console.error("Gagal simpan progress:", err);
       }

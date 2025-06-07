@@ -13,7 +13,7 @@ import { useKelasProgress } from "@/lib/hooks/useKelasProgress";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Button, Skeleton } from "@mui/material";
+import { Skeleton } from "@mui/material";
 import { useRouter } from "next/navigation";
 
 const Page = () => {

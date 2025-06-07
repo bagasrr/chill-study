@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { GradientCircularProgress } from "../GradientCircularProgress";
 import toast from "react-hot-toast";
 import SignatureCanvas from "react-signature-canvas";
+import axios from "axios";
 
 export default function AddOfficialNewForm() {
   const [name, setName] = useState("");
@@ -21,12 +22,6 @@ export default function AddOfficialNewForm() {
     }
 
     setLoading(true);
-    console.log("Submitting...", {
-      name,
-      position,
-      file,
-      signatureDrawn: sigCanvasRef.current?.isEmpty(),
-    });
 
     try {
       const form = new FormData();
@@ -36,11 +31,6 @@ export default function AddOfficialNewForm() {
       if (file) {
         form.append("file", file);
       } else if (signatureDrawn) {
-        // const dataUrl = sigCanvasRef.current.getTrimmedCanvas().toDataURL("image/png");
-        // const blob = await (await fetch(dataUrl)).blob();
-        // form.append("file", blob, "signature.png");
-        // console.log("Blob size:", blob.size);
-
         try {
           const canvas = sigCanvasRef.current?.getTrimmedCanvas?.();
           if (!canvas) {
@@ -50,12 +40,7 @@ export default function AddOfficialNewForm() {
 
           const blob = await (await fetch(dataUrl)).blob();
           form.append("file", blob, "signature.png");
-          console.log("sigCanvasRef.current", sigCanvasRef.current);
-          console.log("Blob size:", blob.size);
         } catch (err) {
-          console.log("sigCanvasRef.current", sigCanvasRef.current);
-
-          console.error("Failed to convert canvas to blob:", err);
           toast.error("Gagal mengambil tanda tangan dari gambar.");
           setLoading(false);
           return;
@@ -77,6 +62,9 @@ export default function AddOfficialNewForm() {
         toast.error("Gagal menyimpan ke database");
       }
     } catch (err) {
+      if (axios.isAxiosError(err)) {
+        toast.error(err.response?.data?.message || "Gagal submit");
+      }
       toast.error("Terjadi kesalahan saat upload");
     }
 

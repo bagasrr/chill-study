@@ -2,15 +2,7 @@
 
 import { useKelasDetailById } from "@/lib/hooks/useKelasDetail";
 import { Skeleton, Typography } from "@mui/material";
-import axios from "axios";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
-
-interface kelas {
-  id: string;
-  title: string;
-  thumbnail: string;
-}
 
 export function CertificatePreview({ kelasId }: { kelasId: string }) {
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
