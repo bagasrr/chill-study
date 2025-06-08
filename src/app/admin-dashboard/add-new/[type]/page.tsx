@@ -1,5 +1,6 @@
 "use client";
 import AddAdminForm from "@/components/AddForm/AddAdminForm";
+import AddCertificateTemplate from "@/components/AddForm/AddCertificateTemplate";
 import AddExamForm from "@/components/AddForm/AddExamForm";
 import AddKelasForm from "@/components/AddForm/AddKelasForm";
 import AddMateriForm from "@/components/AddForm/AddMateriForm";
@@ -14,6 +15,7 @@ const formComponents: Record<string, JSX.Element> = {
   kelas: <AddKelasForm />,
   exam: <AddExamForm />,
   official: <AddOfficialNewForm />,
+  certificate: <AddCertificateTemplate />,
 };
 
 export default function AddNewAccountPage() {

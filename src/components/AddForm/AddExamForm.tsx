@@ -72,7 +72,7 @@ export default function AddExamForm() {
   useEffect(() => {
     const syncSupabaseSession = async () => {
       if (session?.access_token) {
-        const { data, error } = await supabase.auth.signInWithIdToken({
+        const { error } = await supabase.auth.signInWithIdToken({
           provider: "google",
           token: session.id_token as string,
         });

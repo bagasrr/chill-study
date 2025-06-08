@@ -67,6 +67,8 @@ model Kelas {
   LastUpdateDate DateTime?
   Status         Int?
   CompanyCode    String?
+  certifTemplateId String?
+  CertifTemplate   CertifTemplate? @relation(fields: [certifTemplateId], references: [id])
 
   kelasUser    KelasUser[]
   materi       Materi[]
@@ -191,7 +193,7 @@ model Official {
   LastUpdateDate   DateTime?
   LastUpdatedBy    String?
 
-  certificates Certificate[]
+  certificates     Certificate[]
 }
 
 model Certificate {
@@ -215,20 +217,20 @@ model Certificate {
 }
 
 model Exam {
-  id          String       @id @default(cuid())
+  id          String            @id @default(cuid())
   kelasId     String
   title       String
   description String?
-  kelas       Kelas        @relation(fields: [kelasId], references: [id])
+  kelas       Kelas             @relation(fields: [kelasId], references: [id])
   questions   Question[]
-  createdAt   DateTime     @default(now())
+  createdAt   DateTime          @default(now())
 
-  isDeleted        Boolean  @default(false)
+  isDeleted        Boolean      @default(false)
   CreatedBy        String?
   LastUpdateDate   DateTime?
   LastUpdatedBy    String?
-  examResult  ExamResult[]
-  graduate    Int          @default(0)
+  examResult       ExamResult[]
+  graduate         Int          @default(0)
 }
 
 model Question {
@@ -277,6 +279,18 @@ model TemporaryUpload {
   createdAt DateTime @default(now())
 }
 
+model CertifTemplate {
+  id                String   @id @default(uuid())
+  name              String
+  certifTemplate    String
+  createdAt         DateTime @default(now())
+  LastUpdateDate    DateTime?
+  LastUpdatedBy     String?
+  CompanyCode       String   @default("CertifTemplate")
+  status            Int?     @default(1)
+  
+  kelas             Kelas[]
+}
 
 enum Role {
   STUDENT

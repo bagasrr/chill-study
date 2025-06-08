@@ -35,7 +35,7 @@ export const authOptions: NextAuthOptions = {
         token.access_token = account.access_token;
         token.id_token = account.id_token;
         token.refresh_token = account.refresh_token;
-        token.expires_at = account.expires_at * 1000;
+        token.expires_at = account.expires_at  * 1000;
 
         // Simpan juga ke DB
         await prisma.user.update({

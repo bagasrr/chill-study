@@ -22,6 +22,11 @@ export async function GET(req: NextRequest, { params }: { params: { kelasId: str
         select: {
           title: true,
           CompanyCode: true,
+          CertifTemplate: {
+            select: {
+              certifTemplate: true,
+            },
+          },
         },
       },
       official: {
@@ -38,16 +43,63 @@ export async function GET(req: NextRequest, { params }: { params: { kelasId: str
       },
     },
   });
+
+  // const certificate = await prisma.certificate.findFirst({
+  //   where: { userId: session.user.id, kelasId },
+  //   include: {
+  //     kelas: {
+  //       // Kita menggunakan select untuk memilih kolom spesifik dari 'kelas'
+  //       select: {
+  //         title: true,
+  //         CompanyCode: true,
+
+  //         // BENAR: Langsung sebutkan nama relasi di dalam 'select',
+  //         // lalu gunakan 'select' lagi di dalamnya.
+  //         CertifTemplate: {
+  //           select: {
+  //             templateUrl: true, // Mengambil field 'templateUrl' dari CertifTemplate
+  //           },
+  //         },
+  //       },
+  //     },
+  //     official: {
+  //       select: {
+  //         name: true,
+  //         signatureUrl: true,
+  //         position: true,
+  //       },
+  //     },
+  //     user: {
+  //       select: {
+  //         name: true,
+  //       },
+  //     },
+  //   },
+  // });
+
   const user = certificate?.user;
   const kelas = certificate?.kelas;
   const latestOfficial = certificate?.official;
+
+  const templateByClass = certificate?.kelas?.CertifTemplate?.certifTemplate;
 
   const pdfDoc = await PDFDocument.create();
   const page = pdfDoc.addPage([842, 595]); // A4 landscape
 
   // Load template image
-  const templatePath = path.join(process.cwd(), "public", "SertifikatTemplate.png");
-  const templateBytes = await readFile(templatePath);
+  // const templatePath = path.join(process.cwd(), "public", "SertifikatTemplate.png");
+  const templateRecord = await prisma.certifTemplate.findFirst({
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  if (!templateRecord || !templateRecord.certifTemplate) {
+    return new Response("Certificate template not found in database", { status: 404 });
+  }
+  // const templateBytes = await readFile(templatePath?.certifTemplate as string);
+  const templateUrl = templateByClass ? templateByClass : templateRecord.certifTemplate;
+  const templateBytes = await fetch(templateUrl).then((res) => res.arrayBuffer());
   const image = await pdfDoc.embedPng(templateBytes);
   const { width, height } = image.scale(0.5);
 
