@@ -17,3 +17,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ status: 500 });
   }
 }
+
+export async function GET() {
+  try {
+    const data = await prisma.certifTemplate.findMany();
+    return NextResponse.json(data, { status: 200 });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ status: 500 });
+  }
+}

@@ -5,6 +5,7 @@ export const createKelasSchema = z.object({
   deskripsi: z.string().optional(),
   thumbnail: z.string().url().optional(),
   CompanyCode: z.string().min(1, "CompanyCode is required"),
+  certifTemplateId: z.string().min(1, "certifTemplateId is required"),
 });
 
 export const updateKelasSchema = z.object({
@@ -12,4 +13,5 @@ export const updateKelasSchema = z.object({
   deskripsi: z.string().optional(),
   thumbnail: z.string().url().optional(),
   CompanyCode: z.string().min(1, "CompanyCode is required"),
+  certifTemplateId: z.string().min(1, "certifTemplateId is required"),
 });

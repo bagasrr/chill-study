@@ -14,13 +14,14 @@ export async function POST(req: Request) {
     return NextResponse.json({ errors: parsed.error.flatten() }, { status: 400 });
   }
 
-  const { title, deskripsi, thumbnail, CompanyCode } = parsed.data;
+  const { title, deskripsi, thumbnail, CompanyCode, certifTemplateId } = parsed.data;
 
   const kelas = await prisma.kelas.create({
     data: {
       title,
       deskripsi,
       thumbnail,
+      certifTemplateId,
       CreatedBy: session?.user?.email || "system",
       CompanyCode,
       Status: 1,
