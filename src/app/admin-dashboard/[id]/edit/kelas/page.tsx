@@ -59,7 +59,7 @@ export default function EditKelas() {
     if (id) {
       const fetchKelas = async () => {
         try {
-          const res = await axios.get(`/api//${id}/details/kelas`); // Pastikan endpoint API benar
+          const res = await axios.get(`/api/${id}/details/kelas`); // Pastikan endpoint API benar
           reset(res.data); // reset akan mengisi semua field termasuk certifTemplateId
         } catch (err) {
           toast.error("Gagal mengambil data kelas.");
@@ -72,7 +72,7 @@ export default function EditKelas() {
 
   // 4. Siapkan options untuk react-select
   const certificateOptions =
-    certifTemplate?.map((template: any) => ({
+    certifTemplate?.map((template) => ({
       value: template.id,
       label: template.name,
       image: template.certifTemplate,
@@ -89,7 +89,7 @@ export default function EditKelas() {
       // setTimeout(() => {
       router.push("/admin-dashboard#kelas");
       // }, 1500);
-    } catch (err: any) {
+    } catch (err) {
       toast.error(`Gagal update kelas. Error: ${err?.response?.data?.message || err.message}`);
       console.log(err);
       setLoading(false);

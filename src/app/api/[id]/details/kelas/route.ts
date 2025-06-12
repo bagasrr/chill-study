@@ -16,6 +16,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
         LastUpdatedBy: true,
         LastUpdateDate: true,
         CompanyCode: true,
+        certifTemplateId: true,
         materi: {
           select: {
             id: true,
