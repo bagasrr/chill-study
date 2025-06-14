@@ -5,14 +5,20 @@ import { GradientCircularProgress } from "../GradientCircularProgress";
 import toast from "react-hot-toast";
 import SignatureCanvas from "react-signature-canvas";
 import axios from "axios";
+import { useRouter } from "next/navigation";
+
+// declare module "react-signature-canvas";
 
 export default function AddOfficialNewForm() {
   const [name, setName] = useState("");
   const [position, setPosition] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
-  const sigCanvasRef = useRef<SignatureCanvas>(null);
+  // old
+  // const sigCanvasRef = useRef<SignatureCanvas>(null);
+  const sigCanvasRef = useRef<InstanceType<typeof SignatureCanvas>>(null);
 
   const handleUpload = async () => {
     const signatureDrawn = sigCanvasRef.current && !sigCanvasRef.current.isEmpty();
@@ -54,10 +60,11 @@ export default function AddOfficialNewForm() {
 
       if (res.ok) {
         toast.success("TTD Pejabat berhasil diupload!");
-        setName("");
-        setPosition("");
-        setFile(null);
-        sigCanvasRef.current?.clear();
+        router.push("/admin-dashboard#official");
+        // setName("");
+        // setPosition("");
+        // setFile(null);
+        // sigCanvasRef.current?.clear();
       } else {
         toast.error("Gagal menyimpan ke database");
       }

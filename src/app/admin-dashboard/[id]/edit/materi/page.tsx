@@ -164,8 +164,26 @@ export default function EditMateriForm() {
         <h1 className="text-3xl font-roboto font-bold mb-5 text-center">Edit Materi</h1>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Controller name="title" control={control} render={({ field }) => <TextField {...field} label="Judul Materi" fullWidth required color="info" sx={inputStyle} InputLabelProps={{ shrink: true }} />} />
-            <Controller name="videoUrl" control={control} render={({ field }) => <TextField {...field} label="Link Video" fullWidth required color="info" sx={inputStyle} InputLabelProps={{ shrink: true }} />} />
+            <Controller
+              name="title"
+              control={control}
+              render={({ field }) => (
+                <TextField {...field} label="Judul Materi" fullWidth required color="info" sx={inputStyle}>
+                  <InputLabel shrink> Judul Materi </InputLabel>
+                </TextField>
+              )}
+            />
+            <Controller
+              name="videoUrl"
+              control={control}
+              render={({ field }) => (
+                <TextField {...field} label="Link Video" fullWidth required color="info" sx={inputStyle}>
+                  <InputLabel shrink> Link Video </InputLabel>
+                </TextField>
+              )}
+            />
+            {/* <Controller name="title" control={control} render={({ field }) => <TextField {...field} label="Judul Materi" fullWidth required color="info" sx={inputStyle} InputLabelProps={{ shrink: true }} />} />
+            <Controller name="videoUrl" control={control} render={({ field }) => <TextField {...field} label="Link Video" fullWidth required color="info" sx={inputStyle} InputLabelProps={{ shrink: true }} />} /> */}
 
             <div className="col-span-2">
               <FormControl fullWidth color="info" sx={inputStyle}>
@@ -198,7 +216,7 @@ export default function EditMateriForm() {
               render={({ field: { onChange, value } }) => (
                 <div className="flex items-center gap-2">
                   <p className="font-bold">Rp</p>
-                  <CurrencyTextField label="Harga Materi" value={value} onChange={(_, val) => onChange(val)} required sx={inputStyle} />
+                  <CurrencyTextField label="Harga Materi" name="price" value={value} onChange={(_, val) => onChange(val)} required />
                 </div>
               )}
             />

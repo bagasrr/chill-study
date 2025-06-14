@@ -1,8 +1,9 @@
 import { prisma } from "@/lib/prisma";
-import { supabase } from "@/lib/supabaseClient";
+import { Supabase } from "@/lib/supabaseClient";
 import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
+  const supabase = Supabase();
   // ⛔️ Validasi token cron job
   const token = req.headers.get("authorization");
   if (token !== `Bearer ${process.env.CRON_SECRET}`) {

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { TextField, MenuItem, Button, Box, CircularProgress } from "@mui/material";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useParams, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import BackSubmitButton from "@/components/BackSubmitButton";
@@ -65,8 +65,11 @@ export default function EditUser() {
         router.push("/admin-dashboard#User");
       }, 1500);
     } catch (err) {
-      toast.error(`Gagal update User. Err Code : ${err?.response?.status}`);
-      console.log(err);
+      if (axios.isAxiosError(err)) {
+        toast.error(err?.response?.data || err.message);
+      }
+      // toast.error(`Gagal update User. Err Code : ${err?.response?.status}`);
+      // console.log(err);
       setLoading(false);
     }
   };

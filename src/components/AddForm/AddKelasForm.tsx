@@ -64,11 +64,18 @@ export default function AddKelasForm() {
   };
 
   // 5. Siapkan data untuk react-select
-  const certificateOptions = certifTemplate?.map((template: any) => ({
-    value: template.id,
-    label: template.name,
-    image: template.certifTemplate, // URL gambar
-  }));
+  // const certificateOptions = certifTemplate?.map((template: any) => ({
+  //   value: template.id,
+  //   label: template.name,
+  //   image: template.certifTemplate, // URL gambar
+  // }));
+  const certificateOptions = Array.isArray(certifTemplate)
+    ? certifTemplate.map((template: any) => ({
+        value: template.id,
+        label: template.name,
+        image: template.certifTemplate, // URL gambar
+      }))
+    : [];
 
   // 6. Komponen untuk menampilkan opsi dengan gambar
   const formatOptionLabel = ({ label, image }: { label: string; image: string }) => (

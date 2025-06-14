@@ -25,3 +25,27 @@ const theme = createTheme({
 });
 
 export default theme;
+
+export const lightTheme = createTheme({
+  palette: {
+    mode: "light", // 👈 KUNCI UTAMA: Mengaktifkan mode terang
+    background: {
+      paper: "#ffffff", // Warna dasar untuk komponen seperti Paper dan Card
+      default: "#f4f6f8", // Warna dasar untuk body
+    },
+    text: {
+      primary: "#121212", // Warna teks utama (gelap)
+      secondary: "#637381", // Warna teks sekunder
+    },
+  },
+  components: {
+    // Kustomisasi spesifik jika diperlukan
+    MuiTableCell: {
+      styleOverrides: {
+        head: {
+          fontWeight: 600, // Membuat header tabel sedikit tebal
+        },
+      },
+    },
+  },
+});

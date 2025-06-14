@@ -316,16 +316,26 @@ export default function EditExamForm({ examId }: { examId: string }) {
             <p className="text-xs text-red-500 font-bold mt-5">*Pilih gambar jika diperlukan</p>
           </div>
 
-          {["A", "B", "C", "D"].map((opt) => (
+          {/* {["A", "B", "C", "D"].map((opt) => (
             <input key={opt} type="text" placeholder={`Pilihan ${opt}`} {...register(`questions.${index}[option${opt}]` as const)} className="w-full mb-2 p-2 border rounded" />
-          ))}
-
+          ))} */}
+          <input type="text" placeholder="Opsi A" {...register(`questions.${index}.optionA` as const)} className="w-full p-2 mb-2 border rounded" />
+          <input type="text" placeholder="Opsi B" {...register(`questions.${index}.optionB` as const)} className="w-full p-2 mb-2 border rounded" />
+          <input type="text" placeholder="Opsi C" {...register(`questions.${index}.optionC` as const)} className="w-full p-2 mb-2 border rounded" />
+          <input type="text" placeholder="Opsi D" {...register(`questions.${index}.optionD` as const)} className="w-full p-2 mb-2 border rounded" />
+          <select {...register(`questions.${index}.correctAnswer` as const)} className="w-full p-2 mb-2 border rounded">
+            <option value="A">Jawaban Benar : A</option>
+            <option value="B">Jawaban Benar : B</option>
+            <option value="C">Jawaban Benar : C</option>
+            <option value="D">Jawaban Benar : D</option>
+          </select>
+          {/* 
           <select {...register(`questions.${index}.correctAnswer` as const)} className="w-full p-2 border rounded">
             <option value="A">Jawaban Benar: A</option>
             <option value="B">Jawaban Benar: B</option>
             <option value="C">Jawaban Value: C</option>
             <option value="D">Jawaban Benar: D</option>
-          </select>
+          </select> */}
         </div>
       ))}
 

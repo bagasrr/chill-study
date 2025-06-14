@@ -14,7 +14,18 @@ const ProgramCardSkeleton = () => {
         boxShadow: 4,
       }}
     >
-      <Skeleton variant="rectangular" width={{ xs: "100%", lg: 200 }} height={300} sx={{ display: { xs: "block", lg: "none" } }} />
+      {/* <Skeleton variant="rectangular" width={{ xs: "100%", lg: 200 }} height={300} sx={{ display: { xs: "block", lg: "none" } }} /> */}
+      <Skeleton
+        variant="rectangular"
+        sx={{
+          width: {
+            xs: "100%",
+            lg: 200,
+          },
+          display: { xs: "block", lg: "none" },
+        }}
+        height={300}
+      />
       <CardMedia
         sx={{
           display: { xs: "none", lg: "block" },

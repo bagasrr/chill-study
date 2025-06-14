@@ -6,7 +6,7 @@ const Page = () => {
   const { id } = useParams();
   return (
     <>
-      <EditExamForm examId={id} />
+      <EditExamForm examId={id as string} />
     </>
   );
 };

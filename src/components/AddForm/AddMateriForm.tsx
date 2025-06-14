@@ -50,7 +50,12 @@ export default function AddMateriForm() {
     }
   };
 
-  const handleChange = (setter) => (e: ChangeEvent<HTMLInputElement>) => {
+  //old
+  // const handleChange = (setter) => (e: ChangeEvent<HTMLInputElement>) => {
+  //   setter((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  // };
+
+  const handleChange = (setter: React.Dispatch<React.SetStateAction<MateriForm>>) => (e: ChangeEvent<HTMLInputElement>) => {
     setter((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
@@ -98,7 +103,7 @@ export default function AddMateriForm() {
         try {
           // Promise.all sekarang akan menghasilkan array dari objek {name, link}
           uploadedAttachments = await Promise.all(uploadPromises);
-        } catch (error) {
+        } catch (error: any) {
           toast.error(error.message || "Terjadi kesalahan saat mengupload file.");
           setIsUploading(false);
           return; // Hentikan eksekusi jika ada file yang gagal di-upload

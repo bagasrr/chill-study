@@ -4,7 +4,7 @@ import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  const session = getServerSession(authOptions);
+  const session = await getServerSession(authOptions);
   const userId = session?.user?.id;
   try {
     const userCertificate = await prisma.certificate.findFirst({

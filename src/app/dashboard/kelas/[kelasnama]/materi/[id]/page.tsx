@@ -8,7 +8,17 @@ import { Typography, Skeleton } from "@mui/material";
 import VideoPlayer from "@/components/MediaPlayer/VideoPlayer";
 import VideoSkeleton from "@/components/Skeleton/VideoSkeleton";
 import { completeProgress, saveProgress } from "@/lib/api/progress";
-import { Materi } from "@prisma/client";
+// import { Materi } from "@prisma/client";
+
+interface Materi {
+  id: string;
+  title: string;
+  content: string;
+  videoUrl: string;
+  price: number;
+  kelasId: string;
+  attachments: { id: string; name: string; link: string }[];
+}
 
 const Page = () => {
   const { id } = useParams<{ id: string }>();

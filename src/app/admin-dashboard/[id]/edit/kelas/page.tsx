@@ -34,8 +34,7 @@ export default function EditKelas() {
   const router = useRouter();
 
   // 3. Fetch data template sertifikat
-  const { data: certifTemplate } = useFetchData("/api/certificate/template");
-
+  const { data: certifTemplate } = useFetchData("/api/certificate/template") as { data: { id: string; name: string; certifTemplate: string }[] };
   const {
     register,
     handleSubmit,
@@ -90,7 +89,10 @@ export default function EditKelas() {
       router.push("/admin-dashboard#kelas");
       // }, 1500);
     } catch (err) {
-      toast.error(`Gagal update kelas. Error: ${err?.response?.data?.message || err.message}`);
+      if (axios.isAxiosError(err)) {
+        toast.error(err?.response?.data?.message || err.message);
+        setLoading(false);
+      }
       console.log(err);
       setLoading(false);
     }

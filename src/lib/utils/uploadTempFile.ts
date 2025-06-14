@@ -1,8 +1,9 @@
-import { supabase } from "@/lib/supabaseClient";
+import { Supabase } from "../supabaseClient";
 
 export async function uploadTempFile(file: File, userId: string): Promise<string> {
   const filename = `${Date.now()}_${file.name}`;
   const path = `temp/${userId}/${filename}`;
+  const supabase = Supabase();
 
   const { error } = await supabase.storage.from("questions").upload(path, file);
   if (error) throw new Error("Upload ke Supabase gagal");

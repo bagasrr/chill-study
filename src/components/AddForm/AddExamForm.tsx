@@ -144,7 +144,7 @@ export default function AddExamForm() {
       ) : (
         <select {...register("kelasId")} className="w-full p-2 mb-4 border rounded">
           <option value="">Pilih Kelas</option>
-          {kelas?.map((k) => (
+          {kelas?.map((k: { id: string; title: string }) => (
             <option key={k.id} value={k.id}>
               {k.title}
             </option>

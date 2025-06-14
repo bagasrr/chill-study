@@ -11,16 +11,35 @@ declare module "next-auth" {
     } & DefaultSession["user"];
     id_token?: string;
     access_token?: string;
+    refresh_token?: string;
+    expires_at?: number;
   }
 
   interface User extends DefaultUser {
-    deviceToken?: string;
-    googleAccessToken?: string;
-    googleIdToken?: string;
-    role?: string;
+    // deviceToken?: string;
+    // googleAccessToken?: string;
+    // googleIdToken?: string;
+    // role?: string;
+    role: string;
+    deviceToken?: string | null;
+    devTokenExpiredAt?: Date | null;
+    googleAccessToken?: string | null;
+    googleRefreshToken?: string | null;
+    googleTokenExpiry?: Date | null;
   }
 
   interface JWT {
     access_token?: string;
   }
+}
+
+interface Session extends DefaultSession {
+  user: {
+    id: string;
+    role: string;
+  } & DefaultSession["user"];
+
+  // Kirim access_token yang selalu aktif ke client
+  accessToken: string;
+  error?: string;
 }

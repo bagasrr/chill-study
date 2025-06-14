@@ -37,7 +37,7 @@ export function formatCellValue(key: string | number | symbol, value: unknown): 
   return typeof value === "object" ? JSON.stringify(value) : (value as React.ReactNode);
 }
 
-export function formatCellValueSmart(value): React.ReactNode {
+export function formatCellValueSmart(value: React.ReactNode) {
   if (value === null || value === undefined) return "-";
 
   if (typeof value === "object") {
