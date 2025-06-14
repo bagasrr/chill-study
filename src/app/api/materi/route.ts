@@ -58,18 +58,51 @@ export async function GET(request: Request) {
 }
 
 // POST tambah materi baru
+// export async function POST(req: Request) {
+//   try {
+//     const body = await req.json();
+//     const parsed = createMateriSchema.safeParse(body);
+//     const session = await getServerSession(authOptions);
+
+//     if (!parsed.success) {
+//       return NextResponse.json({ errors: parsed.error.flatten() }, { status: 400 });
+//     }
+
+//     const { title, content, videoUrl, price, kelasId,  } = parsed.data;
+
+//     const materi = await prisma.materi.create({
+//       data: {
+//         title,
+//         content,
+//         videoUrl,
+//         price,
+//         kelasId,
+//         CreatedBy: session?.user?.email || "system",
+//         CompanyCode: "Materi",
+//         Status: 1,
+//       },
+//     });
+
+//     return NextResponse.json(materi, { status: 201 });
+//   } catch (error) {
+//     console.error(error);
+//     return new NextResponse("Internal Server Error", { status: 500 });
+//   }
+// }
+
 export async function POST(req: Request) {
   try {
+    const session = await getServerSession(authOptions);
     const body = await req.json();
     const parsed = createMateriSchema.safeParse(body);
-    const session = await getServerSession(authOptions);
 
     if (!parsed.success) {
       return NextResponse.json({ errors: parsed.error.flatten() }, { status: 400 });
     }
 
-    const { title, content, videoUrl, price, kelasId } = parsed.data;
+    const { title, content, videoUrl, price, kelasId, attachments } = parsed.data;
 
+    // 2. Gunakan "nested write" untuk membuat Materi dan Attachment sekaligus
     const materi = await prisma.materi.create({
       data: {
         title,
@@ -80,6 +113,19 @@ export async function POST(req: Request) {
         CreatedBy: session?.user?.email || "system",
         CompanyCode: "Materi",
         Status: 1,
+        // Bagian ini akan membuat record Attachment yang terhubung
+        attachments: {
+          create: attachments?.map((att) => ({
+            name: att.name,
+            link: att.link,
+            // Properti lain dari attachment bisa ditambahkan di sini
+            // CreatedBy, CompanyCode, dll. akan menggunakan nilai default dari skema
+          })),
+        },
+      },
+      // Sertakan attachments dalam respons
+      include: {
+        attachments: true,
       },
     });
 

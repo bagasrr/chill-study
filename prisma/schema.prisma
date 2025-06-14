@@ -111,6 +111,7 @@ model Materi {
 
   progress     Progress[]
   paymentItems PaymentItem[]
+  attachments  Attachment[]
 }
 
 model Progress {
@@ -170,6 +171,23 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Attachment {
+  id           String   @id @default(cuid())
+  name         String   
+  materiId     String
+  link         String   
+
+  materi         Materi    @relation(fields: [materiId], references: [id], onDelete: Cascade)
+  
+  createdAt      DateTime  @default(now())
+  IsDeleted      DateTime?
+  CreatedBy      String    @default("Chill Study System")
+  LastUpdatedBy  String    @default("Chill Study System")
+  LastUpdateDate DateTime  @default(now())
+  Status         Int       @default(1)
+  CompanyCode    String    @default("Attachment")
 }
 
 model VerificationToken {

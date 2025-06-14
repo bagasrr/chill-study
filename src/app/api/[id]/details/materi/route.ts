@@ -16,6 +16,12 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
         CreatedBy: true,
         LastUpdatedBy: true,
         LastUpdateDate: true,
+        attachments: {
+          select: {
+            name: true,
+            link: true,
+          },
+        },
         kelas: {
           select: {
             id: true,
