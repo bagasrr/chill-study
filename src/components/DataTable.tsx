@@ -1,11 +1,49 @@
 "use client";
 
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TableSortLabel, TextField, Typography, TablePagination, Skeleton, Chip } from "@mui/material";
-import { useMemo, useState } from "react";
-import { Order } from "@/lib/type";
-import { formatCellValueSmart } from "@/lib/utils";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import React, { ReactNode, useMemo, useState } from "react";
 import Link from "next/link";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+
+// Asumsi tipe ini ada di "@/lib/type"
+// export type Order = "asc" | "desc";
+import { Order } from "@/lib/type";
+
+// Asumsi fungsi ini ada di "@/lib/utils" dan bisa menerima berbagai tipe data
+// export function formatCellValueSmart(value: any): ReactNode { ... }
+import { formatCellValueSmart } from "@/lib/utils";
+
+// --- BAGIAN UTAMA PERBAIKAN TIPE ---
+
+/**
+ * Tipe ini menciptakan koneksi yang kuat antara `key` kolom dan tipe data `value`
+ * pada fungsi `render`. Ini adalah kunci untuk membuat komponen sepenuhnya type-safe.
+ * Misal: jika key adalah 'name' (string), maka `value` di `render` juga akan `string`.
+ */
+export type ColumnDefinition<T> = {
+  [K in keyof T]: {
+    key: K;
+    label: string;
+    sortable?: boolean;
+    render?: (value: T[K], row: T) => ReactNode;
+  };
+}[keyof T];
+
+/**
+ * Tipe untuk props komponen SortableTable.
+ * Menggunakan `ColumnDefinition<T>[]` untuk `columns`.
+ */
+type SortableTableProps<T extends { id: string | number }> = {
+  data: T[];
+  columns: ColumnDefinition<T>[];
+  tableTitle: string;
+  idSection: string;
+  isLoading?: boolean;
+  addLink?: string | null;
+  renderAction?: (row: T) => ReactNode;
+};
+
+// --- FUNGSI HELPERS UNTUK SORTING ---
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) return -1;
@@ -17,28 +55,19 @@ function getComparator<T>(order: Order, orderBy: keyof T): (a: T, b: T) => numbe
   return order === "desc" ? (a, b) => descendingComparator(a, b, orderBy) : (a, b) => -descendingComparator(a, b, orderBy);
 }
 
-type SortableTableProps<T> = {
-  data: T[];
-  addLink: string | null;
-  isLoading?: boolean;
-  columns: {
-    key: keyof T;
-    label: string;
-    sortable?: boolean;
-    render?: (value: any, row: T) => React.ReactNode;
-  }[];
-  renderAction?: (row: T) => React.ReactNode;
-  emptyValueFallback?: string;
-  tableTitle: string;
-  idSection: string;
-};
+// --- KOMPONEN FINAL ---
 
-export function SortableTable<T extends { id: string }>({ data, columns, renderAction, tableTitle = "Table Title", idSection, isLoading = false, addLink = null }: SortableTableProps<T>) {
+export function SortableTable<T extends { id: string | number }>({ data, columns, tableTitle, idSection, isLoading = false, addLink = null, renderAction }: SortableTableProps<T>) {
   const [order, setOrder] = useState<Order>("asc");
-  const [orderBy, setOrderBy] = useState<keyof T>(columns[0].key);
+  // Inisialisasi orderBy dengan key dari kolom pertama yang bisa di-sort, atau kolom pertama
+  const [orderBy, setOrderBy] = useState<keyof T>(() => {
+    const firstSortableColumn = columns.find((c) => c.sortable);
+    return firstSortableColumn ? firstSortableColumn.key : columns[0].key;
+  });
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [page, setPage] = useState<number>(0);
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
+
   const handleSort = (property: keyof T) => {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
@@ -60,10 +89,14 @@ export function SortableTable<T extends { id: string }>({ data, columns, renderA
   };
 
   const filteredData = useMemo(() => {
+    if (!searchQuery) {
+      return data;
+    }
     return data.filter((row) =>
       columns.some((col) => {
         const value = row[col.key];
-        return value?.toString().toLowerCase().includes(searchQuery);
+        // Penanganan nilai null/undefined sebelum diubah ke string
+        return value != null && value.toString().toLowerCase().includes(searchQuery);
       })
     );
   }, [data, columns, searchQuery]);
@@ -81,37 +114,40 @@ export function SortableTable<T extends { id: string }>({ data, columns, renderA
 
   return (
     <div className="my-12 flex flex-col gap-5" id={idSection}>
-      <div className="flex justify-between">
+      <div className="flex flex-wrap gap-4 justify-between items-center">
         <div className="flex gap-5 items-center">
-          <Typography variant="h4">{tableTitle}</Typography>
+          <Typography variant="h4" component="h2">
+            {tableTitle}
+          </Typography>
           {addLink && (
-            <Link href={addLink} className={`text-sm hover:underline `}>
+            <Link href={addLink}>
               <Chip
                 label={`Add New ${tableTitle}`}
                 variant="outlined"
                 color="primary"
                 icon={<AddCircleOutlineIcon />}
+                clickable
                 sx={{
                   transition: "all 0.3s",
                   "&:hover": {
                     backgroundColor: "primary.main",
                     borderColor: "primary.main",
-                    color: "black",
+                    color: "white",
                   },
                 }}
               />
             </Link>
           )}
         </div>
-
-        <TextField label="Search by Title..." variant="outlined" value={searchQuery} onChange={handleSearchChange} />
+        <TextField label="Search..." variant="outlined" size="small" value={searchQuery} onChange={handleSearchChange} />
       </div>
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="sortable table">
+
+      <TableContainer component={Paper} variant="outlined">
+        <Table sx={{ minWidth: 650 }} aria-label={`a sortable table of ${tableTitle}`}>
           <TableHead>
             <TableRow>
-              {renderAction && <TableCell sx={{ whiteSpace: "nowrap" }}>Action</TableCell>}
-              <TableCell>No</TableCell>
+              <TableCell sx={{ width: "1%", whiteSpace: "nowrap" }}>No</TableCell>
+              {renderAction && <TableCell sx={{ whiteSpace: "nowrap" }}>Actions</TableCell>}
               {columns.map((col) => (
                 <TableCell key={String(col.key)} sx={{ whiteSpace: "nowrap" }}>
                   {col.sortable ? (
@@ -126,38 +162,30 @@ export function SortableTable<T extends { id: string }>({ data, columns, renderA
             </TableRow>
           </TableHead>
           <TableBody>
-            {/* Skeleton */}
             {isLoading ? (
               skeletonRows.map((_, idx) => (
                 <TableRow key={`skeleton-${idx}`}>
-                  {columns.map((col, colIdx) => (
-                    <TableCell key={colIdx}>
-                      <Skeleton variant="text" width="100%" />
-                    </TableCell>
-                  ))}
+                  <TableCell>{idx + 1}</TableCell>
                   {renderAction && (
                     <TableCell>
-                      <Skeleton variant="text" width={60} />
+                      <Skeleton variant="text" width={80} />
                     </TableCell>
                   )}
+                  {columns.map((col, colIdx) => (
+                    <TableCell key={`${String(col.key)}-${colIdx}`}>
+                      <Skeleton variant="text" />
+                    </TableCell>
+                  ))}
                 </TableRow>
               ))
-            ) : // Skeleton end
-            paginatedData.length > 0 ? (
+            ) : paginatedData.length > 0 ? (
               paginatedData.map((row, i) => (
-                <TableRow key={row.id}>
-                  {renderAction && <TableCell sx={{ whiteSpace: "nowrap", textAlign: "center" }}>{renderAction(row)}</TableCell>}
-                  <TableCell>{page != 0 ? page * rowsPerPage + i + 1 : i + 1}</TableCell>
+                <TableRow key={row.id} hover sx={{ "&:nth-of-type(odd)": { backgroundColor: "action.hover" } }}>
+                  <TableCell>{page * rowsPerPage + i + 1}</TableCell>
+                  {renderAction && <TableCell>{renderAction(row)}</TableCell>}
                   {columns.map((col) => (
-                    <TableCell
-                      key={String(col.key)}
-                      sx={{
-                        maxWidth: 250,
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "pre",
-                      }}
-                    >
+                    <TableCell key={String(col.key)}>
+                      {/* KODE INI SEKARANG BERSIH & TYPE-SAFE, TANPA PERLU CASTING */}
                       {col.render ? col.render(row[col.key], row) : formatCellValueSmart(row[col.key])}
                     </TableCell>
                   ))}
@@ -165,14 +193,16 @@ export function SortableTable<T extends { id: string }>({ data, columns, renderA
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length + (renderAction ? 1 : 0)} align="center">
-                  No data found.
+                <TableCell colSpan={columns.length + 1 + (renderAction ? 1 : 0)} align="center">
+                  No data available.
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
-        {!isLoading && <TablePagination component="div" count={sortedData.length} page={page} onPageChange={handleChangePage} rowsPerPage={rowsPerPage} onRowsPerPageChange={handleChangeRowsPerPage} rowsPerPageOptions={[5, 10, 25, 50]} />}
+        {!isLoading && data.length > 0 && (
+          <TablePagination component="div" count={filteredData.length} page={page} onPageChange={handleChangePage} rowsPerPage={rowsPerPage} onRowsPerPageChange={handleChangeRowsPerPage} rowsPerPageOptions={[5, 10, 25, 50]} />
+        )}
       </TableContainer>
     </div>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Button, CircularProgress, Box, FormControl, InputLabel, Select, MenuItem, OutlinedInput, List, ListItem, ListItemText, IconButton, LinearProgress, TextField, Typography } from "@mui/material";
+import { Button, CircularProgress, Box, FormControl, InputLabel, Select, MenuItem, List, ListItem, ListItemText, IconButton, LinearProgress, TextField, Typography } from "@mui/material";
 import { CloudUpload as CloudUploadIcon, Delete as DeleteIcon, Link as LinkIcon } from "@mui/icons-material";
 import { CurrencyTextField } from "@/components/FormTextField";
 import axios from "@/lib/axios";
@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 import { useParams, useRouter } from "next/navigation";
 import BackSubmitButton from "@/components/BackSubmitButton";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { isAxiosError } from "axios";
 
 // Interface untuk data lampiran yang sudah ada
 interface ExistingAttachment {
@@ -120,10 +121,13 @@ export default function EditMateriForm() {
       try {
         // Promise.all akan menghasilkan array dari objek { name, link }
         uploadedNewAttachments = await Promise.all(uploadPromises);
-      } catch (error: any) {
-        toast.error(error.message || "Terjadi kesalahan saat mengupload file baru.");
-        setIsLoading(false);
-        setIsUploading(false);
+      } catch (error: unknown) {
+        if (isAxiosError(error)) {
+          toast.error(error.message || "Terjadi kesalahan saat mengupload file baru.");
+          setIsLoading(false);
+          setIsUploading(false);
+        }
+        toast.error("Terjadi kesalahan saat mengupload file baru.");
         return;
       } finally {
         setIsUploading(false);
@@ -141,7 +145,11 @@ export default function EditMateriForm() {
       toast.success("Materi berhasil diperbarui 🎉");
       router.push("/admin-dashboard#materi");
     } catch (error) {
-      toast.error("Gagal memperbarui materi 😢");
+      if (isAxiosError(error)) {
+        toast.error(error.response?.data?.message || error.message || "Gagal memperbarui materi 😢");
+      }
+      // toast.error(error.message );
+      toast.error("Terjadi kesalahan saat memperbarui materi.");
       console.error("Payload yang gagal:", payload);
     } finally {
       setIsLoading(false);

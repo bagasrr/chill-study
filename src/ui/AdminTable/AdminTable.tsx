@@ -1,5 +1,6 @@
 "use client";
-import { SortableTable } from "@/components/DataTable";
+
+import { ColumnDefinition, SortableTable } from "@/components/DataTable";
 import { useFetchData } from "@/lib/hooks/useFetchData";
 import { formattedDate } from "@/lib/utils";
 import { Button } from "@mui/material";
@@ -12,24 +13,26 @@ const AdminTable = () => {
   const { data: admins, loading } = useFetchData<User[]>("/api/users/admins");
   const dataAdmin = admins || [];
 
+  const columns: ColumnDefinition<User>[] = [
+    { key: "name", label: "User Name", sortable: true },
+    { key: "email", label: "User Email", sortable: true },
+    { key: "deviceToken", label: "Device Token", render: (value) => <p>{value ? "Active" : "None"}</p> },
+    { key: "role", label: "Role", sortable: true },
+    { key: "createdAt", label: "Joined At", sortable: true, render: (value) => <p>{formattedDate(value)}</p> },
+    { key: "CreatedBy", label: "Created By", sortable: true },
+    { key: "LastUpdateDate", label: "Last Update At", sortable: true, render: (value) => (value ? <p>{formattedDate(value)}</p> : "-") },
+    { key: "LastUpdatedBy", label: "Last Update By", sortable: true },
+    { key: "CompanyCode", label: "Company Code" },
+    { key: "Status", label: "Status" },
+  ];
+
   return (
     <SortableTable
       idSection="accounts"
       tableTitle="Admin Account"
       addLink={null}
       data={dataAdmin}
-      columns={[
-        { key: "name", label: "User Name", sortable: true },
-        { key: "email", label: "User Email", sortable: true },
-        { key: "deviceToken", label: "Device Token", render: (value) => <p>{value ? "True" : "False"}</p> },
-        { key: "role", label: "Role", sortable: true },
-        { key: "createdAt", label: "Joined At", sortable: true, render: (value) => <p>{formattedDate(value)}</p> },
-        { key: "CreatedBy", label: "Created By", sortable: true },
-        { key: "LastUpdateDate", label: "Last Update At", sortable: true, render: (value) => <p>{formattedDate(value)}</p> },
-        { key: "LastUpdatedBy", label: "Last Update By", sortable: true },
-        { key: "CompanyCode", label: "Company Code" },
-        { key: "Status", label: "Status" },
-      ]}
+      columns={columns}
       isLoading={loading}
       renderAction={(data) => (
         <div className="flex items-center">

@@ -3,8 +3,8 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
-import axios, { AxiosError } from "axios";
+// import { useSession } from "next-auth/react";
+import axios from "axios";
 import toast from "react-hot-toast";
 import Link from "next/link";
 import { ArrowBack } from "@mui/icons-material";
@@ -32,7 +32,7 @@ type Exam = {
 
 export default function ExamPage() {
   const { kelasId } = useParams();
-  const { data: session } = useSession();
+  // const { data: session } = useSession();
 
   const [exam, setExam] = useState<Exam | null>(null);
   const [answers, setAnswers] = useState<Record<string, string>>({});

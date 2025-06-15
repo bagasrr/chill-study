@@ -7,7 +7,7 @@ export const formatCurrency = (value: number) => {
   return formatter.format(value);
 };
 
-export const formattedDate = (date: string) => {
+export const formattedDate = (date: Date) => {
   const formattedDate = new Date(date).toLocaleDateString("id-ID", {
     day: "2-digit",
     month: "long",
