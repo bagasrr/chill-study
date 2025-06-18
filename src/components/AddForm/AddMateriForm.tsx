@@ -9,6 +9,7 @@ import { useFormSubmit } from "@/lib/hooks/useSubmitform";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { ArrowBack as ArrowBackIcon } from "@mui/icons-material";
 
 // Interface state
 interface MateriContentItem {
@@ -239,9 +240,14 @@ export default function AddMateriForm() {
             )}
           </Box>
 
-          <Button type="submit" variant="contained" size="large" fullWidth disabled={totalLoading} sx={{ bgcolor: "#3b82f6", "&:hover": { bgcolor: "#2563eb" }, py: 1.5 }}>
-            {totalLoading ? <CircularProgress size={24} color="inherit" /> : "Tambahkan Materi"}
-          </Button>
+          <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
+            <Button variant="outlined" startIcon={<ArrowBackIcon />} onClick={() => router.back()} sx={{ color: "#374151", borderColor: "#d1d5db" }}>
+              Kembali
+            </Button>
+            <Button type="submit" variant="contained" startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : <AddIcon />} disabled={isLoading} sx={{ bgcolor: "#3b82f6", "&:hover": { bgcolor: "#2563eb" } }}>
+              {totalLoading ? <CircularProgress size={24} color="inherit" /> : "Tambahkan Materi"}
+            </Button>
+          </Box>
         </form>
       </Paper>
     </div>

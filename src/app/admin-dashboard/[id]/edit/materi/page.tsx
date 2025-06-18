@@ -3,7 +3,7 @@
 
 import React, { useEffect, useState, ChangeEvent, FormEvent } from "react";
 import { Button, CircularProgress, Box, FormControl, InputLabel, Select, MenuItem, TextField, Typography, Paper, IconButton, LinearProgress } from "@mui/material";
-import { CloudUpload as CloudUploadIcon, Delete as DeleteIcon, AddCircleOutline as AddIcon, Videocam as VideoIcon, PictureAsPdf as PdfIcon, Link as LinkIcon } from "@mui/icons-material";
+import { CloudUpload as CloudUploadIcon, Delete as DeleteIcon, AddCircleOutline as AddIcon, Videocam as VideoIcon, PictureAsPdf as PdfIcon, Link as LinkIcon, ArrowBack } from "@mui/icons-material";
 import { CurrencyTextField } from "@/components/FormTextField"; // Asumsi path ini benar
 import axios from "@/lib/axios";
 import { useParams, useRouter } from "next/navigation";
@@ -350,7 +350,7 @@ export default function EditMateriForm() {
                     !item.isNew &&
                     item.url && ( // Tampilkan link PDF yang sudah ada
                       <div className="mt-4">
-                        <Button variant="text" size="small" startIcon={<LinkIcon />} color="primary" onClick={() => window.open(item.url, "_blank")}>
+                        <Button variant="text" size="small" startIcon={<LinkIcon />} color="info" onClick={() => window.open(item.url, "_blank")}>
                           Lihat PDF Existing
                         </Button>
                       </div>
@@ -374,9 +374,14 @@ export default function EditMateriForm() {
             )}
           </Box>
 
-          <Button type="submit" variant="contained" size="large" fullWidth disabled={isLoading || isUploadingFiles} sx={{ bgcolor: "#3b82f6", "&:hover": { bgcolor: "#2563eb" }, py: 1.5 }}>
-            {isLoading || isUploadingFiles ? <CircularProgress size={24} color="inherit" /> : "Simpan Perubahan Materi"}
-          </Button>
+          <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
+            <Button variant="outlined" startIcon={<ArrowBack />} onClick={() => router.back()} sx={{ color: "#374151", borderColor: "#d1d5db" }}>
+              Kembali
+            </Button>
+            <Button type="submit" variant="contained" startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : <AddIcon />} disabled={isLoading} sx={{ bgcolor: "#3b82f6", "&:hover": { bgcolor: "#2563eb" } }}>
+              {isLoading || isUploadingFiles ? <CircularProgress size={24} color="inherit" /> : "Simpan Perubahan Materi"}
+            </Button>
+          </Box>
         </form>
       </Paper>
     </div>
