@@ -1,77 +1,113 @@
-import { authOptions } from "@/lib/auth";
+// app/api/[materiId]/edit/materi/route.ts
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth"; // Jika Anda menggunakan NextAuth
+import { authOptions } from "@/lib/auth"; // Sesuaikan path ke auth options Anda
+import { z } from "zod";
+import { UpdateMateriInput, updateMateriSchema } from "@/lib/validation/materi";
 import { prisma } from "@/lib/prisma";
-import { updateMateriSchema } from "@/lib/validation/materi";
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { getServerSession } from "next-auth";
-import { cookies } from "next/headers";
-import { NextRequest, NextResponse } from "next/server";
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
-  // Inisialisasi Supabase Server Client
-  const supabase = createServerComponentClient({ cookies });
+export async function PATCH(request: Request, { params }: { params: { id: string } }) {
+  const materiId = params.id;
+
+  if (!materiId) {
+    return NextResponse.json({ message: "Materi ID is required" }, { status: 400 });
+  }
+
+  // Opsi: Autentikasi dan Otorisasi
+  const session = await getServerSession(authOptions);
+  if (!session || session.user?.role !== "ADMIN") {
+    // Contoh otorisasi: hanya admin
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
 
   try {
-    const id = params.id;
-    const session = await getServerSession(authOptions);
-    const body = await req.json();
+    const body = await request.json();
 
-    const { newAttachments, removedAttachmentIds, ...materiData } = updateMateriSchema.parse(body);
+    // 1. Validasi input menggunakan Zod
+    const validatedData: UpdateMateriInput = updateMateriSchema.parse(body);
 
-    // Langkah 1: Hapus file dari Supabase Storage jika ada
-    if (removedAttachmentIds && removedAttachmentIds.length > 0) {
-      // Dapatkan path file dari database berdasarkan ID yang akan dihapus
-      const attachmentsToDelete = await prisma.attachment.findMany({
-        where: {
-          id: { in: removedAttachmentIds },
+    const {
+      title,
+      content,
+      price,
+      kelasId,
+      contents, // Ini adalah array gabungan dari frontend (baru & terupdate)
+      removedContentIds,
+      // newAttachments, // Opsional: jika Anda mengelola attachments
+      // removedAttachmentIds, // Opsional: jika Anda mengelola attachments
+    } = validatedData;
+
+    // 2. Transaksi Prisma: Memastikan semua operasi berhasil atau tidak sama sekali
+    const result = await prisma.$transaction(async (tx) => {
+      // Update data dasar Materi
+      const updatedMateri = await tx.materi.update({
+        where: { id: materiId },
+        data: {
+          title: title,
+          content: content,
+          price: price,
+          kelasId: kelasId,
+          LastUpdateDate: new Date(),
+          LastUpdatedBy: session.user?.email || "system",
         },
       });
 
-      const filePathsToDelete = attachmentsToDelete.map((att) => att.name);
+      // 3. Tangani Konten Materi (MateriContent)
+      // a. Hapus konten yang ditandai untuk dihapus
+      if (removedContentIds && removedContentIds.length > 0) {
+        await tx.materiContent.deleteMany({
+          where: {
+            id: {
+              in: removedContentIds,
+            },
+            materiId: materiId, // Pastikan hanya menghapus konten dari materi ini
+          },
+        });
+      }
 
-      if (filePathsToDelete.length > 0) {
-        const { error: storageError } = await supabase.storage.from("file").remove(filePathsToDelete);
-
-        if (storageError) {
-          console.error("Supabase storage error:", storageError);
-          throw new Error("Gagal menghapus file dari storage.");
+      // b. Iterasi melalui 'contents' yang tersisa (sudah difilter di frontend)
+      //    Tentukan apakah akan membuat baru atau mengupdate
+      for (const item of contents) {
+        if (item.id) {
+          // Jika ada ID, berarti ini item yang sudah ada, lakukan update
+          await tx.materiContent.update({
+            where: { id: item.id },
+            data: {
+              type: item.type,
+              title: item.title,
+              url: item.url,
+              weight: item.weight,
+              // Anda bisa menambahkan LastUpdatedBy/Date jika ada di model MateriContent
+            },
+          });
+        } else {
+          // Jika tidak ada ID, berarti ini item baru, lakukan create
+          await tx.materiContent.create({
+            data: {
+              materiId: materiId,
+              type: item.type,
+              title: item.title,
+              url: item.url,
+              weight: item.weight,
+              createdBy: session.user?.email || "system",
+            },
+          });
         }
       }
-    }
 
-    // Langkah 2: Lakukan update database dalam satu transaksi
-    const updatedMateri = await prisma.materi.update({
-      where: { id },
-      data: {
-        ...materiData,
-        LastUpdatedBy: session?.user?.email || "system",
-        LastUpdateDate: new Date(),
-        // Gunakan nested writes untuk mengelola attachments
-        attachments: {
-          // Hapus record dari tabel Attachment
-          deleteMany: removedAttachmentIds
-            ? {
-                id: { in: removedAttachmentIds },
-              }
-            : undefined,
-          // Buat record baru untuk file yang baru diunggah
-          create: newAttachments?.map((att) => ({
-            name: att.name,
-            link: att.link,
-          })),
-        },
-      },
-      include: {
-        attachments: true, // Kirim kembali data attachments terbaru
-      },
+      // 4. Tangani Attachments (Opsional: jika Anda mengelola attachments di sini)
+      // Logika serupa dengan konten: deleteMany, createMany, update.
+
+      return updatedMateri; // Kembalikan data materi yang telah diupdate
     });
 
-    return NextResponse.json(updatedMateri);
+    return NextResponse.json({ message: "Materi updated successfully", materi: result }, { status: 200 });
   } catch (error) {
-    console.error(error);
-    if (error instanceof Error) {
-      // Termasuk error dari Zod
-      return NextResponse.json({ message: error.message }, { status: 400 });
+    if (error instanceof z.ZodError) {
+      console.error("Validation Error:", error.errors);
+      return NextResponse.json({ message: "Validation error", errors: error.errors }, { status: 400 });
     }
-    return NextResponse.json({ message: "Internal server error" }, { status: 500 });
+    console.error("Error updating materi:", error);
+    return NextResponse.json({ message: "Failed to update materi", error: (error as Error).message }, { status: 500 });
   }
 }

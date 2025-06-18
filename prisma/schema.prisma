@@ -97,7 +97,6 @@ model Materi {
   id             String    @id @default(cuid())
   title          String
   content        String?
-  videoUrl       String?
   price          Int
   kelasId        String
   createdAt      DateTime  @default(now())
@@ -109,27 +108,49 @@ model Materi {
   Status         Int?
   CompanyCode    String?
 
-  progress     Progress[]
   paymentItems PaymentItem[]
   attachments  Attachment[]
+
+  contents MateriContent[]
 }
 
 model Progress {
-  id             String    @id @default(cuid())
-  userId         String
-  materiId       String
-  status         Boolean   @default(false)
-  updatedAt      DateTime  @updatedAt
-  materi         Materi    @relation(fields: [materiId], references: [id])
-  user           User      @relation(fields: [userId], references: [id])
-  IsDeleted      DateTime?
-  CreatedBy      String?
-  LastUpdatedBy  String?
-  LastUpdateDate DateTime?
-  Status         Int?
-  CompanyCode    String?
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  
+  // Menunjuk ke item konten spesifik, bukan materi
+  materiContentId String
+  materiContent   MateriContent @relation(fields: [materiContentId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, materiId])
+  completedAt     DateTime @default(now())
+  
+  // Field lama bisa dihapus atau disesuaikan jika masih perlu
+  // status, IsDeleted, CreatedBy, dll.
+
+  @@unique([userId, materiContentId]) // Pastikan user hanya bisa complete satu item sekali
+}
+
+model MateriContent {
+  id        String      @id @default(cuid())
+  materiId  String
+  materi    Materi      @relation(fields: [materiId], references: [id], onDelete: Cascade)
+  
+  type      String      // "VIDEO", "PDF", "QUIZ", etc.
+  title     String      // Misal: "Video Pengenalan" atau "Dokumen Instalasi.pdf"
+  url       String?     // URL ke video atau file PDF
+  
+  // Bobot progress untuk item ini (dalam persentase, misal 20 untuk 20%)
+  weight    Float       
+
+  createdAt DateTime  @default(now())
+  createdBy String?
+
+  
+  // Relasi ke progress user
+  progress  Progress[]
+
+  @@index([materiId])
 }
 
 model Payment {

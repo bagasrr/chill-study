@@ -8,7 +8,7 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 
-export const PricingCard: React.FC<PricingCardProps> = ({ id, title, price, content, canAccess = false, hasProgress = false, link = "", onRefresh }) => {
+export const PricingCard: React.FC<PricingCardProps> = ({ id, kelasId, title, price, content, canAccess = false, hasProgress = false, link = "", onRefresh }) => {
   const { data: session } = useSession();
 
   const handleBayar = async () => {
@@ -57,6 +57,14 @@ export const PricingCard: React.FC<PricingCardProps> = ({ id, title, price, cont
       console.error("❌ Error bayar:", err);
     }
   };
+
+  // const handleSaveKelasUser = () => {
+  //   try {
+  //     axios.post("/api/kelas/user", { kelasId });
+  //   } catch (error) {
+  //     console.error("❌ Error save kelas user:", error);
+  //   }
+  // };
 
   return (
     <div className="border rounded-xl p-4 shadow-md bg-white hover:shadow-lg transition flex flex-col justify-around">

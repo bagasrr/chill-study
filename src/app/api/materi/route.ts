@@ -94,44 +94,50 @@ export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     const body = await req.json();
+
+    // Pastikan skema validasi (createMateriSchema) sesuai dengan payload baru
+    // Anda mungkin perlu memperbaruinya di lib/validation/materi.ts
     const parsed = createMateriSchema.safeParse(body);
 
     if (!parsed.success) {
-      return NextResponse.json({ errors: parsed.error.flatten() }, { status: 400 });
+      console.error("Validation Errors:", parsed.error.flatten());
+      return NextResponse.json({ message: "Data tidak valid.", errors: parsed.error.flatten() }, { status: 400 });
     }
 
-    const { title, content, videoUrl, price, kelasId, attachments } = parsed.data;
+    // Ambil data yang sudah divalidasi, termasuk 'contents'
+    const { title, content, price, kelasId, contents } = parsed.data;
 
-    // 2. Gunakan "nested write" untuk membuat Materi dan Attachment sekaligus
+    // Gunakan "nested write" untuk membuat Materi dan MateriContent sekaligus
     const materi = await prisma.materi.create({
       data: {
         title,
         content,
-        videoUrl,
         price,
         kelasId,
+        // Properti default
         CreatedBy: session?.user?.email || "system",
         CompanyCode: "Materi",
         Status: 1,
-        // Bagian ini akan membuat record Attachment yang terhubung
-        attachments: {
-          create: attachments?.map((att) => ({
-            name: att.name,
-            link: att.link,
-            // Properti lain dari attachment bisa ditambahkan di sini
-            // CreatedBy, CompanyCode, dll. akan menggunakan nilai default dari skema
+
+        // Bagian ini akan membuat record MateriContent yang terhubung
+        contents: {
+          create: contents?.map((item: any) => ({
+            type: item.type, // "VIDEO" atau "PDF"
+            title: item.title, // "Judul Item"
+            url: item.url, // URL video atau PDF dari Supabase
+            weight: item.weight, // Bobot item (misal: 50)
           })),
         },
       },
-      // Sertakan attachments dalam respons
+      // Sertakan contents dalam respons untuk verifikasi
       include: {
-        attachments: true,
+        contents: true,
       },
     });
 
     return NextResponse.json(materi, { status: 201 });
   } catch (error) {
-    console.error(error);
+    console.error("Error creating materi:", error);
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 }

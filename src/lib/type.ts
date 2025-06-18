@@ -5,6 +5,7 @@ export type LeadershipCard = {
   responsibility: string;
 };
 export type PricingCardProps = {
+  kelasId: string;
   id: string;
   title: string;
   price: number;
@@ -35,7 +36,6 @@ export type MateriCard = {
   id: string;
   title: string;
   content: string;
-  videoUrl: string;
   createdAt: Date;
   price: number;
   CreatedBy: string;
@@ -53,4 +53,3 @@ export type ProgramCardType = {
   deskripsi: string;
   CompanyCode: string;
 };
-

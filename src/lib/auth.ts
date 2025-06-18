@@ -2,7 +2,7 @@ import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "./prisma"; // Pastikan path ini benar
 import { randomUUID } from "crypto";
-import { NextAuthOptions, User, Account } from "next-auth";
+import { NextAuthOptions, User } from "next-auth";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -36,39 +36,106 @@ export const authOptions: NextAuthOptions = {
      * signIn: Validasi sebelum user berhasil login.
      * Ini adalah tempat yang tepat untuk mengunci device.
      */
-    async signIn({ user, account }: { user: User; account: Account | null }) {
-      if (!user.email || !account) return false;
-
-      const existingUser = await prisma.user.findUnique({
-        where: { email: user.email },
-      });
-
-      // ❌ Kunci Device: Jika user sudah ada dan token devicenya masih aktif, tolak.
-      if (existingUser?.deviceToken && existingUser.devTokenExpiredAt && existingUser.devTokenExpiredAt > new Date()) {
-        console.log(`Login ditolak untuk ${user.email}: Device lain masih aktif.`);
-        return "/auth/error?error=DeviceActive"; // Arahkan ke halaman error
+    async signIn({ user, account }) {
+      // Pastikan ada email dan account, ini adalah langkah pengamanan pertama.
+      if (!user.email || !account) {
+        console.log("Login gagal: Email atau account tidak tersedia.");
+        return false;
       }
 
-      // ✅ Login Diizinkan: Simpan semua token penting dari Google ke database
-      const deviceToken = randomUUID();
-      const devTokenExpiredAt = new Date();
-      devTokenExpiredAt.setHours(devTokenExpiredAt.getHours() + 3); // Kunci device berlaku 3 jam, bisa disesuaikan
+      try {
+        // Cek dulu user di database untuk validasi device lock.
+        // Langkah ini penting dilakukan SEBELUM melakukan upsert.
+        const userFromDb = await prisma.user.findUnique({
+          where: { email: user.email },
+        });
 
-      await prisma.user.update({
-        where: { email: user.email },
-        data: {
-          deviceToken,
-          devTokenExpiredAt,
-          googleAccessToken: account.access_token,
-          googleRefreshToken: account.refresh_token,
-          // expires_at dari Google dalam detik, ubah ke milidetik lalu jadi Date
-          googleTokenExpiry: new Date(Date.now() + account.expires_at! * 1000),
-        },
-      });
+        // 1. Validasi: Tolak login jika device lain masih aktif
+        if (userFromDb?.deviceToken && userFromDb.devTokenExpiredAt && userFromDb.devTokenExpiredAt > new Date()) {
+          console.log(`Login ditolak untuk ${user.email}: Device lain sudah aktif.`);
+          return "/auth/error?error=DeviceActive"; // Arahkan ke halaman error
+        }
 
-      return true;
+        // Siapkan data untuk device lock dan token Google
+        const deviceToken = randomUUID();
+        const devTokenExpiredAt = new Date(Date.now() + 3 * 60 * 60 * 1000); // 3 jam dari sekarang
+
+        // 2. Gunakan "UPSERT": Operasi utama yang menggabungkan CREATE dan UPDATE
+        await prisma.user.upsert({
+          where: {
+            // Kunci untuk mencari user
+            email: user.email,
+          },
+          // DATA JIKA USER DI-UPDATE (PENGGUNA LAMA)
+          update: {
+            name: user.name, // Selalu update nama & gambar jika ada perubahan dari Google
+            image: user.image,
+            deviceToken,
+            devTokenExpiredAt,
+            googleAccessToken: account.access_token,
+            googleRefreshToken: account.refresh_token,
+            googleTokenExpiry: account.expires_at ? new Date(Date.now() + account.expires_at * 1000) : null,
+          },
+          // DATA JIKA USER DIBUAT (PENGGUNA BARU)
+          create: {
+            email: user.email,
+            name: user.name,
+            image: user.image,
+            role: "STUDENT",
+            emailVerified: new Date(), // Anggap email terverifikasi karena dari Google
+            deviceToken,
+            devTokenExpiredAt,
+            googleAccessToken: account.access_token,
+            googleRefreshToken: account.refresh_token,
+            googleTokenExpiry: account.expires_at ? new Date(Date.now() + account.expires_at * 1000) : null,
+            // Anda bisa menambahkan default value untuk kolom lain di sini
+            // contoh: role: 'USER',
+          },
+        });
+
+        console.log(`Operasi UPSERT berhasil untuk user: ${user.email}`);
+
+        // Karena kita sudah menangani data user, kita juga harus menautkan Akun secara manual
+        // untuk memastikan PrismaAdapter tidak menimpanya.
+        const currentUser = await prisma.user.findUnique({ where: { email: user.email } });
+
+        if (currentUser) {
+          await prisma.account.upsert({
+            where: {
+              provider_providerAccountId: {
+                provider: account.provider,
+                providerAccountId: account.providerAccountId,
+              },
+            },
+            update: {
+              access_token: account.access_token,
+              refresh_token: account.refresh_token,
+              expires_at: account.expires_at,
+              scope: account.scope,
+              token_type: account.token_type,
+              id_token: account.id_token,
+            },
+            create: {
+              userId: currentUser.id,
+              type: account.type,
+              provider: account.provider,
+              providerAccountId: account.providerAccountId,
+              access_token: account.access_token,
+              refresh_token: account.refresh_token,
+              expires_at: account.expires_at,
+              scope: account.scope,
+              token_type: account.token_type,
+              id_token: account.id_token,
+            },
+          });
+        }
+
+        return true; // Izinkan login
+      } catch (error) {
+        console.error("Terjadi error kritis saat proses signIn dengan upsert:", error);
+        return `/auth/error?error=SignInFailed`; // Redirect jika ada error
+      }
     },
-
     /**
      * session: Dipanggil setiap kali sesi diakses.
      * INI ADALAH TEMPAT KITA MELAKUKAN REFRESH TOKEN.

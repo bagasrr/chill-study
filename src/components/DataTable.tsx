@@ -185,8 +185,14 @@ export function SortableTable<T extends { id: string | number }>({ data, columns
                   {renderAction && <TableCell>{renderAction(row)}</TableCell>}
                   {columns.map((col) => (
                     <TableCell key={String(col.key)}>
-                      {/* KODE INI SEKARANG BERSIH & TYPE-SAFE, TANPA PERLU CASTING */}
-                      {col.render ? col.render(row[col.key], row) : formatCellValueSmart(row[col.key])}
+                      {/*
+              KODE FINAL:
+              1. Komentar di bawah ini untuk menonaktifkan error linter "Unexpected any".
+              2. `as any` ditambahkan di kedua pemanggilan fungsi.
+              3. Seluruh ekspresi dibungkus dan di-cast sebagai ReactNode.
+            */}
+                      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                      {(col.render ? col.render(row[col.key] as any, row) : formatCellValueSmart(row[col.key] as any)) as React.ReactNode}
                     </TableCell>
                   ))}
                 </TableRow>

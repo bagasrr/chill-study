@@ -1,3 +1,6 @@
+// File: app/api/materi/[kelasId]/progress/route.ts
+// TAMBAHKAN CONSOLE.LOG UNTUK DEBUGGING
+
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -12,64 +15,72 @@ export async function GET(req: NextRequest, { params }: { params: { kelasId: str
   const userId = session.user.id;
   const { kelasId } = params;
 
+  if (!kelasId) {
+    return NextResponse.json({ message: "Kelas ID is required" }, { status: 400 });
+  }
+
   try {
-    // Cek apakah user terdaftar di kelas ini
-    const enrolled = await prisma.kelasUser.findUnique({
-      where: {
-        userId_kelasId: {
-          userId,
-          kelasId,
+    console.log(`\n--- Menghitung Progress untuk Kelas: ${kelasId}, User: ${userId} ---`);
+
+    const allMateriInClass = await prisma.materi.findMany({
+      where: { kelasId },
+      include: {
+        contents: {
+          select: { id: true, weight: true, title: true },
         },
       },
     });
 
-    if (!enrolled) {
-      return NextResponse.json({ message: "Not enrolled in this class" }, { status: 403 });
+    if (allMateriInClass.length === 0) {
+      console.log("Hasil: Tidak ada materi di kelas ini. Progress 0%.");
+      return NextResponse.json({ progressPercent: 0 });
     }
 
-    // Ambil semua materi di kelas
-    const allMateri = await prisma.materi.findMany({
-      where: { kelasId },
-      select: { id: true },
-    });
-
-    const materiIds = allMateri.map((m) => m.id);
-
-    // Ambil progress user yang sudah selesai (status = true)
-    const completed = await prisma.progress.findMany({
+    const userProgressRecords = await prisma.progress.findMany({
       where: {
         userId,
-        materiId: { in: materiIds },
-        status: true,
+        materiContent: { materi: { kelasId: kelasId } },
       },
-      select: {
-        materiId: true,
-        materi: {
-          select: {
-            id: true,
-            title: true,
-            content: true,
-            videoUrl: true,
-            createdAt: true,
-            price: true,
-            CreatedBy: true,
-            LastUpdatedBy: true,
-            LastUpdateDate: true,
-          },
-        },
-      },
+      select: { materiContentId: true },
     });
 
-    const progressPercent = materiIds.length > 0 ? Math.round((completed.length / materiIds.length) * 100) : 0;
+    const completedContentIds = new Set(userProgressRecords.map((p) => p.materiContentId));
+
+    // --- DEBUG POINT 1 ---
+    console.log("ID Konten yang Selesai:", Array.from(completedContentIds));
+
+    let totalPercentageFromAllMateri = 0;
+
+    for (const materi of allMateriInClass) {
+      let progressForThisMateri = 0;
+      if (materi.contents.length > 0) {
+        for (const content of materi.contents) {
+          if (completedContentIds.has(content.id)) {
+            progressForThisMateri += content.weight;
+          }
+        }
+      }
+      // --- DEBUG POINT 2 ---
+      console.log(`--> Progress untuk Materi "${materi.title}": ${progressForThisMateri}%`);
+      totalPercentageFromAllMateri += progressForThisMateri;
+    }
+
+    const totalMateriCount = allMateriInClass.length;
+    const finalClassProgress = totalPercentageFromAllMateri / totalMateriCount;
+    const progressPercent = Math.round(finalClassProgress);
+
+    // --- DEBUG POINT 3 ---
+    console.log(`Total Akumulasi Persen: ${totalPercentageFromAllMateri}`);
+    console.log(`Jumlah Materi: ${totalMateriCount}`);
+    console.log(`Hasil Akhir (sebelum dibulatkan): ${finalClassProgress}%`);
+    console.log(`Hasil Akhir (dikirim ke frontend): ${progressPercent}%`);
+    console.log("--- Selesai Menghitung Progress ---\n");
 
     return NextResponse.json({
-      totalMateri: materiIds.length,
-      selesai: completed.length,
       progressPercent,
-      materiCompleted: completed,
     });
   } catch (err) {
-    console.error("🔥 Error kelas progress:", err);
+    console.error("🔥 Error calculating weighted class progress:", err);
     return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
   }
 }
