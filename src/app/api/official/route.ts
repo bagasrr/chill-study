@@ -17,7 +17,7 @@ export async function POST(req: Request) {
   const buffer = new Uint8Array(arrayBuffer);
 
   const fileName = `ttd-${Date.now()}-${file.name}`;
-  const { data, error } = await supabaseServer.storage.from("ttd").upload(fileName, buffer, {
+  const { error } = await supabaseServer.storage.from("ttd").upload(fileName, buffer, {
     contentType: file.type,
     upsert: true,
   });

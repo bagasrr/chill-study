@@ -9,6 +9,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { GradientCircularProgress } from "../GradientCircularProgress";
 
 // Tipe data soal
 type QuestionType = {
@@ -82,7 +83,7 @@ export default function AddExamForm() {
       }
     };
     syncSupabaseSession();
-  }, [session?.access_token]);
+  }, [session?.id_token, session?.access_token, supabase.auth]);
 
   const onSubmit = async (data: FormType) => {
     setIsSubmitting(true);
@@ -137,6 +138,7 @@ export default function AddExamForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="max-w-3xl mx-auto p-6 bg-white shadow rounded mt-10">
+      {isSubmitting && <GradientCircularProgress />}
       <h1 className="text-2xl font-bold mb-6">Tambah Ujian</h1>
 
       {isLoading ? (

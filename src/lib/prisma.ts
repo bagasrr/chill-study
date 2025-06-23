@@ -11,7 +11,7 @@ const prisma =
   });
 
 // Middleware soft delete
-prisma.$use(async (params: any, next: any) => {
+prisma.$use(async (params, next) => {
   if (["User", "Kelas", "Materi"].includes(params.model ?? "")) {
     if (params.action === "findMany" || params.action === "findFirst") {
       if (!params.args) params.args = {};

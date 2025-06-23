@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { TextField, MenuItem, Button, Box, CircularProgress } from "@mui/material";
-import axios, { AxiosError } from "axios";
+import { TextField, MenuItem, Box } from "@mui/material";
+import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import BackSubmitButton from "@/components/BackSubmitButton";
@@ -34,12 +34,6 @@ export default function EditUser() {
     },
   });
 
-  useEffect(() => {
-    if (id) {
-      fetchUser();
-    }
-  }, [id]);
-
   const fetchUser = async () => {
     try {
       const res = await axios.get(`/api/${id}/details/user`);
@@ -54,6 +48,9 @@ export default function EditUser() {
       console.error("Failed to fetch data:", err);
     }
   };
+  useEffect(() => {
+    fetchUser();
+  }, []);
 
   const onSubmit = async (data: FormValues) => {
     setLoading(true);

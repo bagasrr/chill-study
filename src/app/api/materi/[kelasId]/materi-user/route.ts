@@ -42,12 +42,12 @@ export async function GET(req: NextRequest, { params }: { params: { kelasId: str
     const progress = await prisma.progress.findMany({
       where: {
         userId,
-        materiId: { in: materi.map((m) => m.id) },
+        materiContentId: { in: materi.map((m) => m.id) },
       },
     });
 
     const paidMateriIds = new Set(paidItems.map((p) => p.materiId));
-    const accessedMateriIds = new Set(progress.map((p) => p.materiId));
+    const accessedMateriIds = new Set(progress.map((p) => p.materiContentId));
 
     const materiWithAccess = materi.map((m) => {
       const hasProgress = accessedMateriIds.has(m.id);

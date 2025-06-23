@@ -10,6 +10,8 @@ import { useFetchData } from "@/lib/hooks/useFetchData";
 import { Box, Button, Typography, Paper, TextField, CircularProgress } from "@mui/material";
 import { CloudUpload as CloudUploadIcon, Add as AddIcon, ArrowBack as ArrowBackIcon } from "@mui/icons-material";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import Image from "next/image";
+import { isAxiosError } from "axios";
 
 // Interface untuk data form
 interface KelasForm {
@@ -91,8 +93,10 @@ export default function AddKelasForm() {
         const { data: publicUrlData } = supabase.storage.from("file").getPublicUrl(uploadData.path);
 
         thumbnailUrl = publicUrlData.publicUrl;
-      } catch (error: any) {
-        toast.error(error.message || "Terjadi kesalahan saat mengunggah file.");
+      } catch (error) {
+        if (isAxiosError(error)) {
+          toast.error(error.message || "Terjadi kesalahan saat mengunggah file.");
+        }
         return;
       }
 
@@ -114,7 +118,7 @@ export default function AddKelasForm() {
 
   // Persiapan data untuk react-select
   const certificateOptions: CertificateOption[] = Array.isArray(certifTemplate)
-    ? certifTemplate.map((template: any) => ({
+    ? certifTemplate.map((template) => ({
         value: template.id,
         label: template.name,
         image: template.certifTemplate,
@@ -123,7 +127,7 @@ export default function AddKelasForm() {
 
   const formatOptionLabel = ({ label, image }: CertificateOption) => (
     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-      <img src={image} alt={label} style={{ width: 50, height: "auto", borderRadius: "4px" }} />
+      <Image src={image} alt={label} style={{ width: 50, height: "auto", borderRadius: "4px" }} />
       <span>{label}</span>
     </div>
   );
@@ -233,7 +237,7 @@ export default function AddKelasForm() {
               </Button>
               {previewUrl && (
                 <Box sx={{ mt: 2, border: "1px solid #e5e7eb", p: 1, borderRadius: 2 }}>
-                  <img src={previewUrl} alt="Preview Thumbnail" style={{ width: "200px", height: "auto", objectFit: "cover", borderRadius: "4px" }} />
+                  <Image src={previewUrl} alt="Preview Thumbnail" style={{ width: "200px", height: "auto", objectFit: "cover", borderRadius: "4px" }} />
                 </Box>
               )}
               {thumbnailFile && (

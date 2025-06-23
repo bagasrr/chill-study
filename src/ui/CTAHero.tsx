@@ -1,14 +1,19 @@
 "use client";
 // pages/pricing.tsx
-import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import KelasShowCase from "@/components/KelasShowCase";
 import { useAllKelas } from "@/lib/hooks/useAllKelas";
 import { useSession } from "next-auth/react";
 
+interface Kelas {
+  id: number;
+  kelas: string;
+  CompanyCode: string;
+  materi: [];
+}
 const CTAHero = () => {
-  const { kelas, isLoading, error, mutate } = useAllKelas();
-  // console.log(kelas);
+  const { kelas } = useAllKelas();
+  console.log(kelas);
   const session = useSession();
   console.log(session);
 
@@ -30,8 +35,8 @@ const CTAHero = () => {
 
       <section className="mb-10">
         {kelas
-          ?.filter((kelas: any) => kelas.materi && kelas.materi.length > 0)
-          .map((kelas: any) => (
+          ?.filter((kelas: Kelas) => kelas.materi && kelas.materi.length > 0)
+          .map((kelas: Kelas) => (
             <KelasShowCase kelasnama={kelas.CompanyCode} key={kelas.id} />
           ))}
       </section>

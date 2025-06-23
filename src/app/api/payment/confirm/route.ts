@@ -1,3 +1,4 @@
+// api/payment/confirm.ts
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
@@ -7,9 +8,11 @@ export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
-  const { orderId, materiId, price } = await req.json(); // ⬅️ menerima data dari frontend
+  const { orderId, materiId, price } = await req.json();
   const userId = session.user.id;
-  // ✅ CEK jika ada transaksi aktif
+
+  // Optional: Cek jika ada transaksi aktif, hanya di sini atau di checkout.
+  // Jika ingin lebih ketat, biarkan di sini. Jika lebih fleksibel, hapus.
   const existing = await prisma.payment.findFirst({
     where: {
       userId,
@@ -18,15 +21,15 @@ export async function POST(req: NextRequest) {
   });
 
   if (existing) {
-    return NextResponse.json({ message: "Kamu masih punya pembayaran yang belum selesai." }, { status: 400 });
+    return NextResponse.json({ message: "Kamu masih punya pembayaran yang belum selesai. Silahkan selesaikan pembayaran sebelumnya.", existing }, { status: 400 });
   }
 
   try {
-    // Create payment
-    const payment = await prisma.payment.create({
+    // Create payment dengan status PENDING
+    await prisma.payment.create({
       data: {
         userId,
-        status: "PAID",
+        status: "PENDING", // <--- PERBAIKAN PENTING DI SINI
         orderId,
         CreatedBy: session.user.email || "system",
         items: {
@@ -41,36 +44,12 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Tambahkan ke kelasUser jika user belum punya kelasnya
-    const materi = await prisma.materi.findUnique({
-      where: { id: materiId },
-      select: { kelasId: true },
-    });
+    // Hapus logika penambahan KelasUser dari sini!
+    // Itu akan dilakukan di webhook setelah pembayaran sukses.
 
-    if (materi) {
-      const existingKelasUser = await prisma.kelasUser.findUnique({
-        where: {
-          userId_kelasId: {
-            userId,
-            kelasId: materi.kelasId,
-          },
-        },
-      });
-
-      if (!existingKelasUser) {
-        await prisma.kelasUser.create({
-          data: {
-            userId,
-            kelasId: materi.kelasId,
-            CreatedBy: session.user.email || "system",
-          },
-        });
-      }
-    }
-
-    return NextResponse.json({ message: "Payment saved" });
+    return NextResponse.json({ message: "Payment initiated", orderId: orderId }); // Mengembalikan orderId
   } catch (error) {
-    console.error("❌ Failed to save payment:", error);
+    console.error("❌ Failed to initiate payment:", error);
     return NextResponse.json({ message: "Internal server error" }, { status: 500 });
   }
 }

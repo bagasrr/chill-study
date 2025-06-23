@@ -48,6 +48,7 @@ export default function AddOfficialNewForm() {
           form.append("file", blob, "signature.png");
         } catch (err) {
           toast.error("Gagal mengambil tanda tangan dari gambar.");
+          console.log(err);
           setLoading(false);
           return;
         }

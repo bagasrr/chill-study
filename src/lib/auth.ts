@@ -2,7 +2,7 @@ import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "./prisma"; // Pastikan path ini benar
 import { randomUUID } from "crypto";
-import { NextAuthOptions, User } from "next-auth";
+import { NextAuthOptions, Session, User } from "next-auth";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -140,7 +140,7 @@ export const authOptions: NextAuthOptions = {
      * session: Dipanggil setiap kali sesi diakses.
      * INI ADALAH TEMPAT KITA MELAKUKAN REFRESH TOKEN.
      */
-    async session({ session, user }: { session: any; user: User }) {
+    async session({ session, user }: { session: Session; user: User }) {
       const now = new Date();
 
       // 1. Cek apakah token di database sudah kedaluwarsa
@@ -185,14 +185,14 @@ export const authOptions: NextAuthOptions = {
 
           console.log(`Token untuk ${user.email} berhasil di-refresh.`);
           // 4. Kirim access token yang BARU ke session client
-          session.accessToken = refreshedTokens.access_token;
+          session.access_token = refreshedTokens.access_token;
         } catch (error) {
           console.error("Gagal melakukan refresh token:", error);
           session.error = "RefreshAccessTokenError";
         }
       } else {
         // ✅ Token masih aktif, langsung gunakan dari database
-        session.accessToken = user.googleAccessToken;
+        session.access_token = user.googleAccessToken ?? undefined;
       }
 
       // Tambahkan data lain yang dibutuhkan client

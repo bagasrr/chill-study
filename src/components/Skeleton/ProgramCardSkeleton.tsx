@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent, CardMedia, Skeleton, Box, CardActions, Button } from "@mui/material";
+import { Card, CardContent, CardMedia, Skeleton, Box, CardActions } from "@mui/material";
 
 const ProgramCardSkeleton = () => {
   return (

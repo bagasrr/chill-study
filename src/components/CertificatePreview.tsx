@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 export function CertificatePreview({ kelasId }: { kelasId: string }) {
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-  const { kelas, isLoading, error } = useKelasDetailById(kelasId);
+  const { kelas, isLoading } = useKelasDetailById(kelasId);
 
   useEffect(() => {
     const fetchPreview = async () => {

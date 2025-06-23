@@ -145,6 +145,7 @@ model MateriContent {
 
   createdAt DateTime  @default(now())
   createdBy String?
+  IsDeleted String?
 
   
   // Relasi ke progress user
@@ -309,14 +310,7 @@ model ExamResult {
 }
 
 
-model TemporaryUpload {
-  id        String   @id @default(uuid())
-  userId    String
-  path      String
-  bucket    String   @default("questions")
-  isUsed    Boolean  @default(false)
-  createdAt DateTime @default(now())
-}
+
 
 model CertifTemplate {
   id                String   @id @default(uuid())

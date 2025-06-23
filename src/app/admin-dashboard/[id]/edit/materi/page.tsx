@@ -3,16 +3,16 @@
 
 import React, { useEffect, useState, ChangeEvent, FormEvent } from "react";
 import { Button, CircularProgress, Box, FormControl, InputLabel, Select, MenuItem, TextField, Typography, Paper, IconButton, LinearProgress } from "@mui/material";
-import { CloudUpload as CloudUploadIcon, Delete as DeleteIcon, AddCircleOutline as AddIcon, Videocam as VideoIcon, PictureAsPdf as PdfIcon, Link as LinkIcon, ArrowBack } from "@mui/icons-material";
+import { CloudUpload as CloudUploadIcon, Delete as DeleteIcon, AddCircleOutline as AddIcon, Videocam as VideoIcon, PictureAsPdf as PdfIcon, Link as LinkIcon, ArrowBack as ArrowBackIcon } from "@mui/icons-material"; // Tambahkan ArrowBackIcon
 import { CurrencyTextField } from "@/components/FormTextField"; // Asumsi path ini benar
-import axios from "@/lib/axios";
+import axios, { isAxiosError } from "axios"; // Import isAxiosError dari axios
 import { useParams, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 // Interface untuk data MateriContent dari DB (untuk yang sudah ada)
 interface MateriContentFromDB {
-  id: string;
+  id: string; // ID dari database
   type: "VIDEO" | "PDF";
   title: string;
   weight: number;
@@ -21,7 +21,7 @@ interface MateriContentFromDB {
 
 // Interface untuk state di frontend (bisa ada 'file' untuk upload baru)
 interface MateriContentItem extends MateriContentFromDB {
-  tempId: string; // ID sementara untuk item baru atau identifikasi unik di frontend
+  tempId: string; // ID sementara untuk item baru atau identifikasi unik di frontend (bisa sama dengan id jika dari DB)
   file?: File; // Untuk file baru yang akan diupload
   isNew?: boolean; // Flag untuk menandai item baru
   isRemoved?: boolean; // Flag untuk menandai item yang dihapus secara logis di frontend
@@ -43,9 +43,9 @@ export default function EditMateriForm() {
   const [contentItems, setContentItems] = useState<MateriContentItem[]>([]);
   const [removedContentIds, setRemovedContentIds] = useState<string[]>([]); // Ini akan melacak ID yang dihapus dari DB
   const [kelas, setKelas] = useState<{ id: string; title: string }[]>([]);
-  console.log({ materiInfo, contentItems, kelas });
+  // console.log({ materiInfo, contentItems, kelas }); // Hapus console.log di sini jika tidak diperlukan lagi
 
-  const [isLoading, setIsLoading] = useState(false); // Untuk submit form
+  const [isLoading, setIsLoading] = useState(false); // Untuk submit form (submitWrapper di AddMateriForm)
   const [isDataLoading, setIsDataLoading] = useState(true); // Untuk loading data awal
   const [isUploadingFiles, setIsUploadingFiles] = useState(false); // Untuk proses upload file PDF
 
@@ -55,10 +55,10 @@ export default function EditMateriForm() {
       try {
         const [kelasRes, materiRes] = await Promise.all([
           axios.get("/api/kelas"),
-          axios.get(`/api/${materiId}/details/materi`), // Asumsi endpoint ini mengembalikan detail materi + contents-nya
+          axios.get(`/api/${materiId}/details/materi`), // Pastikan endpoint ini benar dan mengembalikan detail materi + contents-nya
         ]);
         const materiData = materiRes.data;
-        console.log({ materiRes });
+        // console.log({ materiRes }); // Hapus console.log di sini
 
         setKelas(kelasRes.data);
         setMateriInfo({
@@ -69,43 +69,66 @@ export default function EditMateriForm() {
         });
         // Pastikan setiap item konten yang dimuat dari DB memiliki tempId dan isNew: false
         setContentItems(
-          materiData.contents.map((item: MateriContentFromDB) => ({
+          (materiData.contents || []).map((item: MateriContentFromDB) => ({
             ...item,
             tempId: item.id, // Gunakan ID asli sebagai tempId untuk item yang sudah ada
-            isNew: false,
-            isRemoved: false,
-          })) || []
+            isNew: false, // Item yang dimuat dari DB bukan item baru
+            isRemoved: false, // Default tidak dihapus
+          }))
         );
       } catch (error) {
-        toast.error("Gagal mengambil data materi");
+        if (isAxiosError(error)) {
+          toast.error(error.response?.data?.message || "Gagal mengambil data materi");
+        } else {
+          toast.error("Gagal mengambil data materi.");
+        }
         console.error("Error loading materi data:", error);
       } finally {
         setIsDataLoading(false);
       }
     };
     if (materiId) {
-      // Pastikan materiId ada sebelum memuat data
       loadData();
     }
   }, [materiId]);
 
+  // --- PERBAIKAN handleInfoChange ---
   const handleInfoChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setMateriInfo((p) => ({ ...p, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    setMateriInfo((prev) => ({
+      ...prev,
+      [name]: name === "price" ? Number(value) : value, // Konversi 'price' ke number
+    }));
   };
+  // --- AKHIR PERBAIKAN handleInfoChange ---
 
-  const handleContentItemChange = (index: number, field: keyof MateriContentItem, value: any) => {
-    const newItems = [...contentItems];
-    // @ts-ignore
-    newItems[index][field] = value;
-    setContentItems(newItems);
+  // --- PERBAIKAN handleContentItemChange ---
+  const handleContentItemChange = <K extends keyof MateriContentItem>(
+    index: number,
+    field: K,
+    value: MateriContentItem[K] // Value akan memiliki tipe yang tepat
+  ) => {
+    setContentItems((prevItems) => {
+      const newItems = [...prevItems];
+      // Jika field adalah 'weight' atau properti number lainnya, pastikan nilainya adalah number
+      const parsedValue = field === "weight" && typeof value === "string" ? Number(value) : value;
+
+      const updatedItem = {
+        ...newItems[index],
+        [field]: parsedValue, // Gunakan parsedValue
+      };
+      newItems[index] = updatedItem;
+      return newItems;
+    });
   };
+  // --- AKHIR PERBAIKAN handleContentItemChange ---
 
   const addContentItem = (type: "VIDEO" | "PDF") => {
     setContentItems([
       ...contentItems,
       {
         tempId: `new_${Date.now()}`, // ID sementara unik untuk item baru di frontend
-        id: undefined, // Penting: item baru tidak punya ID database
+        id: "", // ID kosong karena ini item baru, belum di DB
         type,
         title: "",
         weight: 0,
@@ -118,28 +141,37 @@ export default function EditMateriForm() {
 
   const removeContentItem = (tempIdToRemove: string) => {
     setContentItems((prevItems) => {
-      const itemToRemove = prevItems.find((item) => item.tempId === tempIdToRemove);
-
-      // Jika item yang dihapus BUKAN item baru (punya ID asli dari DB), tambahkan ke removedContentIds
-      if (itemToRemove && itemToRemove.id && !itemToRemove.isNew) {
-        setRemovedContentIds((prevRemovedIds) => [...prevRemovedIds, itemToRemove.id!]);
-      }
-
-      // Filter item ini keluar dari array contentItems yang akan dirender
-      return prevItems.filter((item) => item.tempId !== tempIdToRemove);
+      const newItems = prevItems.map((item) => {
+        if (item.tempId === tempIdToRemove) {
+          // Tandai item sebagai dihapus jika bukan item baru
+          if (item.id && !item.isNew) {
+            setRemovedContentIds((prevRemovedIds) => [...prevRemovedIds, item.id]);
+          }
+          return { ...item, isRemoved: true }; // Tandai isRemoved true
+        }
+        return item;
+      });
+      // Hanya tampilkan item yang tidak ditandai isRemoved
+      return newItems.filter((item) => !item.isRemoved);
     });
   };
 
-  // Fungsi untuk membersihkan item yang ditandai removed dari UI
+  // Fungsi untuk mendapatkan item yang masih terlihat (tidak dihapus secara logis)
   const getVisibleContentItems = () => contentItems.filter((item) => !item.isRemoved);
 
   const handleFileChange = (index: number, e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      const newItems = [...contentItems];
-      const file = e.target.files[0];
-      newItems[index].file = file;
-      newItems[index].title = newItems[index].title || file.name.split(".").slice(0, -1).join("."); // Ambil nama file tanpa ekstensi
-      setContentItems(newItems);
+      setContentItems((prevItems) => {
+        const newItems = [...prevItems];
+        const file = e.target.files![0]; // ! untuk memastikan file ada
+        const updatedItem = {
+          ...newItems[index],
+          file: file,
+          title: newItems[index].title || file.name.split(".").slice(0, -1).join("."), // Ambil nama file tanpa ekstensi
+        };
+        newItems[index] = updatedItem;
+        return newItems;
+      });
     }
   };
 
@@ -162,24 +194,18 @@ export default function EditMateriForm() {
     setIsUploadingFiles(true); // Mulai indikator upload file
 
     try {
-      const finalContentsPayload: { id?: string; type: "VIDEO" | "PDF"; title: string; url: string; weight: number }[] = [];
-      // const idsToRemove: string[] = [];
+      const finalContentsPayload: {
+        id?: string; // ID bisa opsional untuk item baru
+        type: "VIDEO" | "PDF";
+        title: string;
+        url: string;
+        weight: number;
+      }[] = [];
 
-      // Proses item yang akan dihapus
-      // contentItems.forEach((item) => {
-      //   if (item.isRemoved && item.id) {
-      //     // Hanya tambahkan ID asli jika ditandai dihapus
-      //     idsToRemove.push(item.id);
-      //   }
-      // });
-
-      // Proses item yang tersisa (tidak dihapus)
       await Promise.all(
         currentVisibleContents.map(async (item) => {
           if (item.isNew && item.type === "PDF" && item.file) {
-            // Upload file PDF baru
             const file = item.file;
-            // Gunakan path yang lebih aman
             const safeName = file.name.replace(/\s+/g, "-").replace(/[^a-zA-Z0-9.\-_]/g, "");
             const path = `materi/attachments/${Date.now()}_${safeName}`;
             const { data, error } = await supabase.storage.from("file").upload(path, file);
@@ -196,10 +222,8 @@ export default function EditMateriForm() {
             });
           } else if (item.type === "VIDEO" || (item.type === "PDF" && !item.isNew)) {
             // Video atau PDF yang sudah ada (tidak perlu upload ulang)
-            // Atau PDF baru tapi tidak ada file (ini harusnya divalidasi juga)
             if (!item.url) {
-              // Validasi jika URL kosong
-              throw new Error(`URL untuk ${item.title} tidak boleh kosong.`);
+              throw new Error(`URL untuk ${item.title || "item ini"} tidak boleh kosong.`);
             }
             finalContentsPayload.push({
               id: item.id, // Kirim ID jika ini item yang sudah ada
@@ -209,8 +233,7 @@ export default function EditMateriForm() {
               url: item.url,
             });
           } else {
-            // Handle case where new PDF item has no file, or other invalid scenarios
-            console.warn("Item konten tidak lengkap atau tidak valid:", item);
+            console.warn("Item konten tidak lengkap atau tidak valid (sebelum submit):", item);
             throw new Error("Beberapa item konten tidak lengkap atau tidak valid.");
           }
         })
@@ -221,49 +244,61 @@ export default function EditMateriForm() {
       const payload = {
         ...materiInfo,
         price: Number(materiInfo.price),
-        contents: finalContentsPayload, // Ini adalah array gabungan yang divalidasi Zod
-        // removedContentIds: idsToRemove, // ID yang akan dihapus
-        removedContentIds, // ID yang akan dihapus
+        contents: finalContentsPayload,
+        removedContentIds: removedContentIds, // Pastikan ini dikirim
       };
 
       console.log("Final Payload to be sent:", payload);
 
-      await axios.patch(`/api/${materiId}/edit/materi`, payload);
+      await axios.patch(`/api/${materiId}/edit/materi`, payload); // Asumsi endpoint ini
       toast.success("Materi berhasil diperbarui 🎉");
       router.push("/admin-dashboard#materi");
-    } catch (error: any) {
-      setIsUploadingFiles(false);
-      toast.error(error.response?.data?.message || error.message || "Gagal memperbarui materi 😢");
-      console.error("Error submitting form:", error);
+    } catch (error) {
+      setIsUploadingFiles(false); // Pastikan ini di-set false bahkan jika ada error
+      setIsLoading(false); // Pastikan ini di-set false bahkan jika ada error
+
+      if (isAxiosError(error)) {
+        console.error("Axios Error:", error.response?.data || error.message);
+        toast.error(error.response?.data?.message || "Gagal memperbarui materi 😢");
+      } else if (error instanceof Error) {
+        console.error("General Error:", error.message);
+        toast.error(error.message);
+      } else {
+        console.error("Unknown Error:", error);
+        toast.error("Terjadi kesalahan yang tidak diketahui saat memperbarui materi.");
+      }
     } finally {
+      // Pastikan loading berakhir di sini untuk semua skenario
+      // Ini bisa dihapus jika setIsLoading sudah ada di tiap branch catch
       setIsLoading(false);
     }
   };
 
   const totalWeight = getVisibleContentItems().reduce((sum, item) => sum + Number(item.weight || 0), 0);
+  const isTotalLoading = isLoading || isUploadingFiles; // Gabungkan loading submit dan upload file
 
-  // ✅ Style untuk text field dengan warna teks input hitam
+  // --- Styles tetap sama ---
   const textFieldStyles = {
+    "& .MuiInputBase-input": {
+      color: "#000",
+    },
     "& .MuiOutlinedInput-root": {
       backgroundColor: "#f8fafc",
-      "& .MuiInputBase-input": {
-        color: "#000", // Warna teks input hitam
-      },
       "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-        borderColor: "#0288d1", // Warna border info
+        borderColor: "#0288d1",
       },
     },
     "& .MuiInputLabel-root.Mui-focused": {
-      color: "#0288d1", // Warna label info
+      color: "#0288d1",
     },
   };
 
   const standardTextFieldStyles = {
     "& .MuiInput-input": {
-      color: "#000", // Warna teks input hitam
+      color: "#000",
     },
     "& .MuiInput-underline:after": {
-      borderBottomColor: "#0288d1", // Warna garis bawah info
+      borderBottomColor: "#0288d1",
     },
     "& .MuiInputLabel-root.Mui-focused": {
       color: "#0288d1",
@@ -301,7 +336,7 @@ export default function EditMateriForm() {
                 <TextField label="Deskripsi Materi" name="content" value={materiInfo.content} onChange={handleInfoChange} multiline rows={3} fullWidth variant="outlined" sx={textFieldStyles} />
               </div>
               <div className="col-span-2 md:col-span-1">
-                <CurrencyTextField label="Harga Materi (0 jika gratis)" name="price" value={materiInfo.price} onChange={(name, value) => setMateriInfo((p) => ({ ...p, [name]: value }))} required sx={textFieldStyles} />
+                <CurrencyTextField label="Harga Materi (0 jika gratis)" name="price" value={materiInfo.price} onChange={(name: string, value: number) => setMateriInfo((p) => ({ ...p, [name]: value }))} required sx={textFieldStyles} />
               </div>
             </div>
           </Box>
@@ -321,47 +356,52 @@ export default function EditMateriForm() {
             </div>
 
             <div className="flex flex-col gap-4">
-              {/* {getVisibleContentItems().map((item, index) => ( */}
-              {contentItems.map((item, index) => (
-                <Paper key={item.tempId} variant="outlined" className="p-4 relative" sx={{ bgcolor: "#f8fafc" }}>
-                  <IconButton size="small" onClick={() => removeContentItem(item.tempId)} sx={{ position: "absolute", top: 8, right: 8 }} className="z-20">
-                    <DeleteIcon color="error" className="hover:bg-blue-500" />
-                  </IconButton>
-                  <div className="flex items-start gap-4">
-                    <Typography className="mt-4">{item.type === "VIDEO" ? <VideoIcon color="info" /> : <PdfIcon color="secondary" />}</Typography>
-                    <div className="flex-grow grid grid-cols-3 gap-x-4">
-                      <TextField label="Judul Item" value={item.title} onChange={(e) => handleContentItemChange(index, "title", e.target.value)} variant="standard" required className="col-span-2" sx={standardTextFieldStyles} />
-                      <TextField label="Bobot (%)" type="number" value={item.weight} onChange={(e) => handleContentItemChange(index, "weight", e.target.value)} variant="standard" required sx={standardTextFieldStyles} />
+              {contentItems.map(
+                (
+                  item,
+                  index // Render semua item, penanganan isRemoved di getVisibleContentItems() untuk payload
+                ) => (
+                  <Paper key={item.tempId} variant="outlined" className={`p-4 relative ${item.isRemoved ? "opacity-50 line-through" : ""}`} sx={{ bgcolor: "#f8fafc" }}>
+                    <IconButton size="small" onClick={() => removeContentItem(item.tempId)} sx={{ position: "absolute", top: 8, right: 8 }} className="z-20">
+                      <DeleteIcon color="error" className="hover:bg-blue-500" />
+                    </IconButton>
+                    <div className="flex items-start gap-4">
+                      <Typography className="mt-4">{item.type === "VIDEO" ? <VideoIcon color="info" /> : <PdfIcon color="secondary" />}</Typography>
+                      <div className="flex-grow grid grid-cols-3 gap-x-4">
+                        <TextField label="Judul Item" value={item.title} onChange={(e) => handleContentItemChange(index, "title", e.target.value)} variant="standard" required className="col-span-2" sx={standardTextFieldStyles} />
+                        {/* Pastikan `Number()` digunakan di sini untuk `weight` */}
+                        <TextField label="Bobot (%)" type="number" value={item.weight} onChange={(e) => handleContentItemChange(index, "weight", Number(e.target.value))} variant="standard" required sx={standardTextFieldStyles} />
+                      </div>
                     </div>
-                  </div>
-                  {item.type === "VIDEO" && (
-                    <TextField label="URL Video" value={item.url} onChange={(e) => handleContentItemChange(index, "url", e.target.value)} fullWidth variant="standard" sx={{ mt: 2, ...standardTextFieldStyles }} required />
-                  )}
-                  {item.type === "PDF" &&
-                    item.isNew && ( // Hanya tampilkan input file untuk PDF baru
-                      <div className="mt-4">
-                        <Button component="label" variant="text" size="small" startIcon={<CloudUploadIcon />} color="info">
-                          {item.file ? item.file.name : "Pilih File PDF Baru"}
-                          <input type="file" accept=".pdf" hidden onChange={(e) => handleFileChange(index, e)} />
-                        </Button>
-                      </div>
+                    {item.type === "VIDEO" && (
+                      <TextField label="URL Video" value={item.url} onChange={(e) => handleContentItemChange(index, "url", e.target.value)} fullWidth variant="standard" sx={{ mt: 2, ...standardTextFieldStyles }} required />
                     )}
-                  {item.type === "PDF" &&
-                    !item.isNew &&
-                    item.url && ( // Tampilkan link PDF yang sudah ada
-                      <div className="mt-4">
-                        <Button variant="text" size="small" startIcon={<LinkIcon />} color="info" onClick={() => window.open(item.url, "_blank")}>
-                          Lihat PDF Existing
-                        </Button>
-                      </div>
-                    )}
-                  {item.type === "PDF" &&
-                    !item.isNew &&
-                    !item.url && ( // Jika PDF lama tapi URL kosong
-                      <div className="mt-4 text-red-600">URL PDF tidak ditemukan. Harap unggah ulang atau perbarui.</div>
-                    )}
-                </Paper>
-              ))}
+                    {item.type === "PDF" &&
+                      item.isNew && ( // Hanya tampilkan input file untuk PDF baru
+                        <div className="mt-4">
+                          <Button component="label" variant="text" size="small" startIcon={<CloudUploadIcon />} color="info">
+                            {item.file ? item.file.name : "Pilih File PDF Baru"}
+                            <input type="file" accept=".pdf" hidden onChange={(e) => handleFileChange(index, e)} />
+                          </Button>
+                        </div>
+                      )}
+                    {item.type === "PDF" &&
+                      !item.isNew &&
+                      item.url && ( // Tampilkan link PDF yang sudah ada
+                        <div className="mt-4">
+                          <Button variant="text" size="small" startIcon={<LinkIcon />} color="info" onClick={() => window.open(item.url, "_blank")}>
+                            Lihat PDF Existing
+                          </Button>
+                        </div>
+                      )}
+                    {item.type === "PDF" &&
+                      !item.isNew &&
+                      !item.url && ( // Jika PDF lama tapi URL kosong
+                        <div className="mt-4 text-red-600">URL PDF tidak ditemukan. Harap unggah ulang atau perbarui.</div>
+                      )}
+                  </Paper>
+                )
+              )}
             </div>
 
             {getVisibleContentItems().length > 0 && (
@@ -375,11 +415,11 @@ export default function EditMateriForm() {
           </Box>
 
           <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
-            <Button variant="outlined" startIcon={<ArrowBack />} onClick={() => router.back()} sx={{ color: "#374151", borderColor: "#d1d5db" }}>
+            <Button variant="outlined" startIcon={<ArrowBackIcon />} onClick={() => router.back()} sx={{ color: "#374151", borderColor: "#d1d5db" }}>
               Kembali
             </Button>
-            <Button type="submit" variant="contained" startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : <AddIcon />} disabled={isLoading} sx={{ bgcolor: "#3b82f6", "&:hover": { bgcolor: "#2563eb" } }}>
-              {isLoading || isUploadingFiles ? <CircularProgress size={24} color="inherit" /> : "Simpan Perubahan Materi"}
+            <Button type="submit" variant="contained" startIcon={isTotalLoading ? <CircularProgress size={20} color="inherit" /> : <AddIcon />} disabled={isTotalLoading} sx={{ bgcolor: "#3b82f6", "&:hover": { bgcolor: "#2563eb" } }}>
+              {isTotalLoading ? "Menyimpan..." : "Simpan Perubahan Materi"}
             </Button>
           </Box>
         </form>

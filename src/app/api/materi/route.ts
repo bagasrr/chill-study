@@ -121,7 +121,7 @@ export async function POST(req: Request) {
 
         // Bagian ini akan membuat record MateriContent yang terhubung
         contents: {
-          create: contents?.map((item: any) => ({
+          create: contents?.map((item) => ({
             type: item.type, // "VIDEO" atau "PDF"
             title: item.title, // "Judul Item"
             url: item.url, // URL video atau PDF dari Supabase

@@ -3,8 +3,6 @@ import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { readFile } from "fs/promises";
-import path from "path";
 
 export async function GET(req: NextRequest, { params }: { params: { kelasId: string } }) {
   const session = await getServerSession(authOptions);

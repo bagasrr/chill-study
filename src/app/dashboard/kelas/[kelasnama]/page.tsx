@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import toast from "react-hot-toast";
 
 // MUI & Icons
 import { Skeleton } from "@mui/material";
@@ -35,7 +34,7 @@ const KelasDetailPage = () => {
   const { percent, isLoading: isLoadingProgress } = useKelasProgress(kelas?.id);
 
   // 3. State lokal untuk data sertifikat (tidak berhubungan langsung dengan materi)
-  const [sertif, setSertif] = useState<any[] | null>(null);
+  const [sertif, setSertif] = useState<[] | null>(null);
   const [loadingSertif, setLoadingSertif] = useState(true);
 
   // Effect untuk mengecek status kelulusan/sertifikat
@@ -129,17 +128,11 @@ const KelasDetailPage = () => {
                 title={materi.title}
                 price={materi.price}
                 content={materi.content}
-                // 'contents' sekarang tersedia jika PricingCard perlu menampilkannya
-                // contents={materi.contents}
                 link={`/dashboard/kelas/${kelasnama}/materi/${materi.id}`}
-                // 'canAccess' dan 'hasProgress' sekarang datang langsung dari data ini
                 canAccess={materi.canAccess}
                 hasProgress={materi.hasProgress}
-                // 'onRefresh' sekarang memanggil mutate dari useKelasDetail
                 onRefresh={() => refreshKelas()}
                 CompanyCode={kelas?.CompanyCode}
-                // Anda bisa menyederhanakan ini jika tidak diperlukan di PricingCard
-                kelas={{ title: kelas.title, CompanyCode: kelas.CompanyCode }}
               />
             ))
           ) : (

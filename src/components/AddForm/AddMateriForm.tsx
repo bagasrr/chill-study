@@ -2,14 +2,13 @@
 
 import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import { Button, CircularProgress, FormControl, InputLabel, Select, MenuItem, TextField, IconButton, LinearProgress, Box, Typography, Paper } from "@mui/material";
-import { CloudUpload as CloudUploadIcon, Delete as DeleteIcon, AddCircleOutline as AddIcon, Videocam as VideoIcon, PictureAsPdf as PdfIcon } from "@mui/icons-material";
+import { CloudUpload as CloudUploadIcon, Delete as DeleteIcon, AddCircleOutline as AddIcon, Videocam as VideoIcon, PictureAsPdf as PdfIcon, ArrowBack as ArrowBackIcon } from "@mui/icons-material";
 import { CurrencyTextField } from "../FormTextField"; // Asumsi FormTextField sudah ada
-import axios from "@/lib/axios";
-import { useFormSubmit } from "@/lib/hooks/useSubmitform";
+import axios, { isAxiosError } from "axios"; // Import isAxiosError dari axios
+import { useFormSubmit } from "@/lib/hooks/useSubmitform"; // Pastikan path dan hooks ini ada
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { ArrowBack as ArrowBackIcon } from "@mui/icons-material";
 
 // Interface state
 interface MateriContentItem {
@@ -18,7 +17,7 @@ interface MateriContentItem {
   title: string;
   weight: number;
   url: string;
-  file?: File;
+  file?: File; // File ini opsional
 }
 
 interface MateriInfo {
@@ -31,7 +30,7 @@ interface MateriInfo {
 export default function AddMateriForm() {
   const supabase = createClientComponentClient();
   const router = useRouter();
-  const { isLoading, submitWrapper } = useFormSubmit();
+  const { isLoading, submitWrapper } = useFormSubmit(); // Pastikan isLoading dan submitWrapper ada
 
   const [materiInfo, setMateriInfo] = useState<MateriInfo>({ title: "", content: "", price: 0, kelasId: "" });
   const [contentItems, setContentItems] = useState<MateriContentItem[]>([]);
@@ -42,23 +41,42 @@ export default function AddMateriForm() {
     const getKelas = async () => {
       try {
         const res = await axios.get("/api/kelas");
+        // Asumsi res.data adalah array of { id: string; title: string; }
         setKelas(res.data);
       } catch (error) {
-        console.error("Gagal mengambil data kelas", error);
+        // Tangani error secara lebih spesifik jika perlu
+        if (isAxiosError(error)) {
+          console.error("Gagal mengambil data kelas:", error.response?.data || error.message);
+        } else {
+          console.error("Gagal mengambil data kelas:", error);
+        }
+        toast.error("Gagal memuat daftar kelas.");
       }
     };
     getKelas();
   }, []);
 
   const handleInfoChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setMateriInfo((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    setMateriInfo((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleContentItemChange = (index: number, field: keyof MateriContentItem, value: any) => {
-    const newItems = [...contentItems];
-    (newItems[index] as any)[field] = value;
-    setContentItems(newItems);
+  // --- PERBAIKAN UTAMA DI SINI ---
+  // Menggunakan generic untuk keyof MateriContentItem dan memastikan tipe value sesuai
+  const handleContentItemChange = <K extends keyof MateriContentItem>(
+    index: number,
+    field: K, // Field sekarang adalah K, yang merupakan salah satu kunci dari MateriContentItem
+    value: MateriContentItem[K] // Value sekarang adalah tipe yang sesuai untuk field tersebut
+  ) => {
+    setContentItems((prevItems) => {
+      const newItems = [...prevItems];
+      // Membuat salinan objek item yang akan diubah agar tidak memutasi state langsung
+      const updatedItem = { ...newItems[index], [field]: value };
+      newItems[index] = updatedItem;
+      return newItems;
+    });
   };
+  // --- AKHIR PERBAIKAN UTAMA ---
 
   const addContentItem = (type: "VIDEO" | "PDF") => {
     setContentItems([...contentItems, { tempId: Date.now(), type, title: "", weight: 0, url: "" }]);
@@ -70,10 +88,18 @@ export default function AddMateriForm() {
 
   const handleFileChange = (index: number, e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      const newItems = [...contentItems];
-      newItems[index].file = e.target.files[0];
-      newItems[index].title = newItems[index].title || e.target.files[0].name;
-      setContentItems(newItems);
+      setContentItems((prevItems) => {
+        const newItems = [...prevItems];
+        const file = e.target.files![0]; // ! untuk memastikan file ada
+        // Membuat salinan objek item dan memperbarui file dan title
+        const updatedItem = {
+          ...newItems[index],
+          file: file,
+          title: newItems[index].title || file.name, // Set judul jika belum ada
+        };
+        newItems[index] = updatedItem;
+        return newItems;
+      });
     }
   };
 
@@ -96,38 +122,53 @@ export default function AddMateriForm() {
           contentItems.map(async (item) => {
             if (item.type === "PDF" && item.file) {
               const file = item.file;
+              // Pastikan nama file aman untuk URL atau path penyimpanan
               const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, "-");
               const path = `materi/attachments/${Date.now()}_${safeName}`;
               const { data, error } = await supabase.storage.from("file").upload(path, file);
-              if (error) throw new Error(`Gagal upload ${file.name}: ${error.message}`);
+              if (error) {
+                console.error(`Supabase upload error for ${file.name}:`, error);
+                throw new Error(`Gagal upload ${file.name}: ${error.message}`);
+              }
               const { data: publicUrlData } = supabase.storage.from("file").getPublicUrl(data.path);
               return { type: "PDF", title: item.title, weight: Number(item.weight), url: publicUrlData.publicUrl };
             }
             if (item.type === "VIDEO") {
+              // Pastikan URL tidak kosong untuk video
+              if (!item.url) {
+                throw new Error(`URL video untuk item "${item.title || "tanpa judul"}" tidak boleh kosong.`);
+              }
               return { type: "VIDEO", title: item.title, weight: Number(item.weight), url: item.url };
             }
-            return null;
+            return null; // Handle kasus di mana item tidak valid
           })
         );
 
         setIsUploading(false);
-        const finalContents = processedContents.filter(Boolean);
+        const finalContents = processedContents.filter(Boolean) as Omit<MateriContentItem, "tempId" | "file">[]; // Cast agar TypeScript tahu ini valid
         if (finalContents.length !== contentItems.length) {
-          throw new Error("Beberapa konten gagal diproses. Silakan coba lagi.");
+          throw new Error("Beberapa konten gagal diproses atau tidak valid. Silakan periksa kembali.");
         }
 
         const payload = { ...materiInfo, price: Number(materiInfo.price), contents: finalContents };
 
-        // PENTING: Cek konsol browser Anda untuk melihat payload ini saat submit
         console.log("Final Payload to be sent:", payload);
 
         await axios.post("/api/materi", payload);
         toast.success("Materi berhasil ditambahkan 🎉");
         router.push("/admin-dashboard#materi");
-      } catch (error: any) {
+      } catch (error) {
         setIsUploading(false);
-        toast.error(error.message || "Gagal menambahkan data materi 😢");
-        console.error(error);
+        if (isAxiosError(error)) {
+          console.error("Axios Error:", error.response?.data || error.message);
+          toast.error(error.response?.data.message || "Gagal menambahkan data materi 😢");
+        } else if (error instanceof Error) {
+          console.error("General Error:", error.message);
+          toast.error(error.message); // Tampilkan pesan error yang lebih spesifik dari throw new Error
+        } else {
+          console.error("Unknown Error:", error);
+          toast.error("Terjadi kesalahan yang tidak diketahui saat menambahkan materi.");
+        }
       }
     });
   };
@@ -135,13 +176,13 @@ export default function AddMateriForm() {
   const totalLoading = isLoading || isUploading;
   const totalWeight = contentItems.reduce((sum, item) => sum + Number(item.weight || 0), 0);
 
-  // ✅ Style untuk text field dengan warna teks input hitam
+  // Style untuk text field dengan warna teks input hitam
   const textFieldStyles = {
+    "& .MuiInputBase-input": {
+      color: "#0f172a",
+    },
     "& .MuiOutlinedInput-root": {
       backgroundColor: "#f8fafc",
-      "& .MuiInputBase-input": {
-        color: "#000", // Warna teks input hitam
-      },
       "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
         borderColor: "#0288d1", // Warna border info
       },
@@ -213,7 +254,7 @@ export default function AddMateriForm() {
                     <Typography className="mt-4">{item.type === "VIDEO" ? <VideoIcon color="info" /> : <PdfIcon color="secondary" />}</Typography>
                     <div className="flex-grow grid grid-cols-3 gap-x-4">
                       <TextField label="Judul Item" value={item.title} onChange={(e) => handleContentItemChange(index, "title", e.target.value)} variant="standard" required className="col-span-2" sx={standardTextFieldStyles} />
-                      <TextField label="Bobot (%)" type="number" value={item.weight} onChange={(e) => handleContentItemChange(index, "weight", e.target.value)} variant="standard" required sx={standardTextFieldStyles} />
+                      <TextField label="Bobot (%)" type="number" value={item.weight} onChange={(e) => handleContentItemChange(index, "weight", Number(e.target.value))} variant="standard" required sx={standardTextFieldStyles} />
                     </div>
                   </div>
                   {item.type === "VIDEO" && (
@@ -244,8 +285,8 @@ export default function AddMateriForm() {
             <Button variant="outlined" startIcon={<ArrowBackIcon />} onClick={() => router.back()} sx={{ color: "#374151", borderColor: "#d1d5db" }}>
               Kembali
             </Button>
-            <Button type="submit" variant="contained" startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : <AddIcon />} disabled={isLoading} sx={{ bgcolor: "#3b82f6", "&:hover": { bgcolor: "#2563eb" } }}>
-              {totalLoading ? <CircularProgress size={24} color="inherit" /> : "Tambahkan Materi"}
+            <Button type="submit" variant="contained" startIcon={totalLoading ? <CircularProgress size={20} color="inherit" /> : <AddIcon />} disabled={totalLoading} sx={{ bgcolor: "#3b82f6", "&:hover": { bgcolor: "#2563eb" } }}>
+              {totalLoading ? "Menambahkan..." : "Tambahkan Materi"}
             </Button>
           </Box>
         </form>

@@ -20,7 +20,7 @@ export async function POST(req: NextRequest, { params }: { params: { kelasId: st
 
   let correct = 0;
   for (const question of exam.questions) {
-    const userAnswer = answers.find((a: any) => a.questionId === question.id);
+    const userAnswer = answers.find((a: { questionId: string; answer: string }) => a.questionId === question.id);
     if (userAnswer?.answer === question.correctAnswer) correct++;
   }
 

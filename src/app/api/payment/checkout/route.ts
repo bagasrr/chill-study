@@ -1,21 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import midtransClient from "midtrans-client";
-import { prisma } from "@/lib/prisma";
+// import { prisma } from "@/lib/prisma";
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { kelasId, kelasName, price, userEmail, userName, orderId, userId } = body;
+  const { kelasId, kelasName, price, userEmail, userName, orderId } = body;
   // ✅ CEK jika ada transaksi aktif
-  const existing = await prisma.payment.findFirst({
-    where: {
-      userId,
-      status: { in: ["CART", "PENDING"] },
-    },
-  });
+  // const existing = await prisma.payment.findFirst({
+  //   where: {
+  //     userId,
+  //     status: { in: ["CART", "PENDING"] },
+  //   },
+  // });
 
-  if (existing) {
-    return NextResponse.json({ message: "Kamu masih punya pembayaran yang belum selesai." }, { status: 400 });
-  }
+  // // if (existing) {
+  // //   return NextResponse.json({ message: "Kamu masih punya pembayaran yang belum selesai. boss", existing }, { status: 400 });
+  // // }
 
   const snap = new midtransClient.Snap({
     isProduction: false,

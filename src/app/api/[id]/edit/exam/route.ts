@@ -36,7 +36,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     });
 
     // Upsert each question
-    const upsertPromises = questions.map((q) =>
+    questions.map((q) =>
       prisma.question.upsert({
         where: {
           id: q.id || "", // Jika kosong akan error, maka perlu pakai kondisi di bawah

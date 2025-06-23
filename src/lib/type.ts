@@ -4,22 +4,36 @@ export type LeadershipCard = {
   role: string;
   responsibility: string;
 };
-export type PricingCardProps = {
-  kelasId: string;
+export interface PricingCardProps {
   id: string;
   title: string;
   price: number;
-  content: string | null;
   link: string;
   canAccess: boolean;
+  onRefresh: () => void; // Jika ini masih relevan untuk refresh data di komponen PricingCard
+  content?: string; // Sesuaikan dengan tipe sebenarnya jika ada
   hasProgress: boolean;
-  onRefresh: () => void;
-  CompanyCode: string;
-  kelas: {
+  CompanyCode?: string;
+  kelas?: Kelas; // Atau buat interface Kelas jika ingin lebih spesifik
+  // Tambahkan properti lain yang mungkin ada dari materi di kelas-detail
+  contents?: Array<{
+    id: string;
+    type: string;
     title: string;
-    CompanyCode: string;
-  };
-};
+    weight: number;
+    url: string;
+  }>;
+}
+
+export interface Kelas {
+  id: string;
+  title: string;
+  deskripsi: string;
+  thumbnail: string;
+  CompanyCode: string;
+  materi: PricingCardProps[]; // Array of materi with access info
+  // ... properti kelas lainnya
+}
 
 export type User = {
   id: string;

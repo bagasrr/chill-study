@@ -23,7 +23,7 @@ type FormValues = {
 // Fungsi untuk merender opsi dengan gambar
 const formatOptionLabel = ({ label, image }: { label: string; image: string }) => (
   <div style={{ display: "flex", alignItems: "center" }}>
-    <img src={image} alt={label} style={{ width: 50, height: "auto", marginRight: 10, borderRadius: "4px" }} />
+    <Image src={image} alt={label} style={{ width: 50, height: "auto", marginRight: 10, borderRadius: "4px" }} />
     <span>{label}</span>
   </div>
 );

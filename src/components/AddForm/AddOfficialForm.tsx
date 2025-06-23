@@ -39,6 +39,7 @@ export default function AddOfficialForm() {
       }
     } catch (err) {
       toast.error("Terjadi kesalahan saat upload");
+      console.log(err);
     }
 
     setLoading(false);

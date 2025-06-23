@@ -10,6 +10,7 @@ import axios from "axios";
 import { useSession } from "next-auth/react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useKelasDetailById } from "@/lib/hooks/useKelasDetail";
+import Image from "next/image";
 
 // --- Tipe Data (Sedikit Modifikasi) ---
 // questionImage bisa berupa string (URL) atau null/undefined
@@ -69,7 +70,7 @@ export default function EditExamForm({ examId }: { examId: string }) {
         console.log(session.id_token);
         // Menggunakan id_token
         try {
-          const { data, error } = await supabase.auth.signInWithIdToken({
+          const { error } = await supabase.auth.signInWithIdToken({
             provider: "google", // Pastikan ini sesuai dengan provider NextAuth Anda
             token: session.id_token as string,
           });
@@ -290,7 +291,7 @@ export default function EditExamForm({ examId }: { examId: string }) {
                   <div className="flex flex-col items-center gap-2 ">
                     <p className="text-sm text-gray-600">Gambar Terpasang:</p>
                     <div className="relative">
-                      <img src={field.questionImage} alt={`Soal ${index + 1}`} className="max-w-[150px] max-h-[100px] object-contain border rounded" />
+                      <Image src={field.questionImage} alt={`Soal ${index + 1}`} className="max-w-[150px] max-h-[100px] object-contain border rounded" />
                       <button type="button" onClick={() => handleRemoveExistingImage(index)} className="text-red-600 text-sm flex items-center absolute -top-1 -right-3 hover:text-red-800">
                         <RemoveCircleOutline className="mr-1" fontSize="small" />
                       </button>

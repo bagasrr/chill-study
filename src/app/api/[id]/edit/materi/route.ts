@@ -5,6 +5,7 @@ import { authOptions } from "@/lib/auth"; // Sesuaikan path ke auth options Anda
 import { z } from "zod";
 import { UpdateMateriInput, updateMateriSchema } from "@/lib/validation/materi";
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 
 export async function PATCH(request: Request, { params }: { params: { id: string } }) {
   const materiId = params.id;
@@ -38,7 +39,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     } = validatedData;
 
     // 2. Transaksi Prisma: Memastikan semua operasi berhasil atau tidak sama sekali
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // Update data dasar Materi
       const updatedMateri = await tx.materi.update({
         where: { id: materiId },

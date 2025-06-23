@@ -1,4 +1,4 @@
-import { TextField } from "@mui/material";
+import { SxProps, TextField } from "@mui/material";
 
 type FormTextFieldProps = {
   label: string;
@@ -54,6 +54,7 @@ export const CurrencyTextField = ({
   multiline = false,
   rows = 1,
   required = false,
+  sx,
 }: {
   label: string;
   name: string;
@@ -62,6 +63,7 @@ export const CurrencyTextField = ({
   multiline?: boolean;
   rows?: number;
   required?: boolean;
+  sx?: SxProps;
 }) => (
   <TextField
     variant="filled"
@@ -79,24 +81,28 @@ export const CurrencyTextField = ({
     color="info"
     multiline={multiline}
     rows={rows}
-    sx={{
-      "& .MuiFilledInput-root": {
-        backgroundColor: "#f1f5f9",
-        borderRadius: "8px",
-        "&:hover": {
-          backgroundColor: "#e2e8f0",
-        },
-        "&.Mui-focused": {
-          backgroundColor: "#fff",
-        },
-      },
-      "& .MuiInputBase-input": {
-        color: "#0f172a",
-      },
-      "& .MuiInputBase-input::placeholder": {
-        color: "#94a3b8",
-        opacity: 1,
-      },
-    }}
+    sx={
+      !sx
+        ? {
+            "& .MuiFilledInput-root": {
+              backgroundColor: "#f1f5f9",
+              borderRadius: "8px",
+              "&:hover": {
+                backgroundColor: "#e2e8f0",
+              },
+              "&.Mui-focused": {
+                backgroundColor: "#fff",
+              },
+            },
+            "& .MuiInputBase-input": {
+              color: "#0f172a",
+            },
+            "& .MuiInputBase-input::placeholder": {
+              color: "#94a3b8",
+              opacity: 1,
+            },
+          }
+        : sx
+    }
   />
 );

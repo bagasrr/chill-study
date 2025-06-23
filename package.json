@@ -33,6 +33,7 @@
     "react-select": "^5.10.1",
     "react-signature-canvas": "1.0.5",
     "react-youtube": "^10.1.0",
+    "recharts": "^3.0.0",
     "swiper": "^11.2.6",
     "swr": "^2.3.3",
     "zod": "^3.24.3"
