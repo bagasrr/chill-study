@@ -1,7 +1,9 @@
-"use client";
+// app/auth/error/page.tsx
+"use client"; // Keep this
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { Suspense } from "react"; // Import Suspense
 
 const errorMessages: Record<string, string> = {
   DeviceActive: "Akun ini sedang aktif di perangkat lain.",
@@ -10,7 +12,8 @@ const errorMessages: Record<string, string> = {
   default: "Terjadi kesalahan saat login.",
 };
 
-export default function ErrorPage() {
+// Create a component that uses useSearchParams and is wrapped by Suspense
+function ErrorPageContent() {
   const params = useSearchParams();
   const errorCode = params.get("error");
   const message = errorMessages[errorCode || ""] || errorMessages.default;
@@ -23,5 +26,14 @@ export default function ErrorPage() {
         Kembali ke Login
       </Link>
     </div>
+  );
+}
+
+// Export the default function which wraps the client component with Suspense
+export default function ErrorPage() {
+  return (
+    <Suspense fallback={<div>Loading error message...</div>}>
+      <ErrorPageContent />
+    </Suspense>
   );
 }

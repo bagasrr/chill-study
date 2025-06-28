@@ -1,13 +1,13 @@
-"use client";
+// app/login/page.tsx
+"use client"; // Keep this, as LoginPage also uses useRouter and useSession
 
 import { useSession } from "next-auth/react";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react"; // Import Suspense
 import { useRouter } from "next/navigation";
 import LoginForm from "@/ui/LoginForm";
 
 export default function LoginPage() {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
 
   useEffect(() => {
@@ -18,7 +18,10 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center dark:bg-slate-800 bg-white">
-      <LoginForm />
+      {/* Wrap LoginForm with Suspense */}
+      <Suspense fallback={<div>Loading login form...</div>}>
+        <LoginForm />
+      </Suspense>
     </div>
   );
 }

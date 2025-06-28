@@ -3,8 +3,8 @@
 
 import { useEffect, useState } from "react";
 import { PDFViewer, PDFDownloadLink } from "@react-pdf/renderer";
-import { ReportPdf } from "@/components/ReportPdf"; // Pastikan path benar
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { ReportPdf } from "@/components/ReportPdf";
 
 interface ProgressData {
   namaKelas: string;

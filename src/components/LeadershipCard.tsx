@@ -4,9 +4,9 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
 import CardActionArea from "@mui/material/CardActionArea";
-import { LeadershipCard } from "@/lib/type";
+import { LeadershipCardType } from "@/lib/type";
 
-export default function ActionAreaCard({ image, name, role, responsibility }: LeadershipCard) {
+export default function LeadershipCard({ image, name, role, responsibility }: LeadershipCardType) {
   return (
     <Card sx={{ maxWidth: 345 }}>
       <CardActionArea>

@@ -34,23 +34,23 @@ export default function EditUser() {
     },
   });
 
-  const fetchUser = async () => {
-    try {
-      const res = await axios.get(`/api/${id}/details/user`);
-      reset({
-        name: res.data.name || "",
-        email: res.data.email || "",
-        role: res.data.role || "STUDENT",
-        deviceToken: res.data.deviceToken || "",
-      });
-      console.log(res.data);
-    } catch (err) {
-      console.error("Failed to fetch data:", err);
-    }
-  };
   useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await axios.get(`/api/${id}/details/user`);
+        reset({
+          name: res.data.name || "",
+          email: res.data.email || "",
+          role: res.data.role || "STUDENT",
+          deviceToken: res.data.deviceToken || "",
+        });
+        console.log(res.data);
+      } catch (err) {
+        console.error("Failed to fetch data:", err);
+      }
+    };
     fetchUser();
-  }, []);
+  }, [id, reset]);
 
   const onSubmit = async (data: FormValues) => {
     setLoading(true);

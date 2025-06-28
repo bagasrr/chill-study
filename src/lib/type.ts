@@ -1,4 +1,4 @@
-export type LeadershipCard = {
+export type LeadershipCardType = {
   image: string;
   name: string;
   role: string;
