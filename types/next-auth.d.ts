@@ -41,6 +41,7 @@ interface Session extends DefaultSession {
   } & DefaultSession["user"];
 
   // Kirim access_token yang selalu aktif ke client
+  userId: string;
   accessToken: string;
   error?: string;
 }

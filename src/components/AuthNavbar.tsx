@@ -1,3 +1,4 @@
+// authNavbar.tsx
 "use client";
 
 import { useSession, signOut } from "next-auth/react";
@@ -27,7 +28,8 @@ export default function AuthNavbar() {
               <Typography>{session.user?.name}</Typography>
             </Stack>
           </Link>
-          <Button variant="outlined" color="primary" onClick={() => fetch("/api/auth/logout", { method: "GET" }).then(() => signOut({ redirect: true, callbackUrl: "/" }))}>
+          {/* Cukup panggil signOut() secara langsung */}
+          <Button variant="outlined" color="primary" onClick={() => signOut({ redirect: true, callbackUrl: "/" })}>
             Logout
           </Button>
         </>
