@@ -25,6 +25,15 @@ const AdminNavbar = () => {
     { label: "Dashboard", href: "/dashboard" },
     { label: "Report", href: "/report" },
   ];
+  const tableDropdownItems = [
+    { label: "Admin", href: "/admin-dashboard#admin" },
+    { label: "Student", href: "/admin-dashboard#student" },
+    { label: "Teacher", href: "/admin-dashboard#teacher" },
+    { label: "Kelas", href: "/admin-dashboard#kelas" },
+    { label: "Materi", href: "/admin-dashboard#materi" },
+    { label: "Exam", href: "/admin-dashboard#exam" },
+    { label: "Official", href: "/admin-dashboard#official" },
+  ];
 
   return (
     <>
@@ -69,9 +78,11 @@ const AdminNavbar = () => {
                 })}
                 {/* Desktop Dropdown */}
                 <div className="group">
-                  {" "}
                   {/* Crucial for the desktop hover effect */}
                   <DropdownButtonNavbar title="Dashboard" items={dashboardDropdownItems} />
+                </div>
+                <div className="group">
+                  <DropdownButtonNavbar title="Table List" items={tableDropdownItems} closeMobileMenu={closeMobileMenu} />
                 </div>
                 <AuthNavbar />
               </Stack>
@@ -83,9 +94,16 @@ const AdminNavbar = () => {
       {/* MOBILE SIDEMENU */}
       <div className={`fixed top-0 left-0 h-full w-64 bg-surface text-textPrimary transform ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"} transition-transform duration-300 lg:hidden z-50 shadow-lg shadow-primary/20`}>
         <div className="p-6 flex flex-col space-y-4">
-          <button onClick={closeMobileMenu} className="self-end text-primary text-2xl hover:text-linkHover transition">
-            ✕
-          </button>
+          <div className="mb-5 flex justify-between items-center ">
+            <div className="flex gap-5 max-w-[70%] items-center">
+              <Image src="/logo_navbar.png" alt="Logo" width={60} height={60} className="flex-shrink-0" />
+              <h5 className="text-wrap text-xs font-bold flex-grow min-w-0">Just a Chill Study</h5>
+            </div>
+
+            <button onClick={closeMobileMenu} className=" text-primary text-2xl hover:text-linkHover transition">
+              ✕
+            </button>
+          </div>
           {navItems.map((item) => {
             const isActive = pathname === item.href;
             return (
@@ -96,6 +114,7 @@ const AdminNavbar = () => {
           })}
           {/* Mobile Dropdown */}
           <DropdownButtonNavbar title="Dashboard" items={dashboardDropdownItems} closeMobileMenu={closeMobileMenu} /> {/* Pass closeMobileMenu for mobile dropdown items */}
+          <DropdownButtonNavbar title="Table List" items={tableDropdownItems} closeMobileMenu={closeMobileMenu} />
           <div className="pt-4 border-t border-textSecondary">
             <AuthNavbar />
           </div>

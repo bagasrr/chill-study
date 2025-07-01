@@ -39,7 +39,7 @@ export const DropdownButtonNavbar: React.FC<DropdownButtonNavbarProps> = ({ titl
       {/* Dropdown Content */}
       <div
         className={`
-          absolute sm:top-0 lg:top-full sm:-right-20 lg:left-0 bg-green-700 shadow-lg border border-gray-200 z-50 min-w-[150px]
+          absolute top-0 lg:top-full -right-20 lg:left-0 bg-green-700 shadow-lg border border-gray-200 z-50 min-w-[150px]
           lg:group-hover:block lg:hidden
           ${isOpen ? "block" : "hidden"}
         `}
