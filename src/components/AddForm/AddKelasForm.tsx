@@ -127,7 +127,7 @@ export default function AddKelasForm() {
 
   const formatOptionLabel = ({ label, image }: CertificateOption) => (
     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-      <Image src={image} alt={label} style={{ width: 50, height: "auto", borderRadius: "4px" }} />
+      <Image src={image} alt={label} width={50} height={50} style={{ width: 50, height: "auto", borderRadius: "4px" }} />
       <span>{label}</span>
     </div>
   );
@@ -237,7 +237,7 @@ export default function AddKelasForm() {
               </Button>
               {previewUrl && (
                 <Box sx={{ mt: 2, border: "1px solid #e5e7eb", p: 1, borderRadius: 2 }}>
-                  <Image src={previewUrl} alt="Preview Thumbnail" style={{ width: "200px", height: "auto", objectFit: "cover", borderRadius: "4px" }} />
+                  <Image src={previewUrl} alt="Preview Thumbnail" width={200} height={200} style={{ width: "200px", height: "auto", objectFit: "cover", borderRadius: "4px" }} />
                 </Box>
               )}
               {thumbnailFile && (

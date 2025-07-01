@@ -4,80 +4,87 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
-import AuthNavbar from "./AuthNavbar";
-import { Divider, Stack, Typography } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
+import AuthNavbar from "./AuthNavbar"; // Assuming AuthNavbar is also TypeScript-friendly
+import { DropdownButtonNavbar } from "./DropdownButtonNavbar"; // Your responsive DropdownButtonNavbar component
 import { useSession } from "next-auth/react";
 
-const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
+// Define an interface for navigation items
+interface NavItem {
+  label: string;
+  href: string;
+}
+
+const Navbar: React.FC = () => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const pathname = usePathname();
   const { data: session } = useSession();
 
-  const toggleMenu = () => setIsOpen(!isOpen);
-  const closeMenu = () => setIsOpen(false);
+  const toggleMobileMenu = () => setIsMobileMenuOpen((prev) => !prev);
+  const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
-  const menuItems = [
+  const mainNavItems: NavItem[] = [
     { label: "Home", href: "/" },
     { label: "Learning", href: "/learning" },
     { label: "Company", href: "/about" },
   ];
 
+  // Define dropdown items for users with ADMIN role
+  const adminDashboardItems: NavItem[] = [
+    { label: "Admin Dashboard", href: "/admin-dashboard" },
+    { label: "Dashboard", href: "/dashboard" },
+    { label: "Report", href: "/report" },
+  ];
+
   return (
     <>
-      {/* NAVBAR DESKTOP */}
+      {/* DESKTOP & MOBILE NAV */}
       <nav className="bg-background text-textPrimary fixed top-0 left-0 w-full z-50 shadow-lg p-3">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
+            {/* Logo */}
             <div className="text-xl font-bold">
-              <Link href="/" className="flex items-center gap-2">
+              <Link href="/" className="flex items-center gap-2" onClick={closeMobileMenu}>
                 <Image src="/logo_navbar.png" alt="Logo" width={60} height={60} />
-                <Typography variant="h6">Just a Chill Study</Typography>
+                <Typography variant="h6" className="hidden sm:block">
+                  Just a Chill Study
+                </Typography>
               </Link>
             </div>
 
-            {/* Toggle Button (Mobile) */}
+            {/* Mobile Menu Toggle Button */}
             <div className="lg:hidden">
-              <button onClick={toggleMenu} className="focus:outline-none text-textPrimary hover:text-linkHover transition">
+              <button onClick={toggleMobileMenu} className="focus:outline-none text-textPrimary hover:text-linkHover transition">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               </button>
             </div>
 
-            {/* Menu (Large Screens) */}
+            {/* Desktop Menu Items */}
             <div className="hidden lg:flex items-center space-x-6">
-              <Stack direction="row" spacing={2} alignItems="center" divider={<Divider orientation="vertical" flexItem />}>
-                {menuItems.map((item, index) => {
+              <Stack direction="row" spacing={4} alignItems="center">
+                {mainNavItems.map((item) => {
                   const isActive = pathname === item.href;
                   return (
-                    <Link key={index} href={item.href} className={`transition  font-medium px-2 py-1 rounded-md  ${isActive ? " text-primary  ease-out duration-300" : "hover:text-linkHover"}`}>
+                    <Link key={item.href} href={item.href} className={`transition font-medium px-2 py-1 rounded-md ${isActive ? "text-primary ease-out duration-300" : "hover:text-linkHover"}`}>
                       {item.label}
                     </Link>
                   );
                 })}
-
-                {session && session.user.role === "ADMIN" ? (
-                  <div className="relative group ">
-                    <button className="transition font-medium px-2 py-1 rounded-md cursor-default text-linkHover">Dashboard</button>
-                    <div className="absolute top-full  left-0 bg-green-700 shadow-lg  border border-gray-200 z-50 hidden group-hover:block min-w-[150px]">
-                      <Link href="/admin-dashboard" className="block px-4 py-2 text-sm hover:bg-green-900">
-                        Admin Dashboard
-                      </Link>
-                      <Link href="/dashboard" className="block px-4 py-2 text-sm hover:bg-green-900">
-                        Dashboard
-                      </Link>
-                      <Link href="/report" className="block px-4 py-2 text-sm hover:bg-green-900">
-                        Report
-                      </Link>
-                    </div>
+                {/* Conditional Dashboard Link/Dropdown for Desktop */}
+                {session?.user?.role === "ADMIN" ? (
+                  <div className="group">
+                    {" "}
+                    {/* Crucial for the desktop hover effect */}
+                    <DropdownButtonNavbar title="Dashboard" items={adminDashboardItems} />
                   </div>
-                ) : null}
-
-                {session && session.user.role !== "ADMIN" && (
+                ) : session ? ( // If logged in but not ADMIN, show single Dashboard link
                   <Link href="/dashboard" className="transition font-medium px-2 py-1 rounded-md hover:text-linkHover">
                     Dashboard
                   </Link>
-                )}
+                ) : null}{" "}
+                {/* If not logged in, no dashboard link in desktop main nav */}
                 <AuthNavbar />
               </Stack>
             </div>
@@ -85,29 +92,37 @@ const Navbar = () => {
         </div>
       </nav>
 
-      {/* MOBILE MENU */}
-      <div className={`fixed top-0 left-0 h-full w-64 bg-surface text-textPrimary transform ${isOpen ? "translate-x-0" : "-translate-x-full"} transition-transform duration-300 lg:hidden z-50 shadow-lg shadow-primary/20`}>
+      {/* MOBILE SIDEMENU */}
+      <div className={`fixed top-0 left-0 h-full w-64 bg-surface text-textPrimary transform ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"} transition-transform duration-300 lg:hidden z-50 shadow-lg shadow-primary/20`}>
         <div className="p-6 flex flex-col space-y-4">
-          <button onClick={closeMenu} className="self-end text-primary text-2xl hover:text-linkHover transition">
+          <button onClick={closeMobileMenu} className="self-end text-primary text-2xl hover:text-linkHover transition">
             ✕
           </button>
-          {menuItems.map((item, index) => {
+          {mainNavItems.map((item) => {
             const isActive = pathname === item.href;
             return (
-              <Link key={index} href={item.href} onClick={closeMenu} className={`text-lg transition rounded-md px-2 py-1 ${isActive ? "bg-primary text-white" : "hover:text-primary"}`}>
+              <Link key={item.href} href={item.href} onClick={closeMobileMenu} className={`text-lg transition rounded-md px-2 py-1 ${isActive ? "bg-primary text-white" : "hover:text-primary"}`}>
                 {item.label}
               </Link>
             );
           })}
-
+          {/* Conditional Dashboard Link/Dropdown for Mobile */}
+          {session?.user?.role === "ADMIN" ? (
+            <DropdownButtonNavbar title="Dashboard" items={adminDashboardItems} closeMobileMenu={closeMobileMenu} />
+          ) : session ? ( // If logged in but not ADMIN, show single Dashboard link
+            <Link href="/dashboard" onClick={closeMobileMenu} className="text-lg transition rounded-md px-2 py-1 hover:text-primary">
+              Dashboard
+            </Link>
+          ) : null}{" "}
+          {/* If not logged in, no dashboard link in mobile main nav */}
           <div className="pt-4 border-t border-textSecondary">
             <AuthNavbar />
           </div>
         </div>
       </div>
 
-      {/* OVERLAY */}
-      {isOpen && <div className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden" onClick={closeMenu} />}
+      {/* MOBILE OVERLAY */}
+      {isMobileMenuOpen && <div className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden" onClick={closeMobileMenu} />}
     </>
   );
 };

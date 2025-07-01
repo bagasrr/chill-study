@@ -40,3 +40,7 @@ next-env.d.ts
 
 # Ignore Prisma migration node_modules
 prisma/migrations/*/node_modules/
+
+#tarrr
+
+*.tar.gz 
