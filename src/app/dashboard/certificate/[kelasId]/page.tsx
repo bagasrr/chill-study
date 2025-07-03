@@ -4,13 +4,13 @@ import { useParams } from "next/navigation";
 import { useKelasProgress } from "@/lib/hooks/useKelasProgress";
 import { CertificatePreview } from "@/components/CertificatePreview";
 import { Skeleton } from "@mui/material";
-import Link from "next/link";
-import { useKelasDetailById } from "@/lib/hooks/useKelasDetail";
+// import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function SertifikatPage() {
+  const router = useRouter();
   const { kelasId } = useParams();
   const { percent, isLoading } = useKelasProgress(kelasId as string);
-  const { kelas } = useKelasDetailById(kelasId as string);
 
   if (isLoading)
     return (
@@ -28,9 +28,10 @@ export default function SertifikatPage() {
         <div className="bg-white border border-red-300 shadow-md rounded-xl p-6 max-w-md text-center space-y-4">
           <p className="text-xl font-semibold text-red-600">Kamu belum menyelesaikan kelas</p>
           <p className="text-gray-600">Selesaikan kelas sekarang untuk mengklaim sertifikat.</p>
-          <Link href={`/dashboard/kelas/${kelas?.CompanyCode}/materi`} className="inline-block bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-700 transition">
+
+          <button onClick={() => router.back()} className="inline-block bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-700 transition">
             Selesaikan Kelas Sekarang
-          </Link>
+          </button>
         </div>
       </div>
     );
