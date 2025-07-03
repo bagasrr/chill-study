@@ -1,6 +1,6 @@
 "use client";
 
-// Impor ColumnDefinition dari lokasi komponen Anda
+// Impor yang dibutuhkan
 import { ColumnDefinition, SortableTable } from "@/components/DataTable";
 import { useFetchData } from "@/lib/hooks/useFetchData";
 import { lightTheme } from "@/lib/theme";
@@ -11,17 +11,21 @@ import { Button, ThemeProvider } from "@mui/material";
 import axios from "axios";
 import Link from "next/link";
 import toast from "react-hot-toast";
+import { useState } from "react"; // Import useState
+import DeleteConfirmModalBox from "@/components/DeleteConfirmModalBox"; // Import komponen modal Anda
 
 // Interface untuk data Anda
 interface Materi {
   id: string;
   title: string;
   content: string;
-  createdAt: Date;
-  LastUpdateDate: Date;
-  LastUpdatedBy: string; // Annnggap ini string, sesuaikan jika perlu
+  // Perhatikan: Tanggal dari API seringkali string, pastikan formatnya bisa di-parse oleh new Date()
+  createdAt: string; // Ubah ke string jika dari API
+  LastUpdateDate: string; // Ubah ke string jika dari API
+  LastUpdatedBy: string;
   price: number;
   kelas: {
+    id: string; // Tambahkan ID kelas jika ada
     title: string;
   };
   Status: number;
@@ -29,22 +33,50 @@ interface Materi {
 }
 
 const MateriTable = () => {
-  const { data: materi, loading } = useFetchData<Materi[]>("/api/materi");
+  // Dapatkan refreshData dari useFetchData (pastikan useFetchData sudah dimodifikasi)
+  const { data: materi, loading, refreshData } = useFetchData<Materi[]>("/api/materi");
   const dataMateri = materi || [];
 
-  const handleDelete = async (id: string) => {
-    try {
-      await axios.delete(`/api/${id}/delete/materi`);
-      toast.success("Materi berhasil dihapus");
+  // State untuk mengontrol modal
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  // State untuk menyimpan ID materi yang akan dihapus
+  const [materiToDeleteId, setMateriToDeleteId] = useState<string | null>(null);
+  // State untuk menyimpan judul materi yang akan dihapus (untuk tampilan modal)
+  const [materiToDeleteTitle, setMateriToDeleteTitle] = useState<string | null>(null);
+  // State untuk menyimpan nama kelas yang terkait dengan materi (untuk tampilan modal)
 
-      // TODO: Panggil fungsi untuk refresh data setelah delete
+  // Fungsi untuk membuka modal dan menyimpan info materi yang akan dihapus
+  const handleOpenDeleteModal = (id: string, title: string) => {
+    setMateriToDeleteId(id);
+    setMateriToDeleteTitle(title);
+    setIsDeleteModalOpen(true);
+  };
+
+  // Fungsi untuk menutup modal
+  const handleCloseDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setMateriToDeleteId(null); // Reset ID
+    setMateriToDeleteTitle(null); // Reset Title
+  };
+
+  // Fungsi yang dipanggil saat konfirmasi hapus dari modal
+  const handleConfirmDelete = async () => {
+    if (!materiToDeleteId) return; // Pastikan ada ID yang akan dihapus
+
+    try {
+      // Mengirim DELETE request untuk menghapus materi
+      // Sesuaikan endpoint API Anda jika berbeda
+      await axios.patch(`/api/${materiToDeleteId}/delete/materi`); // Contoh endpoint: /api/materi/{id}/delete
+      toast.success("Materi berhasil dihapus!");
+      refreshData(); // Muat ulang data setelah penghapusan berhasil
+      handleCloseDeleteModal(); // Tutup modal setelah berhasil dihapus
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        toast.error(error.response?.data?.message || "Gagal menghapus materi.");
+        toast.error(`Gagal menghapus materi. Kode: ${error.response?.status} - ${error.response?.statusText || error.response?.data?.message}`);
       } else {
-        toast.error("Terjadi kesalahan yang tidak diketahui.");
+        toast.error("Terjadi kesalahan tak terduga saat menghapus materi.");
       }
-      console.error(error);
+      console.error("Error deleting materi:", error);
     }
   };
 
@@ -56,26 +88,28 @@ const MateriTable = () => {
       key: "createdAt",
       label: "Created At",
       sortable: true,
-      render: (value: Date) => <p>{formattedDate(value)}</p>,
+      // Konversi string ke Date sebelum diformat
+      render: (value) => <p>{formattedDate(new Date(value))}</p>,
     },
     {
       key: "price",
       label: "Price",
       sortable: true,
-      render: (value: number) => <p>{formatCurrency(value)}</p>,
+      render: (value) => <p>{formatCurrency(value)}</p>,
     },
-    // --- INI PERBAIKAN UTAMANYA ---
     {
       key: "kelas",
       label: "Kelas Nama",
       sortable: true,
-      render: (value: { title: string }) => <p>{value.title}</p>, // Ambil properti .title dari objek
+      // Render dengan asumsi value adalah objek { title: string }
+      render: (value) => <p>{value.title}</p>,
     },
     {
       key: "LastUpdateDate",
       label: "Last Update At",
       sortable: true,
-      render: (value: Date) => (value ? <p>{formattedDate(value)}</p> : <p>-</p>),
+      // Konversi string ke Date sebelum diformat
+      render: (value) => (value ? <p>{formattedDate(new Date(value))}</p> : <p>-</p>),
     },
     { key: "LastUpdatedBy", label: "Last Update By", sortable: true },
     { key: "Status", label: "Status" },
@@ -92,16 +126,32 @@ const MateriTable = () => {
         columns={columns} // Gunakan variabel yang sudah diberi tipe
         isLoading={loading}
         renderAction={(data) => (
-          <div className="flex items-center">
+          <div className="flex items-center space-x-2">
+            {" "}
+            {/* Tambahkan space-x-2 untuk jarak antar ikon */}
             <Link href={`/admin-dashboard/${data.id}/edit/materi`}>
               <EditSquareIcon color="info" />
             </Link>
-            <Button onClick={() => handleDelete(data.id)}>
+            {/* Memanggil handleOpenDeleteModal saat tombol delete diklik */}
+            <Button onClick={() => handleOpenDeleteModal(data.id, data.title)}>
               <DeleteIcon color="error" />
             </Button>
           </div>
         )}
       />
+
+      {/* Komponen DeleteConfirmModalBox */}
+      <DeleteConfirmModalBox
+        isOpen={isDeleteModalOpen}
+        onClose={handleCloseDeleteModal}
+        onConfirm={handleConfirmDelete}
+        // itemName digunakan sebagai fallback jika children tidak disediakan
+        itemName={materiToDeleteTitle || "materi ini"}
+      >
+        {/* Konten kustom yang dilewatkan sebagai children, disesuaikan dengan layout gambar */}
+        <p className="text-gray-700 text-lg mb-2">Yakin Ingin menghapus</p>
+        <p className="font-bold text-xl text-gray-900 mb-4">{materiToDeleteTitle || "Materi ini"}</p>
+      </DeleteConfirmModalBox>
     </ThemeProvider>
   );
 };
