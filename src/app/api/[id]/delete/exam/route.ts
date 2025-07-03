@@ -9,9 +9,9 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   const session = await getServerSession(authOptions);
   const user = session?.user.email;
   try {
-    await prisma.kelas.update({
+    await prisma.exam.update({
       where: { id },
-      data: { IsDeleted: new Date(), LastUpdateDate: new Date(), LastUpdatedBy: user || "system" },
+      data: { isDeleted: true, LastUpdateDate: new Date(), LastUpdatedBy: user || "system" },
     });
 
     return NextResponse.json({ message: "Kelas berhasil di-soft delete" });
