@@ -21,9 +21,11 @@ import Breadcrumb from "@/components/Breadcrump";
 // Impor tipe data jika ada di file terpisah, atau definisikan di sini
 import { PricingCardProps } from "@/lib/type";
 import axios from "axios";
+import { useSession } from "next-auth/react";
 
 const KelasDetailPage = () => {
   const router = useRouter();
+  const session = useSession();
   const { kelasnama } = useParams<{ kelasnama: string }>();
 
   // 1. Hanya hook ini yang diperlukan untuk data utama (kelas + materi + akses)
@@ -100,7 +102,7 @@ const KelasDetailPage = () => {
           {/* Tombol Aksi (Sertifikat/Quiz) */}
           {loadingSertif || isLoadingProgress ? (
             <Skeleton variant="rectangular" width={180} height={40} />
-          ) : sertif && sertif.length > 0 ? (
+          ) : session.data === null ? null : sertif && sertif.length > 0 ? (
             <Link href={`/dashboard/certificate/${kelas?.id}`} className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors shadow-md w-full sm:w-auto justify-center">
               🎓 Lihat Sertifikat
             </Link>
