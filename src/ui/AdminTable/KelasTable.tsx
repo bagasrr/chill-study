@@ -78,7 +78,7 @@ const KelasTable = () => {
     { key: "createdAt", label: "Created At", sortable: true, render: (value) => <p>{formattedDate(new Date(value))}</p> },
     { key: "LastUpdateDate", label: "Last Update At", sortable: true, render: (value) => (value ? <p>{formattedDate(new Date(value))}</p> : "-") },
     { key: "LastUpdatedBy", label: "Last Update By", sortable: true },
-    { key: "Status", label: "Status" },
+    { key: "Status", label: "Status", render: (value) => <p>{value === 1 ? value : "NA"}</p> },
     { key: "CompanyCode", label: "Company Code" },
   ];
 
@@ -93,7 +93,6 @@ const KelasTable = () => {
         isLoading={loading}
         renderAction={(data) => (
           <div className="flex items-center space-x-2">
-            {" "}
             {/* Tambahkan space-x-2 untuk jarak */}
             <Link href={`/admin-dashboard/${data.id}/edit/kelas`}>
               <EditSquareIcon color="info" />
