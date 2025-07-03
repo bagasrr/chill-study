@@ -273,6 +273,18 @@ export const authOptions: NextAuthOptions = {
             image: user.image,
             role: "STUDENT",
             emailVerified: new Date(),
+            createdAt: new Date(),
+
+            // Kolom lain yang diperlukan untuk tugas
+
+            CreatedBy: "cs-system",
+            LastUpdateDate: new Date(),
+            LastUpdatedBy: "cs-system",
+            Status: 1,
+            CompanyCode: "User",
+
+            // End of Kolom lain yang diperlukan untuk tugas
+
             deviceToken,
             devTokenExpiredAt,
             googleAccessToken: account.access_token,
