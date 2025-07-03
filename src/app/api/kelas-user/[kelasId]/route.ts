@@ -13,9 +13,12 @@ export async function GET() {
       where: {
         userId,
         IsDeleted: null,
+        kelas: {
+          IsDeleted: null,
+        },
       },
       include: {
-        kelas: true, // ✅ supaya dapat info detail kelas
+        kelas: true,
       },
       orderBy: {
         LastUpdateDate: "asc",

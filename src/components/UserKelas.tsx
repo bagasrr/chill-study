@@ -39,7 +39,7 @@ const KelasSaya = () => {
     isLoading: isLoadingKelasUser,
     error: kelasUserError, // Tangkap error jika ada dari useKelasUser
   } = useKelasUser(userId as string); // Cast userId as string karena hooks mungkin memerlukannya
-
+  console.log({ kelasUser });
   const {
     kelas, // kelas bisa berupa Kelas[] | undefined
     isLoading: isLoadingAllKelas,
