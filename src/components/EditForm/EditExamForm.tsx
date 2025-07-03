@@ -291,7 +291,7 @@ export default function EditExamForm({ examId }: { examId: string }) {
                   <div className="flex flex-col items-center gap-2 ">
                     <p className="text-sm text-gray-600">Gambar Terpasang:</p>
                     <div className="relative">
-                      <Image src={field.questionImage} alt={`Soal ${index + 1}`} className="max-w-[150px] max-h-[100px] object-contain border rounded" />
+                      <Image src={field.questionImage} alt={`Soal ${index + 1}`} width={150} height={100} className="max-w-[150px] max-h-[100px] object-contain border rounded" />
                       <button type="button" onClick={() => handleRemoveExistingImage(index)} className="text-red-600 text-sm flex items-center absolute -top-1 -right-3 hover:text-red-800">
                         <RemoveCircleOutline className="mr-1" fontSize="small" />
                       </button>
