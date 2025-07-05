@@ -16,12 +16,14 @@
 
 - [Next.js](https://nextjs.org/) (App Router, TypeScript)
 - [Prisma](https://www.prisma.io/) ORM & PostgreSQL
-- [Supabase](https://supabase.com/) (Auth & Storage)
+- [Neon](https://neon.com) (Database)
+- [Supabase](https://supabase.com/) (Storage)
 - [Tailwind CSS](https://tailwindcss.com/)
 - [MUI](https://mui.com/) (Material UI)
 - [NextAuth.js](https://next-auth.js.org/)
 - [Midtrans](https://midtrans.com/) (Payments)
-- [React Hook Form](https://react-hook-form.com/), [Zod](https://zod.dev/)
+- [React Hook Form](https://react-hook-form.com/)
+- [Zod](https://zod.dev/) (Form Validation)
 
 ## Getting Started
 
@@ -35,9 +37,64 @@ yarn install
 npm install
 ```
 
+but i personally use
+
+```bash
+pnpm install
+```
+
 ### 2. Set up environment variables
 
 Copy `.env.example` to `.env` and fill in the required values (database, Supabase, NextAuth, Midtrans, etc).
+
+'.env' example
+
+```bash
+# App URL
+# NEXT_PUBLIC_BASE_URL=http://localhost:3000
+NEXT_PUBLIC_BASE_URL=
+
+# NextAuth (Google OAuth)
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+NEXTAUTH_SECRET=
+# NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_URL=
+
+# Neon Database
+DATABASE_URL=
+DATABASE_URL_UNPOOLED=
+
+PGHOST=
+PGHOST_UNPOOLED=
+PGUSER=
+PGDATABASE=
+PGPASSWORD=
+
+POSTGRES_URL=
+POSTGRES_URL_NON_POOLING=
+POSTGRES_USER=
+POSTGRES_HOST=
+POSTGRES_PASSWORD=
+POSTGRES_DATABASE=
+POSTGRES_URL_NO_SSL=
+POSTGRES_PRISMA_URL=
+
+# Midtrans Key
+NEXT_PUBLIC_MIDTRANS_CLIENT_KEY=
+MIDTRANS_SERVER_KEY=
+MIDTRANS_MERCHANT_ID=
+
+# Supabase Key
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_KEY=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+
+# CRON
+CRON_SECRET=
+
+```
 
 ### 3. Set up the database
 
