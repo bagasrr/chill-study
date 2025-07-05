@@ -27,7 +27,7 @@ const TeacherTable = () => {
 
   return (
     <SortableTable
-      idSection="accounts"
+      idSection="teachers"
       tableTitle="Teacher Account"
       addLink={null}
       data={dataTeacher}

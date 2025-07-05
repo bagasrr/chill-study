@@ -3,15 +3,16 @@
 import { useForm, useFieldArray } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useKelasWithoutExam } from "@/lib/hooks/useKelasWithoutExam";
-import { Delete, NavigateBefore } from "@mui/icons-material";
+import { Delete, NavigateBefore, Image as ImageIcon, RemoveCircleOutline } from "@mui/icons-material";
 import toast from "react-hot-toast";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import axios from "axios";
-import { useSession } from "next-auth/react";
+// import { useSession } from "next-auth/react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { GradientCircularProgress } from "../GradientCircularProgress";
+import Image from "next/image"; // Import Next/Image
 
-// Tipe data soal
+// Tipe data soal (tidak berubah)
 type QuestionType = {
   questionText: string;
   optionA: string;
@@ -35,8 +36,9 @@ export default function AddExamForm() {
   const { kelas, isLoading } = useKelasWithoutExam();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [questionImages, setQuestionImages] = useState<(File | null)[]>([]);
-  const { data: session } = useSession();
-  console.log(session);
+  // State baru untuk URL pratinjau gambar
+  const [questionImagePreviews, setQuestionImagePreviews] = useState<(string | null)[]>([]);
+  // const { data: session } = useSession();
 
   const supabase = createClientComponentClient();
 
@@ -65,12 +67,67 @@ export default function AddExamForm() {
     name: "questions",
   });
 
-  const handleFileChange = (file: File | null, index: number) => {
-    const updated = [...questionImages];
-    updated[index] = file;
-    setQuestionImages(updated);
+  // Fungsi menangani perubahan file, sekarang dengan pratinjau
+  const handleFileChange = useCallback(
+    (file: File | null, index: number) => {
+      const updatedFiles = [...questionImages];
+      updatedFiles[index] = file;
+      setQuestionImages(updatedFiles);
+
+      const updatedPreviews = [...questionImagePreviews];
+      // Hapus pratinjau lama jika ada
+      if (questionImagePreviews[index]) {
+        URL.revokeObjectURL(questionImagePreviews[index] as string);
+      }
+      // Buat URL pratinjau baru jika ada file
+      updatedPreviews[index] = file ? URL.createObjectURL(file) : null;
+      setQuestionImagePreviews(updatedPreviews);
+    },
+    [questionImages, questionImagePreviews]
+  );
+
+  // Fungsi untuk menghapus gambar yang dipilih
+  const handleRemoveImage = useCallback(
+    (index: number) => {
+      // Hapus dari state file
+      const updatedFiles = [...questionImages];
+      updatedFiles[index] = null;
+      setQuestionImages(updatedFiles);
+
+      // Hapus dari state pratinjau
+      const updatedPreviews = [...questionImagePreviews];
+      if (updatedPreviews[index]) {
+        URL.revokeObjectURL(updatedPreviews[index] as string);
+        updatedPreviews[index] = null;
+        setQuestionImagePreviews(updatedPreviews);
+      }
+    },
+    [questionImages, questionImagePreviews]
+  );
+
+  const handleRemoveQuestion = (index: number) => {
+    // Hapus juga file dan pratinjau yang terkait saat soal dihapus
+    handleRemoveImage(index);
+    // Hapus soal dari form
+    remove(index);
   };
 
+  const handleAddQuestion = () => {
+    append({
+      questionText: "",
+      optionA: "",
+      optionB: "",
+      optionC: "",
+      optionD: "",
+      questionImage: null,
+      correctAnswer: "A",
+    });
+    // Tambahkan slot kosong untuk file dan pratinjau
+    setQuestionImages((prev) => [...prev, null]);
+    setQuestionImagePreviews((prev) => [...prev, null]);
+  };
+
+  // Logika onSubmit tetap sama
   const onSubmit = async (data: FormType) => {
     setIsSubmitting(true);
     try {
@@ -112,12 +169,13 @@ export default function AddExamForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="max-w-3xl mx-auto p-6 bg-white shadow rounded mt-10">
+    // Styling form utama diperbarui
+    <form onSubmit={handleSubmit(onSubmit)} className="max-w-3xl mx-auto p-6 bg-white shadow-md rounded-md mt-10">
       {isSubmitting && <GradientCircularProgress />}
       <h1 className="text-2xl font-bold mb-6">Tambah Ujian</h1>
 
       {isLoading ? (
-        <p>Loading daftar kelas...</p>
+        <p className="mb-4 text-gray-500">Loading daftar kelas...</p>
       ) : (
         <select {...register("kelasId")} className="w-full p-2 mb-4 border rounded">
           <option value="">Pilih Kelas</option>
@@ -130,22 +188,54 @@ export default function AddExamForm() {
       )}
 
       <input type="text" placeholder="Judul Ujian" {...register("title")} className="w-full p-2 mb-4 border rounded" />
-      <textarea placeholder="Deskripsi" {...register("description")} className="w-full p-2 mb-4 border rounded" />
-      <input type="number" placeholder="Jumlah benar untuk lulus" {...register("graduate", { valueAsNumber: true })} className="w-full p-2 mb-4 border rounded" />
+      <textarea placeholder="Deskripsi" {...register("description")} className="w-full p-2 mb-6 border rounded" />
+      <input type="number" placeholder="Jumlah soal benar untuk lulus" {...register("graduate", { valueAsNumber: true })} className="w-full p-2 mb-4 border rounded" />
 
-      <h2 className="text-lg font-semibold mb-4">Soal</h2>
+      <h2 className="text-lg font-semibold mb-2">Soal-soal</h2>
       {fields.map((field, index) => (
-        <div key={field.id} className="mb-6 border p-4 rounded bg-gray-50">
-          <div className="flex justify-between mb-2">
+        // Styling container soal diperbarui
+        <div key={field.id} className="mb-6 p-4 border rounded bg-gray-50 relative">
+          <div className="flex items-center justify-between mb-4">
             <p className="font-medium">Soal {index + 1}</p>
             {fields.length > 1 && (
-              <button type="button" onClick={() => remove(index)} className="text-red-500">
+              <button type="button" onClick={() => handleRemoveQuestion(index)} className="text-red-500 hover:underline">
                 <Delete />
               </button>
             )}
           </div>
-          <input type="text" placeholder="Pertanyaan" {...register(`questions.${index}.questionText` as const)} className="w-full p-2 mb-2 border rounded" />
-          <input type="file" accept="image/*" onChange={(e) => handleFileChange(e.target.files?.[0] || null, index)} className="mb-2" />
+          <div className="mb-2 py-5">
+            <div className="flex flex-col gap-5">
+              <input type="text" placeholder="Pertanyaan" {...register(`questions.${index}.questionText` as const)} className="w-full p-2 border rounded" />
+              <div className="flex gap-5 items-center">
+                {/* Logika untuk menampilkan pratinjau gambar atau placeholder */}
+                {questionImagePreviews[index] ? (
+                  <div className="flex flex-col items-center gap-2 ">
+                    <p className="text-sm text-gray-600">Pratinjau Gambar:</p>
+                    <div className="relative">
+                      <Image src={questionImagePreviews[index] as string} alt={`Pratinjau Soal ${index + 1}`} width={150} height={100} className="max-w-[150px] max-h-[100px] object-contain border rounded" />
+                      <button type="button" onClick={() => handleRemoveImage(index)} className="text-red-600 text-sm flex items-center absolute -top-1 -right-3 hover:text-red-800">
+                        <RemoveCircleOutline className="mr-1" fontSize="small" />
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-gray-500 text-sm flex items-center">
+                    <ImageIcon fontSize="small" className="mr-1" /> Belum ada gambar
+                  </div>
+                )}
+                {/* Styling input file diperbarui */}
+                <input
+                  type="file"
+                  accept="image/png, image/jpeg, image/gif"
+                  onChange={(e) => handleFileChange(e.target.files?.[0] || null, index)}
+                  className="w-full border border-gray-300 rounded bg-white file:mr-4 file:py-2 file:px-4 file:border-0 file:rounded file:bg-blue-600 file:text-white hover:file:bg-blue-700"
+                />
+              </div>
+            </div>
+
+            <p className="text-xs text-red-500 font-bold mt-5">*Pilih gambar jika diperlukan</p>
+          </div>
+
           <input type="text" placeholder="Opsi A" {...register(`questions.${index}.optionA` as const)} className="w-full p-2 mb-2 border rounded" />
           <input type="text" placeholder="Opsi B" {...register(`questions.${index}.optionB` as const)} className="w-full p-2 mb-2 border rounded" />
           <input type="text" placeholder="Opsi C" {...register(`questions.${index}.optionC` as const)} className="w-full p-2 mb-2 border rounded" />
@@ -159,21 +249,7 @@ export default function AddExamForm() {
         </div>
       ))}
 
-      <button
-        type="button"
-        onClick={() =>
-          append({
-            questionText: "",
-            optionA: "",
-            optionB: "",
-            optionC: "",
-            optionD: "",
-            questionImage: null,
-            correctAnswer: "A",
-          })
-        }
-        className="text-blue-600 hover:underline mb-6"
-      >
+      <button type="button" onClick={handleAddQuestion} className="text-blue-600 hover:underline mb-6">
         + Tambah Soal
       </button>
 
@@ -182,8 +258,9 @@ export default function AddExamForm() {
           <NavigateBefore />
           Kembali
         </button>
-        <button type="submit" className="w-fit py-2 px-5 text-green-800 border border-green-700 hover:bg-green-700/20 rounded-md">
-          Simpan Ujian
+        <button type="submit" disabled={isSubmitting} className="w-fit py-2 px-5 text-green-800 border border-green-700 hover:bg-green-700/20 rounded-md disabled:opacity-50 disabled:cursor-not-allowed">
+          {/* Teks tombol dinamis */}
+          {isSubmitting ? "Menyimpan..." : "Simpan Ujian"}
         </button>
       </div>
     </form>

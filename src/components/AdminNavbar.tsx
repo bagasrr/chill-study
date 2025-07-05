@@ -26,9 +26,9 @@ const AdminNavbar = () => {
     { label: "Report", href: "/report" },
   ];
   const tableDropdownItems = [
-    { label: "Admin", href: "/admin-dashboard#admin" },
-    { label: "Student", href: "/admin-dashboard#student" },
-    { label: "Teacher", href: "/admin-dashboard#teacher" },
+    { label: "Admin", href: "/admin-dashboard#admins" },
+    { label: "Student", href: "/admin-dashboard#students" },
+    { label: "Teacher", href: "/admin-dashboard#teachers" },
     { label: "Kelas", href: "/admin-dashboard#kelas" },
     { label: "Materi", href: "/admin-dashboard#materi" },
     { label: "Exam", href: "/admin-dashboard#exam" },

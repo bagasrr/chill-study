@@ -28,7 +28,7 @@ const AdminTable = () => {
 
   return (
     <SortableTable
-      idSection="accounts"
+      idSection="admins"
       tableTitle="Admin Account"
       addLink={null}
       data={dataAdmin}
