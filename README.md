@@ -2,6 +2,17 @@
 
 > A modern e-learning platform built with Next.js, Prisma, Supabase, and Tailwind CSS.
 
+This Project made for Web Development Exam
+
+# Our Team
+
+- 312110313 / BAGAS RAMADHAN RUSNADI 🧠
+- 312110607 / ENDANG PUTRI LESTARI
+- 312310132 / MUHAMMAD DIMAS PRATAMA
+- 312310340 / ALIFARIK WIN LABIBAH
+- 312310358 / MUHAMMAD FIKRI RAMADHAN
+- 312310765 / DESTRIAN MUHAMMAD RAMDANI
+
 ## Features
 
 - **User Authentication**: Secure login and registration with NextAuth.js and Supabase.
@@ -47,7 +58,7 @@ pnpm install
 
 Copy `.env.example` to `.env` and fill in the required values (database, Supabase, NextAuth, Midtrans, etc).
 
-'.env' example
+`.env` example
 
 ```bash
 # App URL
@@ -132,5 +143,3 @@ Visit [http://localhost:3000](http://localhost:3000) to view the app.
 - `pnpm build` — Build for production
 - `pnpm start` — Start production server
 - `pnpm lint` — Lint code
-
-## License
