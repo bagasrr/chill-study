@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useKelasWithoutExam } from "@/lib/hooks/useKelasWithoutExam";
 import { Delete, NavigateBefore } from "@mui/icons-material";
 import toast from "react-hot-toast";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
@@ -36,6 +36,7 @@ export default function AddExamForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [questionImages, setQuestionImages] = useState<(File | null)[]>([]);
   const { data: session } = useSession();
+  console.log(session);
 
   const supabase = createClientComponentClient();
 
@@ -70,35 +71,9 @@ export default function AddExamForm() {
     setQuestionImages(updated);
   };
 
-  useEffect(() => {
-    const syncSupabaseSession = async () => {
-      if (session?.access_token) {
-        const { error } = await supabase.auth.signInWithIdToken({
-          provider: "google",
-          token: session.id_token as string,
-        });
-        if (error) {
-          toast.error(`Gagal sinkronisasi session Supabase: ${error.message}`);
-        }
-      }
-    };
-    syncSupabaseSession();
-  }, [session?.id_token, session?.access_token, supabase.auth]);
-
   const onSubmit = async (data: FormType) => {
     setIsSubmitting(true);
     try {
-      const {
-        data: { session: supabaseSession },
-        error,
-      } = await supabase.auth.getSession();
-
-      if (error || !supabaseSession) {
-        toast.error("Tidak terautentikasi dengan Supabase");
-        setIsSubmitting(false);
-        return;
-      }
-
       const updatedQuestions = await Promise.all(
         data.questions.map(async (q, idx) => {
           const file = questionImages[idx];
