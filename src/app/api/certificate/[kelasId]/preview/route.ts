@@ -42,39 +42,6 @@ export async function GET(req: NextRequest, { params }: { params: { kelasId: str
     },
   });
 
-  // const certificate = await prisma.certificate.findFirst({
-  //   where: { userId: session.user.id, kelasId },
-  //   include: {
-  //     kelas: {
-  //       // Kita menggunakan select untuk memilih kolom spesifik dari 'kelas'
-  //       select: {
-  //         title: true,
-  //         CompanyCode: true,
-
-  //         // BENAR: Langsung sebutkan nama relasi di dalam 'select',
-  //         // lalu gunakan 'select' lagi di dalamnya.
-  //         CertifTemplate: {
-  //           select: {
-  //             templateUrl: true, // Mengambil field 'templateUrl' dari CertifTemplate
-  //           },
-  //         },
-  //       },
-  //     },
-  //     official: {
-  //       select: {
-  //         name: true,
-  //         signatureUrl: true,
-  //         position: true,
-  //       },
-  //     },
-  //     user: {
-  //       select: {
-  //         name: true,
-  //       },
-  //     },
-  //   },
-  // });
-
   const user = certificate?.user;
   const kelas = certificate?.kelas;
   const latestOfficial = certificate?.official;
