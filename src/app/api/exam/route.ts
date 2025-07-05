@@ -6,7 +6,12 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET() {
   try {
     const exam = await prisma.exam.findMany({
-      where: { isDeleted: false },
+      where: {
+        isDeleted: false,
+        kelas: {
+          IsDeleted: null,
+        },
+      },
       include: {
         kelas: {
           select: {
