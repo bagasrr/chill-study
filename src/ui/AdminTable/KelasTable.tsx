@@ -73,7 +73,7 @@ const KelasTable = () => {
 
   const columns: ColumnDefinition<Kelas>[] = [
     { key: "title", label: "Title", sortable: true },
-    { key: "deskripsi", label: "Deskripsi", sortable: true },
+    { key: "deskripsi", label: "Deskripsi", sortable: true, render: (value) => <p className="text-sm max-h-[70px] w-[500px] overflow-auto">{value}</p> },
     { key: "thumbnail", label: "Thumbnail", sortable: false, render: (value) => <Image src={value} width={80} height={80} alt="Thumbnail" className="w-20 h-20 object-cover rounded" /> },
     { key: "createdAt", label: "Created At", sortable: true, render: (value) => <p>{formattedDate(new Date(value))}</p> },
     { key: "LastUpdateDate", label: "Last Update At", sortable: true, render: (value) => (value ? <p>{formattedDate(new Date(value))}</p> : "-") },

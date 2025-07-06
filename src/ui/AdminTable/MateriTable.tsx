@@ -83,7 +83,7 @@ const MateriTable = () => {
   // --- SOLUSI TERBAIK: DEFINISIKAN TIPE KOLOM SECARA EKSPLISIT ---
   const columns: ColumnDefinition<Materi>[] = [
     { key: "title", label: "Title", sortable: true },
-    { key: "content", label: "Konten", sortable: true },
+    { key: "content", label: "Konten", sortable: true, render: (value) => <p className="text-sm max-h-[70px] w-[500px] overflow-auto">{value}</p> },
     {
       key: "createdAt",
       label: "Created At",
