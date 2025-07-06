@@ -14,8 +14,8 @@ export interface PricingCardProps {
   content?: string; // Sesuaikan dengan tipe sebenarnya jika ada
   hasProgress: boolean;
   CompanyCode?: string;
-  kelas?: Kelas; // Atau buat interface Kelas jika ingin lebih spesifik
-  // Tambahkan properti lain yang mungkin ada dari materi di kelas-detail
+  isActive?: boolean;
+  kelas?: Kelas;
   contents?: Array<{
     id: string;
     type: string;

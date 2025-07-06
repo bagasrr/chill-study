@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { Pentagon } from "@mui/icons-material";
 
 // Definisi interface dasar untuk objek hasil dari Midtrans Snap callback
 interface MidtransResult {
@@ -19,6 +20,7 @@ interface MidtransResult {
   fraud_status?: string;
   status_code?: string;
   status_message?: string;
+
   // Tambahkan properti lain yang mungkin muncul di objek result
 }
 
@@ -39,7 +41,7 @@ declare global {
   }
 }
 
-export const PricingCard: React.FC<PricingCardProps> = ({ id, title, price, content, canAccess = false, hasProgress = false, link = "", onRefresh }) => {
+export const PricingCard: React.FC<PricingCardProps> = ({ id, title, price, content, canAccess = false, hasProgress = false, link = "", isActive = false, onRefresh }) => {
   const { data: session } = useSession();
   const router = useRouter();
 
@@ -96,8 +98,6 @@ export const PricingCard: React.FC<PricingCardProps> = ({ id, title, price, cont
               toast("Pembayaran dibatalkan oleh pengguna.", { icon: "❌ " });
               onRefresh?.();
             } catch (cancelError) {
-              // <<< Perbaikan di sini
-              // Memeriksa apakah ini AxiosError atau Error generik
               if (axios.isAxiosError(cancelError)) {
                 console.error("❌ Gagal memperbarui status pembayaran ke dibatalkan (Axios Error):", cancelError.message, cancelError.response?.data);
                 toast.error("Gagal memperbarui status pembayaran di sistem (Axios Error).");
@@ -136,16 +136,23 @@ export const PricingCard: React.FC<PricingCardProps> = ({ id, title, price, cont
   };
 
   return (
-    <div className="border rounded-xl p-4 shadow-md bg-white hover:shadow-lg transition flex flex-col justify-around">
+    <div className={`border rounded-xl p-4 shadow-md ${isActive ? "bg-slate-200" : "bg-white"} hover:shadow-lg transition flex flex-col justify-around relative`}>
+      {isActive && (
+        <div className="absolute top-2 right-2 text-sm text-gray-600">
+          <Pentagon className="text-emerald-600" />
+        </div>
+      )}
       <h3 className="text-xl font-bold text-gray-800 mb-2">{title}</h3>
       <p className="text-gray-600 mb-4 h-[70px] overflow-auto">{content}</p>
       <div className="flex flex-col">
         {!canAccess && <p className="text-lg font-semibold text-green-600">{price === 0 ? "Gratis" : formatCurrency(price)}</p>}
 
-        {canAccess ? (
-          <Link href={link} className={`mt-3 w-fit px-4 py-2 text-white rounded-lg ${hasProgress ? "bg-emerald-600 hover:bg-emerald-700" : "bg-rose-600 hover:bg-rose-700"}`}>
-            {hasProgress ? "Lihat Materi" : "Mulai Belajar"}
+        {canAccess && isActive === false ? (
+          <Link href={link} className={`mt-3 w-fit px-4 py-2 text-white rounded-lg  ${hasProgress ? "bg-emerald-600 hover:bg-emerald-700" : "bg-rose-600 hover:bg-rose-700"} `}>
+            {isActive ? "On Playing" : hasProgress ? "Lihat Materi" : "Mulai Belajar"}
           </Link>
+        ) : canAccess && isActive === true ? (
+          <div className={`mt-3 w-fit px-4 py-2 text-white rounded-lg  ${isActive ? "cursor-not-allowed bg-slate-500" : null}           `}>{isActive ? "On Playing" : hasProgress ? "Lihat Materi" : "Mulai Belajar"}</div>
         ) : session?.user ? (
           <button onClick={handleBayar} className="mt-3 w-fit px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
             {price === 0 ? "Ambil Kelas Gratis" : "Beli Kelas Sekarang"}
