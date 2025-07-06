@@ -1,8 +1,6 @@
-// file: app/dashboard/kelas/[kelasnama]/materi/[id]/page.tsx (VERSI FINAL)
-
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useLayoutEffect } from "react";
 import { useParams } from "next/navigation";
 import axios from "axios";
 import { Typography, Skeleton, Paper, Button, Divider } from "@mui/material";
@@ -29,6 +27,49 @@ interface MateriDetail {
   contents: MateriContent[];
 }
 
+const ExpandableContent = ({ content }: { content: string }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [isOverflowing, setIsOverflowing] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const MAX_HEIGHT = 100;
+
+  useLayoutEffect(() => {
+    // Fungsi ini berjalan setelah render untuk mengukur tinggi konten
+    // Kita cek apakah tinggi scroll (tinggi total) lebih besar dari tinggi maksimum
+    if (contentRef.current && contentRef.current.scrollHeight > MAX_HEIGHT) {
+      setIsOverflowing(true);
+    } else {
+      setIsOverflowing(false);
+    }
+  }, [content]); // Jalankan lagi jika konten berubah
+
+  const handleToggle = () => {
+    setIsExpanded(!isExpanded);
+  };
+
+  return (
+    <div className="mb-8">
+      {/* Div ini akan mengubah tingginya secara dinamis */}
+      <div
+        ref={contentRef}
+        className="prose max-w-none text-gray-700 overflow-hidden transition-all duration-300 ease-in-out"
+        style={{
+          maxHeight: isExpanded ? "none" : `${MAX_HEIGHT}px`,
+        }}
+      >
+        <Typography variant="body1">{content}</Typography>
+      </div>
+
+      {/* Tampilkan tombol hanya jika kontennya memang panjang (overflowing) */}
+      {isOverflowing && (
+        <Button onClick={handleToggle} variant="text" size="small" color="info" sx={{ mt: 1, textTransform: "none", fontWeight: "bold" }}>
+          {isExpanded ? "Lihat Lebih Sedikit" : "Lihat Lebih Lengkap"}
+        </Button>
+      )}
+    </div>
+  );
+};
+
 const MateriDetailPage = () => {
   const { id: materiId } = useParams<{ id: string }>();
 
@@ -47,7 +88,6 @@ const MateriDetailPage = () => {
       setIsLoading(true);
       try {
         const res = await axios.get(`/api/${materiId}/details/materi`);
-        console.log(res.data);
         const data: MateriDetail = res.data;
         setMateriDetail(data);
         setIsVideoProgressSaved(false);
@@ -122,7 +162,7 @@ const MateriDetailPage = () => {
   }
 
   return (
-    <div className="p-4 md:p-6 bg-white rounded-lg shadow-md">
+    <div className="p-4 md:p-6 ">
       {mainVideo ? (
         <div className="mb-6 rounded-lg overflow-hidden">
           <VideoPlayer key={mainVideo.id} videoId={mainVideo.url} onPlay={handleVideoPlay} onEnd={() => handleVideoEnd(mainVideo.id)} />
@@ -137,11 +177,7 @@ const MateriDetailPage = () => {
       </Typography>
       <Divider sx={{ mb: 2 }} />
 
-      {materiDetail.content && (
-        <div className="prose max-w-none mb-8 text-gray-700">
-          <Typography variant="body1">{materiDetail.content}</Typography>
-        </div>
-      )}
+      {materiDetail.content && <ExpandableContent content={materiDetail.content} />}
 
       {attachments.length > 0 && (
         <div className="mb-6">
