@@ -9,6 +9,7 @@ import { useFormSubmit } from "@/lib/hooks/useSubmitform"; // Pastikan path dan 
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { GradientCircularProgress } from "../GradientCircularProgress";
 
 // Interface state
 interface MateriContentItem {
@@ -285,12 +286,20 @@ export default function AddMateriForm() {
             <Button variant="outlined" startIcon={<ArrowBackIcon />} onClick={() => router.back()} sx={{ color: "#374151", borderColor: "#d1d5db" }}>
               Kembali
             </Button>
-            <Button type="submit" variant="contained" startIcon={totalLoading ? <CircularProgress size={20} color="inherit" /> : <AddIcon />} disabled={totalLoading} sx={{ bgcolor: "#3b82f6", "&:hover": { bgcolor: "#2563eb" } }}>
+            <Button
+              type="submit"
+              variant="contained"
+              startIcon={totalLoading ? <CircularProgress size={20} color="inherit" /> : <AddIcon />}
+              disabled={totalLoading}
+              sx={{ bgcolor: "#3b82f6", color: "white", "&:hover": { bgcolor: "#2563eb", color: "#e5e7eb" } }}
+            >
               {totalLoading ? "Menambahkan..." : "Tambahkan Materi"}
             </Button>
           </Box>
         </form>
       </Paper>
+
+      {totalLoading && <GradientCircularProgress />}
     </div>
   );
 }
