@@ -9,6 +9,7 @@ import axios, { isAxiosError } from "axios"; // Import isAxiosError dari axios
 import { useParams, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { GradientCircularProgress } from "@/components/GradientCircularProgress";
 
 // Interface untuk data MateriContent dari DB (untuk yang sudah ada)
 interface MateriContentFromDB {
@@ -424,6 +425,7 @@ export default function EditMateriForm() {
           </Box>
         </form>
       </Paper>
+      {isTotalLoading && <GradientCircularProgress />}
     </div>
   );
 }

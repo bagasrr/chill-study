@@ -123,11 +123,6 @@ const MateriDetailPage = () => {
 
   return (
     <div className="p-4 md:p-6 bg-white rounded-lg shadow-md">
-      <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: "bold" }}>
-        {materiDetail.title}
-      </Typography>
-      <Divider sx={{ mb: 3 }} />
-
       {mainVideo ? (
         <div className="mb-6 rounded-lg overflow-hidden">
           <VideoPlayer key={mainVideo.id} videoId={mainVideo.url} onPlay={handleVideoPlay} onEnd={() => handleVideoEnd(mainVideo.id)} />
@@ -137,6 +132,10 @@ const MateriDetailPage = () => {
           <Typography>Tidak ada video utama untuk materi ini.</Typography>
         </Paper>
       )}
+      <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: "bold" }}>
+        {materiDetail.title}
+      </Typography>
+      <Divider sx={{ mb: 2 }} />
 
       {materiDetail.content && (
         <div className="prose max-w-none mb-8 text-gray-700">
