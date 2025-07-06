@@ -12,6 +12,7 @@ import { CloudUpload as CloudUploadIcon, Add as AddIcon, ArrowBack as ArrowBackI
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import Image from "next/image";
 import { isAxiosError } from "axios";
+import { GradientCircularProgress } from "../GradientCircularProgress";
 
 // Interface untuk data form
 interface KelasForm {
@@ -231,7 +232,7 @@ export default function AddKelasForm() {
                 borderRadius: 2,
               }}
             >
-              <Button component="label" variant="contained" startIcon={<CloudUploadIcon />} sx={{ bgcolor: "#3b82f6", "&:hover": { bgcolor: "#2563eb" } }}>
+              <Button component="label" variant="contained" startIcon={<CloudUploadIcon />} sx={{ bgcolor: "#3b82f6", color: "white", "&:hover": { bgcolor: "#2563eb", color: "#e5e7eb" } }}>
                 Pilih Gambar
                 <input type="file" hidden accept="image/*" onChange={handleFileChange} />
               </Button>
@@ -281,12 +282,19 @@ export default function AddKelasForm() {
             <Button variant="outlined" startIcon={<ArrowBackIcon />} onClick={() => router.back()} sx={{ color: "#374151", borderColor: "#d1d5db" }}>
               Kembali
             </Button>
-            <Button type="submit" variant="contained" startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : <AddIcon />} disabled={isLoading} sx={{ bgcolor: "#3b82f6", "&:hover": { bgcolor: "#2563eb" } }}>
+            <Button
+              type="submit"
+              variant="contained"
+              startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : <AddIcon />}
+              disabled={isLoading}
+              sx={{ bgcolor: "#3b82f6", color: "white", "&:hover": { bgcolor: "#2563eb", color: "#e5e7eb" } }}
+            >
               {isLoading ? "Menambahkan..." : "Tambah Kelas"}
             </Button>
           </Box>
         </form>
       </Paper>
+      {isLoading && <GradientCircularProgress />}
     </div>
   );
 }
