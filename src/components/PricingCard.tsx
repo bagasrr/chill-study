@@ -138,7 +138,7 @@ export const PricingCard: React.FC<PricingCardProps> = ({ id, title, price, cont
   return (
     <div className="border rounded-xl p-4 shadow-md bg-white hover:shadow-lg transition flex flex-col justify-around">
       <h3 className="text-xl font-bold text-gray-800 mb-2">{title}</h3>
-      <p className="text-gray-600 mb-4">{content}</p>
+      <p className="text-gray-600 mb-4 h-[70px] overflow-auto">{content}</p>
       <div className="flex flex-col">
         {!canAccess && <p className="text-lg font-semibold text-green-600">{price === 0 ? "Gratis" : formatCurrency(price)}</p>}
 
