@@ -100,8 +100,6 @@ const MateriTable = () => {
     {
       key: "kelas",
       label: "Kelas Nama",
-      sortable: true,
-      // Render dengan asumsi value adalah objek { title: string }
       render: (value) => <p>{value.title}</p>,
     },
     {

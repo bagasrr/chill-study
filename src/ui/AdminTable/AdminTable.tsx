@@ -19,11 +19,11 @@ const AdminTable = () => {
     { key: "deviceToken", label: "Device Token", render: (value) => <p>{value ? "Active" : "None"}</p> },
     { key: "role", label: "Role", sortable: true },
     { key: "createdAt", label: "Joined At", sortable: true, render: (value) => <p>{formattedDate(value)}</p> },
-    { key: "CreatedBy", label: "Created By", sortable: true },
+    { key: "CreatedBy", label: "Created By", sortable: true, render: (value) => <p>{value || "cs-system"}</p> },
     { key: "LastUpdateDate", label: "Last Update At", sortable: true, render: (value) => (value ? <p>{formattedDate(value)}</p> : "-") },
     { key: "LastUpdatedBy", label: "Last Update By", sortable: true },
-    { key: "CompanyCode", label: "Company Code" },
-    { key: "Status", label: "Status" },
+    { key: "CompanyCode", label: "Company Code", render: (value) => <p>{value || "User-Admin"}</p> },
+    { key: "Status", label: "Status", render: (value) => <p>{value || "Active"}</p> },
   ];
 
   return (
