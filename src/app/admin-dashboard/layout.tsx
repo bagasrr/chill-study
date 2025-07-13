@@ -10,7 +10,7 @@ const layout = async ({ children }: { children: React.ReactNode }) => {
   const session = await getServerSession(authOptions);
 
   console.log("session: ", session);
-  if (session?.user?.role !== "ADMIN") {
+  if (session?.user?.role === "STUDENT") {
     redirect("/?error=not-admin");
   }
 

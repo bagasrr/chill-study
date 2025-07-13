@@ -73,7 +73,7 @@ const Navbar: React.FC = () => {
                   );
                 })}
                 {/* Conditional Dashboard Link/Dropdown for Desktop */}
-                {session?.user?.role === "ADMIN" ? (
+                {session?.user?.role !== "STUDENT" ? (
                   <div className="group">
                     {" "}
                     {/* Crucial for the desktop hover effect */}
@@ -107,7 +107,7 @@ const Navbar: React.FC = () => {
             );
           })}
           {/* Conditional Dashboard Link/Dropdown for Mobile */}
-          {session?.user?.role === "ADMIN" ? (
+          {session?.user?.role !== "STUDENT" ? (
             <DropdownButtonNavbar title="Dashboard" items={adminDashboardItems} closeMobileMenu={closeMobileMenu} />
           ) : session ? ( // If logged in but not ADMIN, show single Dashboard link
             <Link href="/dashboard" onClick={closeMobileMenu} className="text-lg transition rounded-md px-2 py-1 hover:text-primary">
