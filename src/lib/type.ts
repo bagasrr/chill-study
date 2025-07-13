@@ -67,3 +67,20 @@ export type ProgramCardType = {
   deskripsi: string;
   CompanyCode: string;
 };
+
+export type PaymentStatus = "COMPLETED" | "PENDING" | "CANCELLED" | "REFUNDED";
+
+// Definisi tipe untuk model Payment
+export interface Payment {
+  id: string;
+  userId: string;
+  orderId: string;
+  status: PaymentStatus;
+  createdAt: string; // Atau Date jika Anda mengonversi di backend
+  IsDeleted: string | null; // DateTime? di Prisma jadi string | null
+  CreatedBy: string | null;
+  LastUpdatedBy: string | null;
+  LastUpdateDate: string | null; // DateTime? di Prisma jadi string | null
+  Status: number | null; // Int? di Prisma jadi number | null
+  CompanyCode: string | null;
+}
