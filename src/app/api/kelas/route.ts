@@ -6,6 +6,8 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
+  const email = session?.user?.email;
+  if (!email) return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
 
   const body = await req.json();
   const parsed = createKelasSchema.safeParse(body);
@@ -22,11 +24,11 @@ export async function POST(req: Request) {
       deskripsi,
       thumbnail,
       certifTemplateId,
-      CreatedBy: session?.user?.email || "system",
+      CreatedBy: email || "system",
       CompanyCode,
       Status: 1,
       LastUpdateDate: new Date(),
-      LastUpdatedBy: session?.user?.email || "system",
+      LastUpdatedBy: email || "system",
     },
   });
 
